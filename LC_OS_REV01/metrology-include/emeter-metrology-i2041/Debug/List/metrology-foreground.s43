@@ -1,0 +1,3578 @@
+///////////////////////////////////////////////////////////////////////////////
+//                                                                            /
+// IAR C/C++ Compiler V5.52.1.50724/W32 for MSP430      07/Jul/2014  17:16:18 /
+// Copyright 1996-2013 IAR Systems AB.                                        /
+//                                                                            /
+//    __rt_version  =  3                                                      /
+//    __double_size =  32                                                     /
+//    __reg_r4      =  free                                                   /
+//    __reg_r5      =  free                                                   /
+//    __pic         =  no                                                     /
+//    __core        =  430                                                    /
+//    Source file   =  C:\Users\a0283112\Desktop\Submeter i2040               /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\src\metrolo /
+//                     gy-foreground.c                                        /
+//    Command line  =  "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\src\metrolo /
+//                     gy-foreground.c" -D __MSP430__ -lCN                    /
+//                     "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041\Debug\List\" -lA                           /
+//                     "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041\Debug\List\" -o                            /
+//                     "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041\Debug\Obj\" --debug -D__MSP430I2041__ -e   /
+//                     --double=32 --dlib_config "C:\Program Files (x86)\IAR  /
+//                     Systems\Embedded Workbench                             /
+//                     6.5_0\430\LIB\DLIB\dl430fn.h" --library_module -I      /
+//                     "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041/../../emeter-toolkit/include\" -I          /
+//                     "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041/../include\" -I                            /
+//                     "C:\Users\a0283112\Desktop\Submeter i2040              /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041\" -Ohs --multiplier=16s                    /
+//    List file     =  C:\Users\a0283112\Desktop\Submeter i2040               /
+//                     8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\emeter-metr /
+//                     ology-i2041\Debug\List\metrology-foreground.s43        /
+//                                                                            /
+//                                                                            /
+///////////////////////////////////////////////////////////////////////////////
+
+        MODULE `metrology-foreground`
+
+        RTMODEL "__SystemLibrary", "DLib"
+        RTMODEL "__core", "430"
+        RTMODEL "__dlib_full_locale_support", "0"
+        RTMODEL "__double_size", "32"
+        RTMODEL "__pic", "no"
+        RTMODEL "__reg_r4", "free"
+        RTMODEL "__reg_r5", "free"
+        RTMODEL "__rt_version", "3"
+
+        RSEG CSTACK:DATA:SORT:NOROOT(0)
+
+        EXTERN ?Epilogue6
+        EXTERN _Mul32s32sto64i
+        EXTERN ?DivMod32u
+        EXTERN ?DivMod32s
+        EXTERN ?Epilogue8
+        EXTERN _Mul64i
+        EXTERN ?ShiftRight64s_6
+        EXTERN ?Epilogue7
+        EXTERN ?Epilogue4
+        EXTERN ?cstart_init_zero
+        EXTERN ?longjmp_r4
+        EXTERN ?longjmp_r5
+        EXTERN ?setjmp_r4
+        EXTERN ?setjmp_r5
+
+        PUBWEAK ?setjmp_save_r4
+        PUBWEAK ?setjmp_save_r5
+        PUBWEAK SD24PRE1
+        FUNCTION accumulate_phase_energies,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 20, STACK
+        PUBLIC align_metrology_with_calibration_data
+        FUNCTION align_metrology_with_calibration_data,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 2, STACK
+        PUBLIC calculate_phase_readings
+        FUNCTION calculate_phase_readings,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 16, STACK
+        FUNCTION evaluate_current_thd,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 18, STACK
+        FUNCTION evaluate_fundamental_active_power,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 16, STACK
+        FUNCTION evaluate_fundamental_reactive_power,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 16, STACK
+        FUNCTION evaluate_fundamental_rms_current,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 26, STACK
+        FUNCTION evaluate_fundamental_rms_voltage,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 6, STACK
+        FUNCTION evaluate_power_factor,0203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 6, STACK
+        FUNCTION evaluate_reactive_power,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 10, STACK
+        FUNCTION evaluate_rms_current,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 14, STACK
+        FUNCTION evaluate_rms_voltage,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 2, STACK
+        FUNCTION evaluate_voltage_thd,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 18, STACK
+        PUBLIC integrate_power_to_energy
+        FUNCTION integrate_power_to_energy,021203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 20, STACK
+        PUBLIC metrology_state
+        PUBLIC operating_mode
+        PUBLIC set_phase_correction
+        FUNCTION set_phase_correction,0203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 2, STACK
+        PUBLIC set_sd_phase_correction
+        FUNCTION set_sd_phase_correction,0203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 2, STACK
+        PUBLIC working_data
+        
+          CFI Names cfiNames0
+          CFI StackFrame CFA SP DATA
+          CFI Resource PC:16, SP:16, SR:16, R4:16, R5:16, R6:16, R7:16, R8:16
+          CFI Resource R9:16, R10:16, R11:16, R12:16, R13:16, R14:16, R15:16
+          CFI EndNames cfiNames0
+        
+          CFI Common cfiCommon0 Using cfiNames0
+          CFI CodeAlign 2
+          CFI DataAlign 2
+          CFI ReturnAddress PC CODE
+          CFI CFA SP+2
+          CFI PC Frame(CFA, -2)
+          CFI SR Undefined
+          CFI R4 SameValue
+          CFI R5 SameValue
+          CFI R6 SameValue
+          CFI R7 SameValue
+          CFI R8 SameValue
+          CFI R9 SameValue
+          CFI R10 SameValue
+          CFI R11 SameValue
+          CFI R12 Undefined
+          CFI R13 Undefined
+          CFI R14 Undefined
+          CFI R15 Undefined
+          CFI EndCommon cfiCommon0
+        
+        EXTERN metrology_disable_analog_front_end
+        FUNCTION metrology_disable_analog_front_end,0202H
+        EXTERN metrology_init_analog_front_end_normal_mode
+        FUNCTION metrology_init_analog_front_end_normal_mode,0202H
+        EXTERN nv_parms
+        EXTERN metrology_init_from_nv_data
+        FUNCTION metrology_init_from_nv_data,0202H
+        EXTERN FOREGROUND_PROCESS_ON
+        FUNCTION FOREGROUND_PROCESS_ON,0202H
+        EXTERN _Div64s
+        FUNCTION _Div64s,0202H
+        EXTERN mul48_32_16
+        FUNCTION mul48_32_16,0202H
+        EXTERN fir_coeffs
+        EXTERN raw_temperature_from_adc
+        EXTERN temperature_in_celsius
+        EXTERN memset
+        FUNCTION memset,010202H
+        EXTERN FOREGROUND_PROCESS_OFF
+        FUNCTION FOREGROUND_PROCESS_OFF,0202H
+        EXTERN div48
+        FUNCTION div48,0202H
+        EXTERN q1_15_mul
+        FUNCTION q1_15_mul,0202H
+        EXTERN isqrt64
+        FUNCTION isqrt64,0202H
+        EXTERN _Div64u
+        FUNCTION _Div64u,0202H
+        EXTERN mul48u_32_16
+        FUNCTION mul48u_32_16,0202H
+        EXTERN isqrt32
+        FUNCTION isqrt32,0202H
+
+// C:\Users\a0283112\Desktop\Submeter i2040 8k_DC_THD_AUTO_OSR_IAR5.5\emeter-metrology\src\metrology-foreground.c
+//    1 /*******************************************************************************
+//    2  *  metrology-foreground.c -
+//    3  *
+//    4  *  Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
+//    5  * 
+//    6  *  Redistribution and use in source and binary forms, with or without 
+//    7  *  modification, are permitted provided that the following conditions 
+//    8  *  are met:
+//    9  *
+//   10  *    Redistributions of source code must retain the above copyright 
+//   11  *    notice, this list of conditions and the following disclaimer.
+//   12  *
+//   13  *    Redistributions in binary form must reproduce the above copyright
+//   14  *    notice, this list of conditions and the following disclaimer in the 
+//   15  *    documentation and/or other materials provided with the   
+//   16  *    distribution.
+//   17  *
+//   18  *    Neither the name of Texas Instruments Incorporated nor the names of
+//   19  *    its contributors may be used to endorse or promote products derived
+//   20  *    from this software without specific prior written permission.
+//   21  *
+//   22  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
+//   23  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//   24  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+//   25  *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+//   26  *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+//   27  *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//   28  *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+//   29  *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//   30  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+//   31  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//   32  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//   33  *
+//   34  ******************************************************************************/
+//   35 
+//   36 /*! \file emeter-metrology.h */
+//   37 
+//   38 /*--------------------------------------------------------------------------
+//   39     MSP430 foreground (non-interrupt) routines for e-meters
+//   40 
+//   41     This software is appropriate for single phase and three phase e-meters
+//   42     using a voltage sensor plus a CT or shunt resistor current sensors, or
+//   43     a combination of a CT plus a shunt.
+//   44  
+//   45     Foreground process includes:
+//   46     -Using timer tick to wait
+//   47     -Calculating the power per channel
+//   48     -Determine if current channel needs scaling.
+//   49     -Determine if needs to be in low power modes.
+//   50     -Compensate reference from temperature sensor */
+//   51 
+//   52 #include <inttypes.h>
+//   53 #include <stdlib.h>
+//   54 #if !defined(__MSP430__)
+//   55 #include <stdio.h>
+//   56 #include <fcntl.h>
+//   57 #include <unistd.h>
+//   58 #endif
+//   59 #if defined(__GNUC__)
+//   60 #include <signal.h>
+//   61 #endif
+//   62 #include <string.h>
+//   63 
+//   64 #include <emeter-toolkit.h>
+
+        ASEGN DATA16_AN:DATA:NOROOT,0b9H
+// unsigned char volatile SD24PRE1
+SD24PRE1:
+        DS8 1
+//   65 
+//   66 #include "emeter-metrology.h"
+//   67 #include "metrology-structs.h"
+//   68 #include "metrology-nv-structs.h"
+//   69 
+//   70 #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//   71 static const uint16_t current_overrange_masks[PER_PHASE_CURRENT_CHANNELS] = {PHASE_STATUS_I_OVERRANGE, PHASE_STATUS_I_NEUTRAL_OVERRANGE};
+//   72 #endif
+//   73 
+//   74 /* Meter status flag bits. */
+
+        RSEG DATA16_Z:DATA:SORT:NOROOT(1)
+        REQUIRE ?cstart_init_zero
+//   75 uint16_t metrology_state;
+metrology_state:
+        DS8 2
+//   76 
+//   77 /* Current operating mode - normal, limp, power down, etc. */
+
+        RSEG DATA16_Z:DATA:SORT:NOROOT(0)
+        REQUIRE ?cstart_init_zero
+//   78 int8_t operating_mode;
+operating_mode:
+        DS8 1
+//   79 #if defined(LIMP_MODE_SUPPORT)
+//   80 int normal_limp;
+//   81 #endif
+//   82 
+//   83 #if defined(WIRE_RESISTANCE_COMPENSATE)
+//   84 extern uint32_t resistance_scaling;
+//   85 #endif
+//   86 
+//   87 #if defined(CAPACITOR_COMPENSATE_ON)
+//   88 extern uint32_t capacitance_scaling;
+//   89 #endif
+//   90 
+//   91 /* The main per-phase working parameter structure */
+
+        RSEG DATA16_Z:DATA:SORT:NOROOT(1)
+        REQUIRE ?cstart_init_zero
+//   92 struct metrology_data_s working_data;
+working_data:
+        DS8 362
+//   93 
+//   94 static __inline__ int32_t abs32(int32_t x)
+//   95 {
+//   96     return (x < 0)  ?  -x  :  x;
+//   97 }
+//   98 
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//   99 void set_phase_correction(struct phase_correction_s *s, int correction)
+set_phase_correction:
+          CFI Block cfiBlock0 Using cfiCommon0
+          CFI Function set_phase_correction
+//  100 {
+//  101     correction += 128;
+        ADD.W   #0x80, R13
+//  102     s->step = I_HISTORY_STEPS + (correction >> 8);
+        MOV.W   R13, R15
+        SWPB    R15
+        SXT     R15
+        ADD.W   #0x2, R15
+        MOV.W   R15, 0(R12)
+//  103     correction = 127 - ((correction & 0xFF) >> 1);
+        MOV.W   #0x7f, R14
+        RRA.B   R13
+        MOV.B   R13, R15
+        SXT     R15
+        AND.W   R14, R15
+        MOV.W   R14, R13
+        SUB.W   R15, R13
+//  104     s->fir_beta = fir_coeffs[correction][0];
+        RLA.W   R13
+        RLA.W   R13
+        MOV.W   fir_coeffs(R13), 0x2(R12)
+//  105     s->fir_gain = fir_coeffs[correction][1];
+        MOV.W   fir_coeffs + 2(R13), 0x4(R12)
+//  106 }
+        RET
+          CFI EndBlock cfiBlock0
+//  107 
+//  108 #if defined(DYNAMIC_PHASE_CORRECTION_SUPPORT)
+//  109 static void set_phase_gain_correction(struct phase_correction_s *s, int correction, int gain)
+//  110 {
+//  111     correction += 128;
+//  112     s->step = I_HISTORY_STEPS + (correction >> 8);
+//  113     correction = 127 - ((correction & 0xFF) >> 1);
+//  114     s->fir_beta = fir_coeffs[correction][0];
+//  115     s->fir_gain = q1_15_mul(gain, fir_coeffs[correction][1]);
+//  116 }
+//  117 #endif
+//  118 
+//  119 #if defined(__HAS_SD_ADC__)
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  120 void set_sd_phase_correction(struct phase_correction_sd_s *s, int phx, int correction)
+set_sd_phase_correction:
+          CFI Block cfiBlock1 Using cfiCommon0
+          CFI Function set_sd_phase_correction
+//  121 {
+//  122 #if defined(__MSP430_HAS_SD24_B__)
+//  123     uint16_t bump;
+//  124     #if defined(__IAR_SYSTEMS_ICC__)
+//  125     static unsigned short int volatile * const sd_locations[NUM_CURRENT_CHANNELS] =
+//  126     #else
+//  127     static unsigned int volatile * const sd_locations[NUM_CURRENT_CHANNELS] =
+//  128     #endif
+//  129 #else
+//  130     uint8_t bump;
+//  131     static unsigned char volatile * const sd_locations[NUM_CURRENT_CHANNELS] =
+//  132 #endif
+//  133     {
+//  134         &sd_xxxx_reg(SD_PRE_, PHASE_1_CURRENT_ADC_CHANNEL),
+//  135     #if NUM_PHASES >= 2
+//  136         &sd_xxxx_reg(SD_PRE_, PHASE_2_CURRENT_ADC_CHANNEL),
+//  137     #endif
+//  138     #if NUM_PHASES >= 3
+//  139         &sd_xxxx_reg(SD_PRE_, PHASE_3_CURRENT_ADC_CHANNEL),
+//  140     #endif
+//  141     #if NUM_PHASES >= 4
+//  142         &sd_xxxx_reg(SD_PRE_, PHASE_4_CURRENT_ADC_CHANNEL),
+//  143     #endif
+//  144     #if NUM_PHASES >= 5
+//  145         &sd_xxxx_reg(SD_PRE_, PHASE_5_CURRENT_ADC_CHANNEL),
+//  146     #endif
+//  147     #if NUM_PHASES >= 6
+//  148         &sd_xxxx_reg(SD_PRE_, PHASE_6_CURRENT_ADC_CHANNEL),
+//  149     #endif
+//  150     #if defined(NEUTRAL_MONITOR_SUPPORT)
+//  151         &sd_xxxx_reg(SD_PRE_, NEUTRAL_CURRENT_ADC_CHANNEL),
+//  152     #endif
+//  153     };
+//  154 
+//  155     /* Only try to nudge the converter's timing when in normal operating mode. */
+//  156     if (operating_mode == OPERATING_MODE_NORMAL)
+        CMP.B   #0x0, &operating_mode
+        JNE     ??set_sd_phase_correction_0
+//  157     {
+//  158         if ((bump = (s->sd_preloaded_offset - correction) & 0xFF))
+        MOV.B   0x2(R12), R15
+        SUB.B   R14, R15
+        JEQ     ??set_sd_phase_correction_0
+//  159             *sd_locations[phx] = bump;
+        RLA.W   R13
+        MOV.W   ??sd_locations(R13), R13
+        MOV.B   R15, 0(R13)
+//  160     }
+//  161     /* Always store the required correction. */
+//  162     s->step = I_HISTORY_STEPS - (correction >> 8);
+??set_sd_phase_correction_0:
+        MOV.W   #0x2, R13
+        MOV.W   R14, R15
+        SWPB    R15
+        SXT     R15
+        SUB.W   R15, R13
+        MOV.W   R13, 0(R12)
+//  163     s->sd_preloaded_offset = correction & 0xFF;
+        AND.B   #0xff, R14
+        MOV.W   R14, 0x2(R12)
+//  164 }
+        RET
+          CFI EndBlock cfiBlock1
+
+        RSEG DATA16_C:CONST:SORT:NOROOT(1)
+??sd_locations:
+        DC16 SD24PRE1
+//  165 #endif
+//  166 
+//  167 #if defined(PHASE_UNBALANCED_DETECTION_SUPPORT)
+//  168 static int32_t test_phase_balance(int32_t live_signal, int32_t neutral_signal, const int32_t thresholds[2])
+//  169 {
+//  170     int permitted_imbalance_fraction;
+//  171 
+//  172     /* This may be testing between two currents, or between two powers. In normal mode it
+//  173        is testing between two power readings. In limp mode it is testing between two
+//  174        current readings. */
+//  175 
+//  176     /* If both signals are very small, it is not practical to make a meaningful assessment of phase
+//  177        balance, so we just declare that balance is OK. */
+//  178     if (live_signal <= thresholds[0]  &&  neutral_signal <= thresholds[0])
+//  179     {
+//  180         /* Clear the unbalanced condition. */
+//  181         phase->metrology.current_unbalanced_persistence_check = 0;
+//  182         phase->status &= ~(PHASE_STATUS_UNBALANCED | PHASE_STATUS_CURRENT_FROM_NEUTRAL);
+//  183     }
+//  184 
+//  185     /* See which signal is bigger, with some tolerance built in.
+//  186     
+//  187        If the signal measured from the neutral is more than some fraction different from
+//  188        the signal measured from the live there is something wrong (maybe fraudulent tampering,
+//  189        or just something faulty). In this case we use the signal measured from the
+//  190        channel with the higher signal. When the channel is reasonably balanced, we use
+//  191        the signal from the live lead.
+//  192 
+//  193        If the signals are big we can use a fairly small fractional difference safely. If we
+//  194        use the same small fraction for small signals we are likely to have false detection
+//  195        problems under high EMI and transient conditions, so we use a larger fraction. For efficent
+//  196        computation we limit ourselves to "power of 2" type fractions - 1/2, 1/4, 1/8, 1/16, 1/32, etc.
+//  197 
+//  198        Balance assessments are persistence checked, to further reduce the chances of EMI and transient
+//  199        conditions causing false detections. */
+//  200     if (live_signal <= thresholds[1]  &&  neutral_signal <= thresholds[1])
+//  201         permitted_imbalance_fraction = PHASE_UNBALANCED_RELAXED_FRACTION;
+//  202     else
+//  203         permitted_imbalance_fraction = PHASE_UNBALANCED_PERMITTED_FRACTION;
+//  204 
+//  205     if ((live_signal - (live_signal >> permitted_imbalance_fraction)) > neutral_signal
+//  206         ||
+//  207         (neutral_signal - (neutral_signal >> permitted_imbalance_fraction)) > live_signal)
+//  208     {
+//  209         /* The phase appears UNBALANCED at this instant, but we need to persistence check to avoid
+//  210            false detection on noise spikes, EMI hits, etc. */
+//  211         if ((phase->status & PHASE_STATUS_UNBALANCED))
+//  212         {
+//  213             phase->metrology.current_unbalanced_persistence_check = 0;
+//  214         }
+//  215         else
+//  216         {
+//  217             if (++phase->metrology.current_unbalanced_persistence_check >= PHASE_UNBALANCED_PERSISTENCE_CHECK)
+//  218             {
+//  219                 /* Things look genuinely unbalanced. */
+//  220                 phase->metrology.current_unbalanced_persistence_check = 0;
+//  221                 phase->status |= PHASE_STATUS_UNBALANCED;
+//  222                 if (neutral_signal > live_signal)
+//  223                     phase->status |= PHASE_STATUS_CURRENT_FROM_NEUTRAL;
+//  224                 else
+//  225                     phase->status &= ~PHASE_STATUS_CURRENT_FROM_NEUTRAL;
+//  226             }
+//  227         }
+//  228     }
+//  229     else
+//  230     {
+//  231         /* The phase appears BALANCED at this instant, but we need to persistence check to avoid
+//  232            false detection on noise spikes, EMI hits, etc. */
+//  233         if ((phase->status & PHASE_STATUS_UNBALANCED))
+//  234         {
+//  235             if (--phase->metrology.current_unbalanced_persistence_check <= -PHASE_UNBALANCED_PERSISTENCE_CHECK)
+//  236             {
+//  237                 /* Things look genuinely balanced. */
+//  238                 phase->metrology.current_unbalanced_persistence_check = 0;
+//  239                 phase->status &= ~(PHASE_STATUS_UNBALANCED | PHASE_STATUS_CURRENT_FROM_NEUTRAL);
+//  240             }
+//  241         }
+//  242         else
+//  243         {
+//  244             phase->metrology.current_unbalanced_persistence_check = 0;
+//  245         }
+//  246     }
+//  247 
+//  248     if ((phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL))
+//  249         return  neutral_signal;
+//  250     return live_signal;
+//  251 }
+//  252 #endif
+//  253 
+//  254 #if defined(MAINS_FREQUENCY_SUPPORT)
+//  255 #if NUM_PHASES == 1
+//  256 static int16_t evaluate_mains_frequency(void)
+//  257 #else
+//  258 static int16_t evaluate_mains_frequency(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  259 #endif
+//  260 {
+//  261     uint32_t x;
+//  262     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  263     int ch;
+//  264     #endif
+//  265 
+//  266     /* Calculate the mains frequency in 1/100Hz increments, based on the mains
+//  267        period assessment from the background activity. */
+//  268 
+//  269     #if defined(LIMP_MODE_SUPPORT)
+//  270     if (operating_mode == OPERATING_MODE_LIMP)
+//  271     {
+//  272         /* In limp mode there is no voltage waveform, so we get the frequency from
+//  273            the current in the active lead. This may fail to measure frequency
+//  274            correctly for very low currents, and very distorted current waveforms. */
+//  275         #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  276         ch = (phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL)  ?  1  :  0;
+//  277         #endif
+//  278 
+//  279         x = phase->metrology.current[ch].mains_period;
+//  280     }
+//  281     else
+//  282     #endif
+//  283     {
+//  284         /* Normally we get the mains frequency from the voltage. Voltage is always
+//  285            present, and is not subject to the same level of distortion as the current
+//  286            waveform with difficult loads. */
+//  287     #if defined(REACTIVE_POWER_BY_QUADRATURE_SUPPORT)
+//  288         /* We have a whole cycle period in the upper 16 bits, but we want the delay for 90 degrees, so we shift 2
+//  289            extra bits for that. */
+//  290         x = (phase->metrology.mains_period >> 18);
+//  291         #if defined(__HAS_SD_ADC__)
+//  292         set_phase_correction(&phase->metrology.current[0].quadrature_correction, x);
+//  293             #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  294         set_phase_correction(&phase->metrology.current[1].quadrature_correction, x);
+//  295             #endif
+//  296         #else
+//  297         set_phase_correction(&phase->metrology.current[0].quadrature_correction, x + phase_cal->current[0].phase_correction);
+//  298             #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  299         set_phase_correction(&phase->metrology.current[1].quadrature_correction, x + phase_cal->current[1].phase_correction);
+//  300             #endif
+//  301         #endif
+//  302     #endif
+//  303         x = phase->metrology.mains_period;
+//  304     }
+//  305     #if defined(FUNDAMENTAL_POWER_SUPPORT)
+//  306     phase->metrology.pure_phase_rate = (int64_t) 0x100000000000000LL/(int64_t) x;
+//  307     #endif
+//  308     x = (uint32_t) SAMPLES_PER_10_SECONDS*256L*10L/(x >> 16);
+//  309     return x;
+//  310 }
+//  311 #endif
+//  312 
+//  313 #if defined(VRMS_SUPPORT)
+//  314     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  315 static rms_voltage_t evaluate_rms_voltage(void)
+evaluate_rms_voltage:
+          CFI Block cfiBlock2 Using cfiCommon0
+          CFI Function evaluate_rms_voltage
+//  316     #else
+//  317 static rms_voltage_t evaluate_rms_voltage(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  318     #endif
+//  319 {
+//  320     rms_voltage_t x;
+//  321     int32_t tmp;
+//  322     int dp;
+//  323 
+//  324     if ((phase->status & PHASE_STATUS_V_OVERRANGE))
+        FUNCALL evaluate_rms_voltage, div48
+        LOCFRAME CSTACK, 2, STACK
+        FUNCALL evaluate_rms_voltage, isqrt32
+        LOCFRAME CSTACK, 2, STACK
+        FUNCALL evaluate_rms_voltage, mul48u_32_16
+        LOCFRAME CSTACK, 2, STACK
+        BIT.W   #0x10, &working_data + 360
+        JNC     ??evaluate_rms_voltage_0
+//  325         return RMS_VOLTAGE_OVERRANGE;
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        RET
+//  326 
+//  327     dp = phase->metrology.dp_set;
+??evaluate_rms_voltage_0:
+        MOV.B   &working_data + 359, R12
+        SXT     R12
+//  328     /* The accumulated voltage is 16bitsx16bits*(~4096). So its a 43/44 bit number.
+//  329        After dividing by (~4096) its a 31/32 bit number.
+//  330        After we take the square root of the 32 bit number its a 16.16 bit number. */
+//  331     tmp = div_ac_voltage(phase->metrology.dot_prod[dp].V_sq, phase->metrology.dot_prod[dp].sample_count);
+        RLA.W   R12
+        MOV.W   R12, R15
+        RLA.W   R12
+        ADD.W   R12, R15
+        RLA.W   R12
+        ADD.W   R15, R12
+        MOV.W   working_data + 214(R12), R13
+        ADD.W   #working_data + 202, R12
+        CALL    #div48
+//  332     if (tmp < phase_cal->v_ac_offset)
+        CMP.W   &nv_parms + 24, R13
+        JL      ??evaluate_rms_voltage_1
+        JNE     ??evaluate_rms_voltage_2
+        CMP.W   &nv_parms + 22, R12
+        JC      ??evaluate_rms_voltage_2
+//  333         return 0;
+??evaluate_rms_voltage_1:
+        MOV.W   #0x0, R12
+        MOV.W   #0x0, R13
+        RET
+//  334 
+//  335     /* The ac_offset removes the effect of the AWGN from the ADC front end. AWGN is orthogonal to everything but a true copy
+//  336        of itself. This means means we need to subtract the ac_offset in a "Pythagoras" manner", while still squared. */
+//  337     x = isqrt32(tmp - phase_cal->v_ac_offset);
+??evaluate_rms_voltage_2:
+        SUB.W   &nv_parms + 22, R12
+        SUBC.W  &nv_parms + 24, R13
+        CALL    #isqrt32
+//  338     /* If we multiply the 16.16 bit number by a 15 bit scaling factor we get a 31.16 bit number.
+//  339        Dropping the last 16 bits gives us a */
+//  340     x = mul48u_32_16(x, phase_cal->V_rms_scale_factor[normal_limp]) >> 10;
+//  341 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  342     x = mul48u_32_16(x, working_data.temperature_correction.amplitude_factor);
+//  343 #endif
+//  344     return x;
+        MOV.W   &nv_parms + 26, R14
+        CALL    #mul48u_32_16
+        SWPB    R12
+        SWPB    R13
+        XOR.B   R13, R12
+        XOR.W   R13, R12
+        AND.B   #0xff, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RET
+          CFI EndBlock cfiBlock2
+//  345 }
+//  346 #endif
+//  347 
+//  348 #if defined(FUNDAMENTAL_VRMS_SUPPORT)
+//  349     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  350 static rms_voltage_t evaluate_fundamental_rms_voltage(void)
+evaluate_fundamental_rms_voltage:
+          CFI Block cfiBlock3 Using cfiCommon0
+          CFI Function evaluate_fundamental_rms_voltage
+//  351     #else
+//  352 static rms_voltage_t evaluate_fundamental_rms_voltage(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  353     #endif
+//  354 {
+        FUNCALL evaluate_fundamental_rms_voltage, div48
+        LOCFRAME CSTACK, 6, STACK
+        FUNCALL evaluate_fundamental_rms_voltage, q1_15_mul
+        LOCFRAME CSTACK, 6, STACK
+        FUNCALL evaluate_fundamental_rms_voltage, mul48u_32_16
+        LOCFRAME CSTACK, 6, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+//  355     int16_t i;
+//  356     rms_voltage_t x;
+//  357     int8_t dp;
+//  358 
+//  359     if ((phase->status & PHASE_STATUS_V_OVERRANGE))
+        BIT.W   #0x10, &working_data + 360
+        JNC     ??evaluate_fundamental_rms_voltage_0
+//  360         return RMS_VOLTAGE_OVERRANGE;
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        JMP     ??evaluate_fundamental_rms_voltage_1
+//  361 
+//  362     dp = phase->metrology.dp_set;
+??evaluate_fundamental_rms_voltage_0:
+        MOV.B   &working_data + 359, R12
+//  363     /* Scale by the voltage gain */
+//  364     x = div_ac_voltage(phase->metrology.dot_prod[dp].V_fundamental, phase->metrology.dot_prod[dp].sample_count);
+        SXT     R12
+        RLA.W   R12
+        MOV.W   R12, R15
+        RLA.W   R12
+        ADD.W   R12, R15
+        RLA.W   R12
+        ADD.W   R15, R12
+        MOV.W   working_data + 214(R12), R13
+        ADD.W   #working_data + 208, R12
+        CALL    #div48
+        MOV.W   R12, R10
+        MOV.W   R13, R11
+//  365     /* A negative value indicates the voltage correlation is completely unsynced. */
+//  366     if (x < 0)
+        CMP.W   #0x0, R13
+        JGE     ??evaluate_fundamental_rms_voltage_2
+//  367         return 0;
+        MOV.W   #0x0, R12
+        MOV.W   #0x0, R13
+        JMP     ??evaluate_fundamental_rms_voltage_1
+//  368 
+//  369     /* Scale by 1/sqrt(2). Nudge the scaling factor up a little, to avoid losses due to rounding. */
+//  370     i = q1_15_mul(phase_cal->V_rms_scale_factor[normal_limp], 23171 + 3);
+??evaluate_fundamental_rms_voltage_2:
+        MOV.W   #0x5a86, R13
+        MOV.W   &nv_parms + 26, R12
+        CALL    #q1_15_mul
+        MOV.W   R12, R14
+//  371     /* Scale by the voltage calibration factor */
+//  372     x = mul48u_32_16(x, i) >> 8;
+//  373 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  374     x = mul48u_32_16(x, working_data.temperature_correction.amplitude_factor);
+//  375 #endif
+//  376     return x;
+        MOV.W   R10, R12
+        MOV.W   R11, R13
+        CALL    #mul48u_32_16
+        SWPB    R12
+        SWPB    R13
+        XOR.B   R13, R12
+        XOR.W   R13, R12
+        AND.B   #0xff, R13
+??evaluate_fundamental_rms_voltage_1:
+        POP.W   R11
+          CFI R11 SameValue
+          CFI CFA SP+4
+        POP.W   R10
+          CFI R10 SameValue
+          CFI CFA SP+2
+        RET
+          CFI EndBlock cfiBlock3
+//  377 }
+//  378 #endif
+//  379 
+//  380 #if defined(VOLTAGE_THD_SUPPORT)
+//  381     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  382 static thd_t evaluate_voltage_thd(void)
+evaluate_voltage_thd:
+          CFI Block cfiBlock4 Using cfiCommon0
+          CFI Function evaluate_voltage_thd
+//  383     #else
+//  384 static thd_t evaluate_voltage_thd(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  385     #endif
+//  386 {
+        FUNCALL evaluate_voltage_thd, isqrt64
+        LOCFRAME CSTACK, 18, STACK
+        FUNCALL evaluate_voltage_thd, _Div64s
+        LOCFRAME CSTACK, 18, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+        PUSH.W  R5
+          CFI R5 Frame(CFA, -18)
+          CFI CFA SP+18
+        CMP.W   &working_data + 6, &working_data + 2
+        JL      ??evaluate_voltage_thd_1
+        JNE     ??evaluate_voltage_thd_2
+        CMP.W   &working_data + 4, &working_data
+        JNC     ??evaluate_voltage_thd_1
+//  387     int64_t x;
+//  388     int64_t y;
+//  389     int64_t z;
+//  390 
+//  391 #if defined(VOLTAGE_THD_MEASUREMENT_CUTOFF)
+//  392     /* Don't evaluate the voltage THD if the voltage is too small, as we can get some REALLY low accuracy answers
+//  393        from the weak signals. */
+//  394     if (phase->readings.V_rms < VOLTAGE_THD_MEASUREMENT_CUTOFF)
+//  395         return 0;
+//  396 #endif
+//  397 
+//  398     /* Avoid silly results if the fundamental appears to exceed the total, either transiently or
+//  399        due to rounding issues. */
+//  400     if (phase->readings.fundamental_V_rms > phase->readings.V_rms)
+//  401         return 0;
+//  402     x = (int64_t) phase->readings.fundamental_V_rms*phase->readings.fundamental_V_rms;
+??evaluate_voltage_thd_2:
+        MOV.W   &working_data + 4, R8
+        MOV.W   &working_data + 6, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        MOV.W   R10, R14
+        MOV.W   R10, R15
+        CALL    #_Mul64i
+        MOV.W   R12, R4
+        MOV.W   R13, R5
+        MOV.W   R14, R6
+        MOV.W   R15, R7
+//  403     y = (int64_t) phase->readings.V_rms*phase->readings.V_rms;
+        MOV.W   &working_data, R8
+        MOV.W   &working_data + 2, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        MOV.W   R10, R14
+        MOV.W   R10, R15
+        CALL    #_Mul64i
+//  404     /* Prevent tiny errors in x and y from leading to tiny negative values for THD */
+//  405     if (x >= y)
+        CMP.W   R15, R7
+        JL      ??evaluate_voltage_thd_3
+        JNE     ??evaluate_voltage_thd_1
+        CMP.W   R14, R6
+        JNC     ??evaluate_voltage_thd_3
+        JNE     ??evaluate_voltage_thd_1
+        CMP.W   R13, R5
+        JNC     ??evaluate_voltage_thd_3
+        JNE     ??evaluate_voltage_thd_1
+        CMP.W   R12, R4
+        JC      ??evaluate_voltage_thd_1
+//  406         return 0;
+//  407     z = y - x;
+//  408 #if defined(IEC_THD_SUPPORT)
+//  409     z = isqrt64(z);
+??evaluate_voltage_thd_3:
+        SUB.W   R4, R12
+        SUBC.W  R5, R13
+        SUBC.W  R6, R14
+        SUBC.W  R7, R15
+        CALL    #isqrt64
+//  410     z /= phase->readings.fundamental_V_rms;
+//  411     z *= 10000;
+//  412     y = z >> 32;
+        MOV.W   &working_data + 4, R8
+        MOV.W   &working_data + 6, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        CALL    #_Div64s
+        MOV.W   #0x2710, R8
+        MOV.W   #0x0, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        CALL    #_Mul64i
+        MOV.W   R14, R12
+        RLA.W   R15
+        SUBC.W  R15, R15
+        XOR.W   #0xffff, R15
+//  413 #else
+//  414     z *= 10000;
+//  415     z /= x;
+//  416     y = z;
+//  417 #endif
+//  418     if (y < 0)
+        CMP.W   #0x0, R15
+        JGE     ??evaluate_voltage_thd_0
+//  419         return 0;
+??evaluate_voltage_thd_1:
+        MOV.W   #0x0, R12
+//  420     return y;
+??evaluate_voltage_thd_0:
+        BR      #?Epilogue8
+          CFI EndBlock cfiBlock4
+//  421 }
+//  422 #endif
+//  423 
+//  424 #if defined(IRMS_SUPPORT)
+//  425     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  426 static rms_current_t evaluate_rms_current(void)
+evaluate_rms_current:
+          CFI Block cfiBlock5 Using cfiCommon0
+          CFI Function evaluate_rms_current
+//  427     #else
+//  428 static rms_current_t evaluate_rms_current(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal, int ph)
+//  429     #endif
+//  430 {
+        FUNCALL evaluate_rms_current, _Div64s
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL evaluate_rms_current, isqrt64
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL evaluate_rms_current, mul48u_32_16
+        LOCFRAME CSTACK, 14, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        SUB.W   #0x4, SP
+          CFI CFA SP+14
+//  431     rms_current_t x[PER_PHASE_CURRENT_CHANNELS];
+//  432     #if defined(TWENTYFOUR_BIT)
+//  433     int64_t tmp;
+//  434     #else
+//  435     int32_t tmp;
+//  436     #endif
+//  437     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  438     int ch;
+//  439     #endif
+//  440     #if defined(LIMP_MODE_SUPPORT)  &&  defined(PHASE_UNBALANCED_DETECTION_SUPPORT)
+//  441     static const int32_t thresholds[2] = {PHASE_UNBALANCED_CUTOFF_THRESHOLD_CURRENT, PHASE_UNBALANCED_TIGHT_THRESHOLD_CURRENT};
+//  442     #endif
+//  443     int dp;
+//  444 
+//  445     dp = phase->metrology.dp_set;
+        MOV.B   &working_data + 359, R15
+        SXT     R15
+//  446     /* Calculate the RMS current. Return RMS_CURRENT_OVERRANGE for overrange
+//  447        (i.e. ADC clip). A side effect of this routine is it updates the dynamic
+//  448        phase correction settings, based on the newly calculated current. */
+//  449     /* We always have to work out the properly scaled current from both leads, in
+//  450        order to work out the FIR coeffs for the next block. */
+//  451     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  452     for (ch = 0;  ch < 2;  ch++)
+//  453     #endif
+//  454     {
+//  455     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  456         if ((phase->status & current_overrange_masks[ch]))
+//  457     #else
+//  458         if ((phase->status & PHASE_STATUS_I_OVERRANGE))
+        BIT.W   #0x20, &working_data + 360
+        JNC     ??evaluate_rms_current_0
+//  459     #endif
+//  460         {
+//  461             x[ch] = RMS_CURRENT_OVERRANGE;
+        MOV.W   #0xffff, 0(SP)
+        MOV.W   #0x7fff, 0x2(SP)
+        JMP     ??evaluate_rms_current_1
+//  462         }
+//  463         else
+//  464         {
+//  465             tmp = div_ac_current(phase->metrology.current[ch].dot_prod[dp].I_sq, phase->metrology.current[ch].dot_prod[dp].sample_count);
+??evaluate_rms_current_0:
+        RLA.W   R15
+        MOV.W   R15, R11
+        RLA.W   R15
+        RLA.W   R15
+        ADD.W   R15, R11
+        RLA.W   R15
+        RLA.W   R15
+        ADD.W   R11, R15
+        MOV.W   working_data + 284(R15), R8
+        MOV.W   R8, R9
+        XOR.W   #0xffff, R9
+        RLA.W   R9
+        SUBC.W  R9, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        ADD.W   #working_data + 276, R15
+        MOV.W   @R15+, R12
+        MOV.W   @R15+, R13
+        MOV.W   @R15+, R14
+        MOV.W   @R15+, R15
+        CALL    #_Div64s
+//  466             if (tmp < phase_cal->current[ch].ac_offset)
+        MOV.W   &nv_parms + 6, R8
+        MOV.W   &nv_parms + 8, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        CMP.W   R10, R15
+        JL      ??evaluate_rms_current_2
+        JNE     ??evaluate_rms_current_3
+        CMP.W   R10, R14
+        JNC     ??evaluate_rms_current_2
+        JNE     ??evaluate_rms_current_3
+        CMP.W   R9, R13
+        JNC     ??evaluate_rms_current_2
+        JNE     ??evaluate_rms_current_3
+        CMP.W   R8, R12
+        JC      ??evaluate_rms_current_3
+//  467             {
+//  468                 x[ch] = 0;
+??evaluate_rms_current_2:
+        MOV.W   #0x0, 0(SP)
+        MOV.W   #0x0, 0x2(SP)
+        JMP     ??evaluate_rms_current_1
+//  469             }
+//  470             else
+//  471             {
+//  472                 /* The ac_offset removes the effect of the AWGN from the ADC front end. AWGN is orthogonal to everything but a true copy
+//  473                    of itself. This means means we need to subtract the ac_offset in a "Pythagoras" manner", while still squared. */
+//  474         #if defined(TWENTYFOUR_BIT)
+//  475                 x[ch] = isqrt64(tmp - phase_cal->current[ch].ac_offset) >> 26;
+??evaluate_rms_current_3:
+        SUB.W   R8, R12
+        SUBC.W  R9, R13
+        SUBC.W  R10, R14
+        SUBC.W  R10, R15
+        CALL    #isqrt64
+        MOV.W   R13, R12
+        MOV.W   R14, R13
+        MOV.W   R15, R11
+//  476         #else
+//  477                 x[ch] = isqrt32(tmp - phase_cal->current[ch].ac_offset) >> 2;
+//  478         #endif
+//  479                 x[ch] = mul48u_32_16(x[ch], phase_cal->current[ch].I_rms_scale_factor[normal_limp]);
+        MOV.W   &nv_parms + 12, R14
+        SWPB    R11
+        SWPB    R13
+        SWPB    R12
+        XOR.B   R13, R12
+        XOR.W   R13, R12
+        XOR.B   R11, R13
+        XOR.W   R11, R13
+        MOV.B   R11, R10
+        MOV.W   #0x0, R11
+        CLRC
+        RRC.W   R10
+        RRC.W   R13
+        RRC.W   R12
+        RRA.W   R11
+        RRC.W   R10
+        RRC.W   R13
+        RRC.W   R12
+        CALL    #mul48u_32_16
+        MOV.W   R12, 0(SP)
+        MOV.W   R13, 0x2(SP)
+//  480             }
+//  481         }
+//  482         #if defined(PER_SENSOR_PRECALCULATED_PARAMETER_SUPPORT)
+//  483         phase->metrology.current[ch].readings.I_rms = x[ch];
+//  484         #endif
+//  485 
+//  486         #if defined(DYNAMIC_PHASE_CORRECTION_SUPPORT)
+//  487             #if NUM_PHASES == 1
+//  488                 #if defined(NEUTRAL_MONITOR_SUPPORT)
+//  489             dynamic_phase_correction(ch);
+//  490                 #else
+//  491             dynamic_phase_correction();
+//  492                 #endif
+//  493             #else
+//  494         dynamic_phase_correction(phase, phase_cal, ph);
+//  495             #endif
+//  496         #endif
+//  497     }
+//  498 
+//  499     #if defined(LIMP_MODE_SUPPORT)
+//  500     if (operating_mode == OPERATING_MODE_LIMP)
+//  501     {
+//  502         /* We need to work out which is the relevant current to use. */
+//  503         #if defined(PHASE_UNBALANCED_DETECTION_SUPPORT)
+//  504         x[0] = test_phase_balance(x[0], x[1], thresholds);
+//  505         /* In limp mode we have no way to determine if the phase is reversed,
+//  506            so just say it is not. */
+//  507         phase->status &= ~PHASE_STATUS_REVERSED;
+//  508         #endif
+//  509     }
+//  510     else
+//  511     #endif
+//  512     {
+//  513         /* The power calculation has provided us which is the appropriate
+//  514            current to use. */
+//  515     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  516         if ((phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL))
+//  517             x[0] = x[1];
+//  518     #endif
+//  519     }
+//  520 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  521     x[0] = mul48u_32_16(x[0], working_data.temperature_correction.amplitude_factor);
+//  522 #endif
+//  523     return x[0];
+??evaluate_rms_current_1:
+        MOV.W   @SP, R12
+        MOV.W   0x2(SP), R13
+        ADD.W   #0x4, SP
+          CFI CFA SP+10
+        BR      #?Epilogue4
+          CFI EndBlock cfiBlock5
+//  524 }
+//  525 #endif
+//  526 
+//  527 #if defined(FUNDAMENTAL_IRMS_SUPPORT)
+//  528     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  529 static rms_current_t evaluate_fundamental_rms_current(void)
+evaluate_fundamental_rms_current:
+          CFI Block cfiBlock6 Using cfiCommon0
+          CFI Function evaluate_fundamental_rms_current
+//  530     #else
+//  531 static rms_current_t evaluate_fundamental_rms_current(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  532     #endif
+//  533 {
+        FUNCALL evaluate_fundamental_rms_current, isqrt64
+        LOCFRAME CSTACK, 18, STACK
+        FUNCALL evaluate_fundamental_rms_current, _Div64u
+        LOCFRAME CSTACK, 18, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+        PUSH.W  R5
+          CFI R5 Frame(CFA, -18)
+          CFI CFA SP+18
+//  534     rms_current_t x;
+//  535     int64_t z;
+//  536 
+//  537     if ((phase->status & (PHASE_STATUS_I_OVERRANGE | PHASE_STATUS_I_NEUTRAL_OVERRANGE)))
+        BIT.B   #0xa0, &working_data + 360
+        JEQ     ??evaluate_fundamental_rms_current_0
+//  538         return RMS_CURRENT_OVERRANGE;
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        JMP     ??evaluate_fundamental_rms_current_1
+//  539 
+//  540 #if defined(__TI_COMPILER_VERSION__)
+//  541     /* TODO: We seem to need to calculate this way to get the right answer with CCS 5.1 */
+//  542     {
+//  543         int64_t y;
+//  544 
+//  545         z = (int64_t)phase->readings.fundamental_active_power;
+//  546         z *= phase->readings.fundamental_active_power;
+//  547         y = (int64_t)phase->readings.fundamental_reactive_power;
+//  548         y *= phase->readings.fundamental_reactive_power;
+//  549         z += y;
+//  550     }
+//  551 #else
+//  552     z = (int64_t) phase->readings.fundamental_active_power*phase->readings.fundamental_active_power
+//  553       + (int64_t) phase->readings.fundamental_reactive_power*phase->readings.fundamental_reactive_power;
+??evaluate_fundamental_rms_current_0:
+        MOV.W   &working_data + 32, R4
+        MOV.W   &working_data + 34, R5
+        MOV.W   R5, R6
+        XOR.W   #0xffff, R6
+        RLA.W   R6
+        SUBC.W  R6, R6
+        MOV.W   &working_data + 24, R8
+        MOV.W   &working_data + 26, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        MOV.W   R10, R14
+        MOV.W   R10, R15
+        CALL    #_Mul64i
+        PUSH.W  R15
+          CFI CFA SP+20
+        PUSH.W  R14
+          CFI CFA SP+22
+        PUSH.W  R13
+          CFI CFA SP+24
+        PUSH.W  R12
+          CFI CFA SP+26
+        MOV.W   R4, R12
+        MOV.W   R5, R13
+        MOV.W   R6, R14
+        MOV.W   R6, R15
+        MOV.W   R4, R8
+        MOV.W   R5, R9
+        MOV.W   R6, R10
+        MOV.W   R6, R11
+        CALL    #_Mul64i
+        POP.W   R8
+          CFI CFA SP+24
+        POP.W   R9
+          CFI CFA SP+22
+        POP.W   R10
+          CFI CFA SP+20
+        POP.W   R11
+          CFI CFA SP+18
+        ADD.W   R12, R8
+        ADDC.W  R13, R9
+        ADDC.W  R14, R10
+        ADDC.W  R15, R11
+//  554 #endif
+//  555     /* Prevent tiny errors leading to tiny negative values for the fundamental RMS current */
+//  556     if (z < 0)
+        CMP.W   #0x0, R11
+        JGE     ??evaluate_fundamental_rms_current_2
+//  557         return 0;
+        MOV.W   #0x0, R12
+        MOV.W   #0x0, R13
+        JMP     ??evaluate_fundamental_rms_current_1
+//  558     z = isqrt64(z)/phase->readings.fundamental_V_rms;
+??evaluate_fundamental_rms_current_2:
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        MOV.W   R10, R14
+        MOV.W   R11, R15
+        CALL    #isqrt64
+//  559     /* We need to scale by 1000000. Multiply by 1000000/(2^6), and then shift down by 6 bits
+//  560        less than the 32 need to get the fraction out of the sqrt answer */
+//  561     z *= 15625LL;
+//  562     x = z >> (32 - 6);
+//  563 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  564     x = mul48u_32_16(x, working_data.temperature_correction.amplitude_factor);
+//  565 #endif
+//  566     return x;
+        MOV.W   &working_data + 4, R8
+        MOV.W   &working_data + 6, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        CALL    #_Div64u
+        MOV.W   #0x3d09, R8
+        MOV.W   #0x0, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        CALL    #_Mul64i
+        SWPB    R15
+        SWPB    R14
+        SWPB    R13
+        XOR.B   R14, R13
+        XOR.W   R14, R13
+        MOV.W   R13, R12
+        XOR.B   R15, R14
+        XOR.W   R15, R14
+        MOV.W   R14, R13
+        MOV.B   R15, R14
+        SXT     R14
+        SWPB    R15
+        RLA.W   R15
+        SUBC.W  R15, R15
+        XOR.W   #0xffff, R15
+        RRA.W   R15
+        RRC.W   R14
+        RRC.W   R13
+        RRC.W   R12
+        RRA.W   R15
+        RRC.W   R14
+        RRC.W   R13
+        RRC.W   R12
+??evaluate_fundamental_rms_current_1:
+        BR      #?Epilogue8
+          CFI EndBlock cfiBlock6
+//  567 }
+//  568 #endif
+//  569 
+//  570 #if defined(CURRENT_THD_SUPPORT)
+//  571     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  572 static thd_t evaluate_current_thd(void)
+evaluate_current_thd:
+          CFI Block cfiBlock7 Using cfiCommon0
+          CFI Function evaluate_current_thd
+//  573     #else
+//  574 static thd_t evaluate_current_thd(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  575     #endif
+//  576 {
+        FUNCALL evaluate_current_thd, isqrt64
+        LOCFRAME CSTACK, 18, STACK
+        FUNCALL evaluate_current_thd, _Div64s
+        LOCFRAME CSTACK, 18, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+        PUSH.W  R5
+          CFI R5 Frame(CFA, -18)
+          CFI CFA SP+18
+        CMP.W   &working_data + 16, &working_data + 12
+        JL      ??evaluate_current_thd_2
+        JNE     ??evaluate_current_thd_4
+        CMP.W   &working_data + 14, &working_data + 10
+        JNC     ??evaluate_current_thd_2
+//  577     int64_t x;
+//  578     int64_t y;
+//  579     int64_t z;
+//  580 
+//  581     #if defined(CURRENT_THD_MEASUREMENT_CUTOFF)
+//  582     /* Don't calculate the THD when the current is small, as the results are too noisy */
+//  583     if (phase->readings.I_rms < CURRENT_THD_MEASUREMENT_CUTOFF)
+//  584         return 0;
+//  585     #endif
+//  586 
+//  587     /* Avoid silly results if the fundamental appears to exceed the total, either transiently or
+//  588        due to rounding issues. */
+//  589     if (phase->readings.fundamental_I_rms > phase->readings.I_rms)
+//  590         return 0;
+//  591 
+//  592     x = (int64_t) phase->readings.fundamental_I_rms*phase->readings.fundamental_I_rms;
+??evaluate_current_thd_4:
+        MOV.W   &working_data + 14, R8
+        MOV.W   &working_data + 16, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        MOV.W   R10, R14
+        MOV.W   R10, R15
+        CALL    #_Mul64i
+        MOV.W   R12, R4
+        MOV.W   R13, R5
+        MOV.W   R14, R6
+        MOV.W   R15, R7
+//  593     y = (int64_t) phase->readings.I_rms*phase->readings.I_rms;
+        MOV.W   &working_data + 10, R8
+        MOV.W   &working_data + 12, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        MOV.W   R10, R14
+        MOV.W   R10, R15
+        CALL    #_Mul64i
+//  594     /* Prevent tiny errors in x and y from leading to tiny negative values for THD */
+//  595     if (x >= y)
+        CMP.W   R15, R7
+        JL      ??evaluate_current_thd_3
+        JNE     ??evaluate_current_thd_2
+        CMP.W   R14, R6
+        JNC     ??evaluate_current_thd_3
+        JNE     ??evaluate_current_thd_2
+        CMP.W   R13, R5
+        JNC     ??evaluate_current_thd_3
+        JNE     ??evaluate_current_thd_2
+        CMP.W   R12, R4
+        JC      ??evaluate_current_thd_2
+//  596         return 0;
+//  597     z = y - x;
+//  598     #if defined(IEC_THD_SUPPORT)
+//  599     z = isqrt64(z);
+??evaluate_current_thd_3:
+        SUB.W   R4, R12
+        SUBC.W  R5, R13
+        SUBC.W  R6, R14
+        SUBC.W  R7, R15
+        CALL    #isqrt64
+//  600     z /= phase->readings.fundamental_I_rms;
+//  601     z *= 10000;
+//  602     z >>= 32;
+        MOV.W   &working_data + 14, R8
+        MOV.W   &working_data + 16, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        CALL    #_Div64s
+        MOV.W   #0x2710, R8
+        MOV.W   #0x0, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        CALL    #_Mul64i
+        MOV.W   R14, R12
+        RLA.W   R15
+        SUBC.W  R15, R15
+        XOR.W   #0xffff, R15
+//  603     #else
+//  604     z *= 10000;
+//  605     z /= x;
+//  606     #endif
+//  607     /* Avoid stupid results when the maths is going crazy on zero current and
+//  608        out of lock conditions */
+//  609     if (z < 0)
+        CMP.W   #0x0, R15
+        JGE     ??evaluate_current_thd_1
+//  610         z = 0;
+??evaluate_current_thd_2:
+        MOV.W   #0x0, R12
+//  611     return z;
+??evaluate_current_thd_1:
+        BR      #?Epilogue8
+          CFI EndBlock cfiBlock7
+//  612 }
+//  613 #endif
+//  614 
+//  615 #if NUM_PHASES > 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)  &&  defined(IRMS_SUPPORT)
+//  616 static rms_current_t evaluate_neutral_rms_current(void)
+//  617 {
+//  618     rms_current_t x;
+//  619     #if defined(TWENTYFOUR_BIT)
+//  620     int64_t tmp;
+//  621     #else
+//  622     int32_t tmp;
+//  623     #endif
+//  624     int dp;
+//  625 
+//  626     /* Calculate the RMS current in 1mA increments. Return -1 for overrange
+//  627        (i.e. ADC clip). A side effect of this routine is it updates the dynamic
+//  628        phase correction settings, based on the newly calculated current. */
+//  629     if ((working_data.neutral.status & PHASE_STATUS_I_OVERRANGE))
+//  630         return RMS_CURRENT_OVERRANGE;
+//  631 
+//  632     dp = working_data.neutral.metrology.dp_set;
+//  633     tmp = div_ac_current(working_data.neutral.metrology.dot_prod[dp].I_sq, working_data.neutral.metrology.dot_prod[dp].sample_count);
+//  634     if (tmp < cal_info->neutral.ac_offset)
+//  635         return 0;
+//  636 
+//  637     /* The ac_offset removes the effect of the AWGN from the ADC front end. AWGN is orthogonal to everything but a true copy
+//  638        of itself. This means means we need to subtract the ac_offset in a "Pythagoras" manner", while still squared. */
+//  639     #if defined(TWENTYFOUR_BIT)
+//  640     x = isqrt64(tmp - cal_info->neutral.ac_offset) >> 26;
+//  641     #else
+//  642     x = isqrt32(tmp - cal_info->neutral.ac_offset) >> 2;
+//  643     #endif
+//  644     x = mul48u_32_16(x, cal_info->neutral.I_rms_scale_factor[normal_limp]);
+//  645 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  646     x = mul48u_32_16(x, working_data.temperature_correction.amplitude_factor);
+//  647 #endif
+//  648     return x;
+//  649 }
+//  650 #endif
+//  651 
+//  652 #if NUM_PHASES > 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)  &&  defined(RESIDUAL_IRMS_SUPPORT)
+//  653 static rms_current_t evaluate_residual_3phase_rms_current(void)
+//  654 {
+//  655     rms_current_t x;
+//  656     uint16_t status;
+//  657     int dp;
+//  658 
+//  659     /* Calculate the RMS current in 1mA increments. Return RMS_CURRENT_OVERRANGE for overrange
+//  660        (i.e. ADC clipping). */
+//  661     status = working_data.phases[0].status | working_data.phases[1].status | working_data.phases[2].status | working_data.neutral.status;
+//  662     if ((status & PHASE_STATUS_I_OVERRANGE))
+//  663         return RMS_CURRENT_OVERRANGE;
+//  664 
+//  665     dp = working_data.neutral.metrology.dp_set;
+//  666     #if defined(TWENTYFOUR_BIT)
+//  667     x = isqrt64(div_ac_current(working_data.neutral.metrology.dot_prod[dp].residual_I_sq, working_data.neutral.metrology.dot_prod[dp].sample_count)) >> 26;
+//  668     #else
+//  669     x = isqrt32(div_ac_current(working_data.neutral.metrology.dot_prod[dp].residual_I_sq, working_data.neutral.metrology.dot_prod[dp].sample_count)) >> 2;
+//  670     #endif
+//  671     /* Use the scaling factor from phase 0 as a a compromise scaling factor. In most meters the phase to phase scaling variation is a
+//  672        fraction of a percent. */
+//  673     x = mul48u_32_16(x, cal_info->phases[0].current[0].I_rms_scale_factor[normal_limp]);
+//  674 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  675     x = mul48u_32_16(x, working_data.temperature_correction.amplitude_factor);
+//  676 #endif
+//  677     return x;
+//  678 }
+//  679 #endif
+//  680 
+//  681 #if NUM_PHASES == 1
+//  682 static power_t evaluate_active_power(void)
+//  683 #else
+//  684 static power_t evaluate_active_power(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  685 #endif
+//  686 {
+//  687     #if defined(TWENTYFOUR_BIT)
+//  688     int64_t x[PER_PHASE_CURRENT_CHANNELS];
+//  689     #else
+//  690     int32_t x[PER_PHASE_CURRENT_CHANNELS];
+//  691     #endif
+//  692 #if defined(PHASE_REVERSED_DETECTION_SUPPORT)
+//  693     int reversed;
+//  694 #endif
+//  695 #if defined(PHASE_UNBALANCED_DETECTION_SUPPORT)
+//  696     static const int32_t thresholds[2] = {PHASE_UNBALANCED_CUTOFF_THRESHOLD_POWER, PHASE_UNBALANCED_TIGHT_THRESHOLD_POWER};
+//  697 #endif
+//  698 #if defined(PHASE_REVERSED_DETECTION_SUPPORT)
+//  699     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  700     static const uint16_t reversed_masks[PER_PHASE_CURRENT_CHANNELS] = {PHASE_STATUS_I_REVERSED, PHASE_STATUS_I_NEUTRAL_REVERSED};
+//  701     int ch;
+//  702     #else
+//  703     static const uint16_t reversed_masks[1] = {PHASE_STATUS_I_REVERSED};
+//  704     #endif
+//  705 #endif
+//  706     int dp;
+//  707 
+//  708     if (phase->status & (PHASE_STATUS_V_OVERRANGE | PHASE_STATUS_I_OVERRANGE | PHASE_STATUS_I_NEUTRAL_OVERRANGE))
+//  709     {
+//  710 #if defined(PER_SENSOR_PRECALCULATED_PARAMETER_SUPPORT)
+//  711         phase->metrology.current[0].readings.active_power = POWER_OVERRANGE;
+//  712     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  713         phase->metrology.current[1].readings.active_power = POWER_OVERRANGE;
+//  714     #endif
+//  715 #endif
+//  716         return POWER_OVERRANGE;
+//  717     }
+//  718 
+//  719     /* We can only do real power assessment in full operating mode. */
+//  720     /* If we have neutral monitoring for a single phase meter, we need to measure
+//  721        both power levels, and decide between them. Issues to be assessed here are
+//  722        whether one or both leads show reverse power, and whether the power levels
+//  723        are balanced. */
+//  724 #if defined(PHASE_REVERSED_DETECTION_SUPPORT)
+//  725     /* If we find a negative power level we may be genuinely feeding power to the grid,
+//  726        or we may be seeing a tamper condition. This is application dependent. */
+//  727     reversed = FALSE;
+//  728 #endif
+//  729 
+//  730     dp = phase->metrology.dp_set;
+//  731 #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  732     for (ch = 0;  ch < 2;  ch++)
+//  733 #endif
+//  734     {
+//  735         x[ch] = div_ac_power(phase->metrology.current[ch].dot_prod[dp].P_active, phase->metrology.current[ch].dot_prod[dp].sample_count);
+//  736         x[ch] >>= 9;
+//  737         x[ch] = mul48_32_16(x[ch], phase_cal->current[ch].P_scale_factor);
+//  738 #if defined(PER_SENSOR_PRECALCULATED_PARAMETER_SUPPORT)
+//  739         phase->metrology.current[ch].readings.active_power = x[ch];
+//  740 #endif
+//  741 #if defined(PHASE_REVERSED_DETECTION_SUPPORT)
+//  742         if (x[ch] < 0)
+//  743         {
+//  744     #if defined(PHASE_REVERSED_IS_TAMPERING)
+//  745             x[ch] = -x[ch];
+//  746     #endif
+//  747             phase->status |= reversed_masks[ch];
+//  748             if (x[ch] > PHASE_REVERSED_THRESHOLD_POWER)
+//  749                 reversed = TRUE;
+//  750         }
+//  751         else
+//  752         {
+//  753             phase->status &= ~reversed_masks[ch];   
+//  754         }
+//  755 #endif
+//  756     }
+//  757 
+//  758 #if defined(PHASE_UNBALANCED_DETECTION_SUPPORT)
+//  759     x[0] = test_phase_balance(x[0], x[1], thresholds);
+//  760     if ((phase->status & PHASE_STATUS_UNBALANCED))
+//  761     {
+//  762         /* When the phase is unbalanced we only look for reversed current in the 
+//  763            lead with the higher current. If we do not impose this restriction, coupling
+//  764            through a parasitic CT power supply transformer can cause the reverse condition
+//  765            to be raised incorrectly. If there is no parasitic supply this test is probably
+//  766            a waste of time. */
+//  767         if ((phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL))
+//  768             reversed = phase->status & PHASE_STATUS_I_NEUTRAL_REVERSED;
+//  769         else
+//  770             reversed = phase->status & PHASE_STATUS_I_REVERSED;
+//  771     }
+//  772 #endif
+//  773 
+//  774 #if defined(PHASE_REVERSED_DETECTION_SUPPORT)
+//  775     if ((phase->status & PHASE_STATUS_REVERSED))
+//  776     {
+//  777         if (!reversed)
+//  778         {
+//  779             if (--phase->metrology.current_reversed_persistence_check <= -PHASE_REVERSED_PERSISTENCE_CHECK)
+//  780             {
+//  781                 phase->status &= ~PHASE_STATUS_REVERSED;
+//  782                 phase->metrology.current_reversed_persistence_check = 0;
+//  783             }
+//  784         }
+//  785         else
+//  786         {
+//  787             phase->metrology.current_reversed_persistence_check = 0;
+//  788         }
+//  789     }
+//  790     else
+//  791     {
+//  792         if (reversed)
+//  793         {
+//  794             if (++phase->metrology.current_reversed_persistence_check >= PHASE_REVERSED_PERSISTENCE_CHECK)
+//  795             {
+//  796                 phase->status |= PHASE_STATUS_REVERSED;
+//  797                 phase->metrology.current_reversed_persistence_check = 0;
+//  798             }
+//  799         }
+//  800         else
+//  801         {
+//  802             phase->metrology.current_reversed_persistence_check = 0;
+//  803         }
+//  804     }
+//  805 #endif
+//  806 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  807     x[0] = mul48_32_16(x[0], working_data.temperature_correction.power_factor);
+//  808 #endif
+//  809     return x[0];
+//  810 }
+//  811 
+//  812 #if defined(REACTIVE_POWER_SUPPORT)  &&  defined(REACTIVE_POWER_BY_QUADRATURE_SUPPORT)
+//  813     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  814 static power_t evaluate_reactive_power(void)
+evaluate_reactive_power:
+          CFI Block cfiBlock8 Using cfiCommon0
+          CFI Function evaluate_reactive_power
+//  815     #else
+//  816 static power_t evaluate_reactive_power(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  817     #endif
+//  818 {
+        FUNCALL evaluate_reactive_power, _Div64s
+        LOCFRAME CSTACK, 10, STACK
+        FUNCALL evaluate_reactive_power, q1_15_mul
+        LOCFRAME CSTACK, 10, STACK
+        FUNCALL evaluate_reactive_power, mul48_32_16
+        LOCFRAME CSTACK, 10, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+//  819     #if defined(TWENTYFOUR_BIT)
+//  820     int64_t x;
+//  821     #else
+//  822     int32_t x;
+//  823     #endif
+//  824     int16_t i;
+//  825     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  826     int ch;
+//  827     #endif
+//  828     int dp;
+//  829 
+//  830     if (phase->status & (PHASE_STATUS_V_OVERRANGE | PHASE_STATUS_I_OVERRANGE | PHASE_STATUS_I_NEUTRAL_OVERRANGE))
+        BIT.B   #0xb0, &working_data + 360
+        JEQ     ??evaluate_reactive_power_0
+//  831         return POWER_OVERRANGE;
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        JMP     ??evaluate_reactive_power_1
+//  832 
+//  833     dp = phase->metrology.dp_set;
+??evaluate_reactive_power_0:
+        MOV.B   &working_data + 359, R15
+        SXT     R15
+//  834     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  835     /* If we have neutral monitoring for a single phase meter, we need to use whichever
+//  836        channel has been selected by the anti-tamper validation scheme. */
+//  837     ch = (phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL)  ?  1  :  0;
+//  838     #endif
+//  839 
+//  840     x = div_ac_power(phase->metrology.current[ch].dot_prod[dp].P_reactive, phase->metrology.current[ch].dot_prod[dp].sample_count);
+        RLA.W   R15
+        MOV.W   R15, R11
+        RLA.W   R15
+        RLA.W   R15
+        ADD.W   R15, R11
+        RLA.W   R15
+        RLA.W   R15
+        ADD.W   R11, R15
+        MOV.W   working_data + 284(R15), R8
+        MOV.W   R8, R9
+        XOR.W   #0xffff, R9
+        RLA.W   R9
+        SUBC.W  R9, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        ADD.W   #working_data + 252, R15
+        MOV.W   @R15+, R12
+        MOV.W   @R15+, R13
+        MOV.W   @R15+, R14
+        MOV.W   @R15+, R15
+        CALL    #_Div64s
+        MOV.W   R12, R8
+        MOV.W   R13, R9
+        MOV.W   R14, R10
+        MOV.W   R15, R11
+//  841     x >>= 9;
+//  842     i = q1_15_mul(phase_cal->current[ch].P_scale_factor, phase->metrology.current[ch].quadrature_correction.fir_gain);
+        MOV.W   &working_data + 336, R13
+        MOV.W   &nv_parms + 14, R12
+        CALL    #q1_15_mul
+//  843     x = mul48_32_16(x, i);
+//  844     x <<= 2;
+//  845 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  846     x = mul48_32_16(x, working_data.temperature_correction.power_factor);
+//  847 #endif
+//  848     return  x;
+        MOV.W   R12, R14
+        SWPB    R11
+        SWPB    R10
+        SWPB    R9
+        SWPB    R8
+        XOR.B   R9, R8
+        XOR.W   R9, R8
+        XOR.B   R10, R9
+        XOR.W   R10, R9
+        XOR.B   R11, R10
+        XOR.W   R11, R10
+        SXT     R11
+        RRA.W   R11
+        RRC.W   R10
+        RRC.W   R9
+        RRC.W   R8
+        MOV.W   R8, R12
+        MOV.W   R9, R13
+        CALL    #mul48_32_16
+        RLA.W   R12
+        RLC.W   R13
+        RLA.W   R12
+        RLC.W   R13
+??evaluate_reactive_power_1:
+        BR      #?Epilogue4
+          CFI EndBlock cfiBlock8
+//  849 }
+//  850 #endif
+//  851 
+//  852 #if defined(APPARENT_POWER_SUPPORT)
+//  853     #if NUM_PHASES == 1
+//  854 static int32_t evaluate_apparent_power(void)
+//  855     #else
+//  856 static int32_t evaluate_apparent_power(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  857     #endif
+//  858 {
+//  859     #if defined(REACTIVE_POWER_BY_QUADRATURE_SUPPORT)
+//  860     int64_t z;
+//  861 
+//  862     if (phase->readings.active_power == POWER_OVERRANGE  ||  phase->readings.reactive_power == POWER_OVERRANGE)
+//  863         return POWER_OVERRANGE;
+//  864 
+//  865     /* Calculate apparent (VA) power in 0.01W increments */
+//  866 #if defined(__TI_COMPILER_VERSION__)
+//  867     /* TODO: We seem to need to calculate this way to get the right answer with CCS 5.1 */
+//  868     {
+//  869         int64_t y;
+//  870 
+//  871         z = (int64_t)phase->readings.active_power;
+//  872         z *= phase->readings.active_power;
+//  873         y = (int64_t)phase->readings.reactive_power;
+//  874         y *= phase->readings.reactive_power;
+//  875         z += y;
+//  876     }
+//  877 #else
+//  878     z = (int64_t) phase->readings.active_power*phase->readings.active_power
+//  879       + (int64_t) phase->readings.reactive_power*phase->readings.reactive_power;
+//  880 #endif
+//  881     return isqrt64i(z);
+//  882     #else
+//  883     rms_voltage_t x;
+//  884     rms_current_t y;
+//  885         #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  886     int ch;
+//  887         #endif
+//  888     int dp;
+//  889 
+//  890     dp = phase->metrology.dp_set;
+//  891     /* Calculate VA power in 0.01W increments */
+//  892     x = isqrt32(div_ac_voltage(phase->metrology.dot_prod[dp].V_sq, phase->metrology.dot_prod[dp].sample_count));
+//  893         #if defined(LIMP_MODE_SUPPORT)
+//  894     x = (x >> 12)*phase_cal->V_rms_scale_factor[normal_limp];
+//  895         #else
+//  896     x = (x >> 12)*phase_cal->V_rms_scale_factor;
+//  897         #endif
+//  898     x >>= 14;
+//  899 
+//  900         #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  901     ch = (phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL)  ?  1  :  0;
+//  902         #endif
+//  903     /* The ac_offset removes the effect of the AWGN from the ADC front end. AWGN is orthogonal to everything but a true copy
+//  904        of itself. This means means we need to subtract the ac_offset in a "Pythagoras" manner", while still squared. */
+//  905         #if defined(TWENTYFOUR_BIT)
+//  906     y = isqrt64(div_ac_current(phase->metrology.current[ch].dot_prod[dp].I_sq, phase->metrology.current[ch].dot_prod[dp].sample_count)
+//  907               - phase_cal->current[ch].ac_offset) >> 36;
+//  908         #else
+//  909     y = isqrt32(div_ac_current(phase->metrology.current[ch].dot_prod[dp].I_sq, phase->metrology.current[ch].dot_prod[dp].sample_count)
+//  910               - phase_cal->current[ch].ac_offset) >> 12;
+//  911         #endif
+//  912         #if defined(LIMP_MODE_SUPPORT)
+//  913     y *= phase_cal->current[ch].I_rms_scale_factor[normal_limp];
+//  914         #else
+//  915     y *= phase_cal->current[ch].I_rms_scale_factor;
+//  916         #endif
+//  917     y >>= 14;
+//  918 
+//  919     x *= y;
+//  920     x /= 1000;
+//  921 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  922     x = mul48_32_16(x, working_data.temperature_correction.power_factor);
+//  923 #endif
+//  924     return x;
+//  925     #endif
+//  926 }
+//  927 #endif
+//  928 
+//  929 #if defined(FUNDAMENTAL_ACTIVE_POWER_SUPPORT)
+//  930     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  931 static power_t evaluate_fundamental_active_power(void)
+evaluate_fundamental_active_power:
+          CFI Block cfiBlock9 Using cfiCommon0
+          CFI Function evaluate_fundamental_active_power
+//  932     #else
+//  933 static power_t evaluate_fundamental_active_power(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  934     #endif
+//  935 {
+        FUNCALL evaluate_fundamental_active_power, _Div64s
+        LOCFRAME CSTACK, 16, STACK
+        FUNCALL evaluate_fundamental_active_power, mul48_32_16
+        LOCFRAME CSTACK, 16, STACK
+        FUNCALL evaluate_fundamental_active_power, div48
+        LOCFRAME CSTACK, 16, STACK
+        FUNCALL evaluate_fundamental_active_power, mul48_32_16
+        LOCFRAME CSTACK, 16, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+//  936     #if defined(TWENTYFOUR_BIT)
+//  937     int64_t x;
+//  938     #else
+//  939     int32_t x;
+//  940     #endif
+//  941     int32_t y;
+//  942     int32_t z;
+//  943     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  944     int ch;
+//  945     #endif
+//  946     int dp;
+//  947 
+//  948     if (phase->status & (PHASE_STATUS_V_OVERRANGE | PHASE_STATUS_I_OVERRANGE | PHASE_STATUS_I_NEUTRAL_OVERRANGE))
+        BIT.B   #0xb0, &working_data + 360
+        JEQ     ??evaluate_fundamental_active_power_0
+//  949         return POWER_OVERRANGE;
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        JMP     ??evaluate_fundamental_active_power_1
+//  950 
+//  951     dp = phase->metrology.dp_set;
+??evaluate_fundamental_active_power_0:
+        MOV.B   &working_data + 359, R7
+        SXT     R7
+//  952     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  953     /* If we have neutral monitoring for a single phase meter, we need to use whichever
+//  954        channel has been selected by the anti-tamper validation scheme. */
+//  955     ch = (phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL)  ?  1  :  0;
+//  956     #endif
+//  957 
+//  958     x = div_ac_power(phase->metrology.current[ch].dot_prod[dp].P_fundamental_active, phase->metrology.current[ch].dot_prod[dp].sample_count);
+//  959     x >>= 6;
+//  960     y = mul48_32_16(x, phase_cal->current[ch].P_scale_factor);
+        MOV.W   R7, R6
+        RLA.W   R6
+        MOV.W   R6, R15
+        RLA.W   R6
+        RLA.W   R6
+        ADD.W   R6, R15
+        RLA.W   R6
+        RLA.W   R6
+        ADD.W   R15, R6
+        MOV.W   working_data + 284(R6), R8
+        MOV.W   R8, R9
+        XOR.W   #0xffff, R9
+        RLA.W   R9
+        SUBC.W  R9, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R6, R15
+        ADD.W   #working_data + 260, R15
+        MOV.W   @R15+, R12
+        MOV.W   @R15+, R13
+        MOV.W   @R15+, R14
+        MOV.W   @R15+, R15
+        CALL    #_Div64s
+        MOV.W   &nv_parms + 14, R4
+        CALL    #?ShiftRight64s_6
+        MOV.W   R4, R14
+        CALL    #mul48_32_16
+        MOV.W   R12, R10
+        MOV.W   R13, R11
+//  961     /* Scale by the voltage gain */
+//  962     z = div_ac_voltage(phase->metrology.dot_prod[dp].V_fundamental, phase->metrology.current[ch].dot_prod[dp].sample_count);
+        MOV.W   working_data + 284(R6), R13
+        RLA.W   R7
+        MOV.W   R7, R15
+        RLA.W   R7
+        ADD.W   R7, R15
+        RLA.W   R7
+        ADD.W   R15, R7
+        ADD.W   #working_data + 208, R7
+        MOV.W   R7, R12
+        CALL    #div48
+//  963     /* Scale down by the size of the reference signal to 15 bits */
+//  964     z >>= 16;
+//  965     y = mul48_32_16(y, (int16_t) z);
+//  966 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+//  967     y = mul48_32_16(y, working_data.temperature_correction.power_factor);
+//  968 #endif
+//  969     return y;
+        MOV.W   R13, R14
+        MOV.W   R10, R12
+        MOV.W   R11, R13
+        CALL    #mul48_32_16
+??evaluate_fundamental_active_power_1:
+        BR      #?Epilogue7
+          CFI EndBlock cfiBlock9
+//  970 }
+//  971 #endif
+//  972 
+//  973 #if defined(FUNDAMENTAL_REACTIVE_POWER_SUPPORT)
+//  974     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+//  975 static power_t evaluate_fundamental_reactive_power(void)
+evaluate_fundamental_reactive_power:
+          CFI Block cfiBlock10 Using cfiCommon0
+          CFI Function evaluate_fundamental_reactive_power
+//  976     #else
+//  977 static power_t evaluate_fundamental_reactive_power(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+//  978     #endif
+//  979 {
+        FUNCALL evaluate_fundamental_reactive_power, _Div64s
+        LOCFRAME CSTACK, 16, STACK
+        FUNCALL evaluate_fundamental_reactive_power, mul48_32_16
+        LOCFRAME CSTACK, 16, STACK
+        FUNCALL evaluate_fundamental_reactive_power, div48
+        LOCFRAME CSTACK, 16, STACK
+        FUNCALL evaluate_fundamental_reactive_power, mul48_32_16
+        LOCFRAME CSTACK, 16, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+//  980     #if defined(TWENTYFOUR_BIT)
+//  981     int64_t x;
+//  982     #else
+//  983     int32_t x;
+//  984     #endif
+//  985     power_t y;
+//  986     rms_voltage_t z;
+//  987     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  988     int ch;
+//  989     #endif
+//  990     int dp;
+//  991 
+//  992     if (phase->status & (PHASE_STATUS_V_OVERRANGE | PHASE_STATUS_I_OVERRANGE | PHASE_STATUS_I_NEUTRAL_OVERRANGE))
+        BIT.B   #0xb0, &working_data + 360
+        JEQ     ??evaluate_fundamental_reactive_power_0
+//  993         return POWER_OVERRANGE;
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        JMP     ??evaluate_fundamental_reactive_power_1
+//  994 
+//  995     dp = phase->metrology.dp_set;
+??evaluate_fundamental_reactive_power_0:
+        MOV.B   &working_data + 359, R7
+        SXT     R7
+//  996     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+//  997     /* If we have neutral monitoring for a single phase meter, we need to use whichever
+//  998        channel has been selected by the anti-tamper validation scheme. */
+//  999     ch = (phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL)  ?  1  :  0;
+// 1000     #endif
+// 1001 
+// 1002     x = div_ac_power(phase->metrology.current[ch].dot_prod[dp].P_fundamental_reactive, phase->metrology.current[ch].dot_prod[dp].sample_count);
+// 1003     x >>= 6;
+// 1004     y = mul48_32_16(x, phase_cal->current[ch].P_scale_factor);
+        MOV.W   R7, R6
+        RLA.W   R6
+        MOV.W   R6, R15
+        RLA.W   R6
+        RLA.W   R6
+        ADD.W   R6, R15
+        RLA.W   R6
+        RLA.W   R6
+        ADD.W   R15, R6
+        MOV.W   working_data + 284(R6), R8
+        MOV.W   R8, R9
+        XOR.W   #0xffff, R9
+        RLA.W   R9
+        SUBC.W  R9, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        MOV.W   R6, R15
+        ADD.W   #working_data + 268, R15
+        MOV.W   @R15+, R12
+        MOV.W   @R15+, R13
+        MOV.W   @R15+, R14
+        MOV.W   @R15+, R15
+        CALL    #_Div64s
+        MOV.W   &nv_parms + 14, R4
+        CALL    #?ShiftRight64s_6
+        MOV.W   R4, R14
+        CALL    #mul48_32_16
+        MOV.W   R12, R10
+        MOV.W   R13, R11
+// 1005     /* Scale by the voltage gain */
+// 1006     z = div_ac_voltage(phase->metrology.dot_prod[dp].V_fundamental, phase->metrology.current[ch].dot_prod[dp].sample_count);
+        MOV.W   working_data + 284(R6), R13
+        RLA.W   R7
+        MOV.W   R7, R15
+        RLA.W   R7
+        ADD.W   R7, R15
+        RLA.W   R7
+        ADD.W   R15, R7
+        ADD.W   #working_data + 208, R7
+        MOV.W   R7, R12
+        CALL    #div48
+// 1007     /* Scale down by the size of the reference signal to 15 bits */
+// 1008     z >>= 16;
+// 1009     y = mul48_32_16(y, (int16_t) z);
+// 1010 #if defined(TEMPERATURE_CORRECTION_SUPPORT)
+// 1011     y = mul48_32_16(y, working_data.temperature_correction.power_factor);
+// 1012 #endif
+// 1013     return y;
+        MOV.W   R13, R14
+        MOV.W   R10, R12
+        MOV.W   R11, R13
+        CALL    #mul48_32_16
+??evaluate_fundamental_reactive_power_1:
+        BR      #?Epilogue7
+          CFI EndBlock cfiBlock10
+// 1014 }
+// 1015 #endif
+// 1016 
+// 1017 #if defined(POWER_FACTOR_SUPPORT)
+// 1018     #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+// 1019 static int16_t evaluate_power_factor(void)
+evaluate_power_factor:
+          CFI Block cfiBlock11 Using cfiCommon0
+          CFI Function evaluate_power_factor
+// 1020     #else
+// 1021 static int16_t evaluate_power_factor(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+// 1022     #endif
+// 1023 {
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+// 1024     power_t p;
+// 1025     power_t x;
+// 1026     #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+// 1027     int ch;
+// 1028     #endif
+// 1029 
+// 1030     p = abs32(phase->readings.active_power);
+        MOV.W   &working_data + 20, R12
+        MOV.W   &working_data + 22, R13
+        CMP.W   #0x0, R13
+        JGE     ??evaluate_power_factor_1
+        XOR.W   #0xffff, R12
+        XOR.W   #0xffff, R13
+        ADD.W   #0x1, R12
+        ADDC.W  #0x0, R13
+// 1031     #if defined(POWER_FACTOR_MEASUREMENT_CUTOFF)
+// 1032     if (p < POWER_FACTOR_MEASUREMENT_CUTOFF/10)
+// 1033         return 10000;
+// 1034     #endif
+// 1035     #if defined(APPARENT_POWER_SUPPORT)
+// 1036     x = abs32(phase->readings.apparent_power);
+??evaluate_power_factor_1:
+        MOV.W   &working_data + 36, R14
+        MOV.W   &working_data + 38, R15
+        CMP.W   #0x0, R15
+        JGE     ??evaluate_power_factor_2
+        XOR.W   #0xffff, R14
+        XOR.W   #0xffff, R15
+        ADD.W   #0x1, R14
+        ADDC.W  #0x0, R15
+// 1037     #endif
+// 1038     if (p  &&  x)
+??evaluate_power_factor_2:
+        MOV.W   R12, R10
+        BIS.W   R13, R10
+        CMP.W   #0x0, R10
+        JEQ     ??evaluate_power_factor_3
+        MOV.W   R14, R10
+        BIS.W   R15, R10
+        CMP.W   #0x0, R10
+        JEQ     ??evaluate_power_factor_3
+// 1039     {
+// 1040         /* Justify for optimal accuracy */
+// 1041         while ((p & 0x40000000) == 0  &&  (x & 0x40000000) == 0)
+        BIT.W   #0x4000, R13
+        JC      ??evaluate_power_factor_4
+        BIT.W   #0x4000, R15
+        JC      ??evaluate_power_factor_4
+// 1042         {
+// 1043             p <<= 1;
+??evaluate_power_factor_0:
+        RLA.W   R12
+        RLC.W   R13
+// 1044             x <<= 1;
+        RLA.W   R14
+        RLC.W   R15
+        BIT.W   #0x4000, R13
+        JC      ??evaluate_power_factor_4
+        BIT.W   #0x4000, R15
+        JC      ??evaluate_power_factor_4
+        RLA.W   R12
+        RLC.W   R13
+        RLA.W   R14
+        RLC.W   R15
+        BIT.W   #0x4000, R13
+        JC      ??evaluate_power_factor_4
+        BIT.W   #0x4000, R15
+        JNC     ??evaluate_power_factor_0
+// 1045         }
+// 1046         x >>= 16;
+// 1047         p /= x;
+// 1048         p *= 10000;
+// 1049         p >>= 16;
+??evaluate_power_factor_4:
+        MOV.W   R15, R14
+        XOR.W   #0xffff, R15
+        RLA.W   R15
+        SUBC.W  R15, R15
+        CALL    #?DivMod32s
+        PUSH.W  SR
+          CFI CFA SP+6
+        DINT
+        NOP
+        MOV.W   R12, &0x130
+        MOV.W   #0x2710, &0x138
+        MOV.W   &0x13a, R12
+        MOV.W   &0x13c, &0x13a
+        MOV.W   R13, &0x134
+        MOV.W   #0x2710, &0x138
+        MOV.W   &0x13a, R13
+        POP.W   SR
+          CFI CFA SP+4
+        MOV.W   R13, R12
+        XOR.W   #0xffff, R13
+        RLA.W   R13
+        SUBC.W  R13, R13
+// 1050         /* Don't let a little imprecision cause strange answers */
+// 1051         if (p > 10000)
+        CMP.W   #0x0, R13
+        JL      ??evaluate_power_factor_5
+        JNE     ??evaluate_power_factor_6
+        CMP.W   #0x2711, R12
+        JNC     ??evaluate_power_factor_5
+// 1052             p = 10000;
+??evaluate_power_factor_6:
+        MOV.W   #0x2710, R12
+        JMP     ??evaluate_power_factor_5
+// 1053     }
+// 1054     else
+// 1055     {
+// 1056         p = 0;
+??evaluate_power_factor_3:
+        MOV.W   #0x0, R12
+// 1057     }
+// 1058     /* Use a negative PF to indicate an inductive load */
+// 1059     #if defined(REACTIVE_POWER_BY_QUADRATURE_SUPPORT)
+// 1060     if (phase->readings.reactive_power < 0)
+??evaluate_power_factor_5:
+        CMP.W   #0x0, &working_data + 30
+        JGE     ??evaluate_power_factor_7
+// 1061         p = -p;
+        XOR.W   #0xffff, R12
+        ADD.W   #0x1, R12
+// 1062     #else
+// 1063         #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+// 1064     /* If we have neutral monitoring for a single phase meter, we need to use whichever
+// 1065        channel has been selected by the anti-tamper validation scheme. */
+// 1066     ch = (phase->status & PHASE_STATUS_CURRENT_FROM_NEUTRAL)  ?  1  :  0;
+// 1067         #endif
+// 1068     if (phase->metrology.current[ch].leading < 0)
+// 1069         p = -p;
+// 1070     #endif
+// 1071     return p;
+??evaluate_power_factor_7:
+        POP.W   R10
+          CFI R10 SameValue
+          CFI CFA SP+2
+        RET
+          CFI EndBlock cfiBlock11
+// 1072 }
+
+        RSEG CODE:CODE:NOROOT(1)
+accumulate_phase_energies:
+          CFI Block cfiBlock12 Using cfiCommon0
+          CFI Function accumulate_phase_energies
+        FUNCALL accumulate_phase_energies, _Div64s
+        LOCFRAME CSTACK, 20, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+        PUSH.W  R5
+          CFI R5 Frame(CFA, -18)
+          CFI CFA SP+18
+        SUB.W   #0x2, SP
+          CFI CFA SP+20
+        MOV.W   &working_data + 20, R12
+        MOV.W   &working_data + 22, R13
+        CMP.W   #0xffff, R12
+        JNE     ??accumulate_phase_energies_1
+        CMP.W   #0x7fff, R13
+        JEQ     ??accumulate_phase_energies_2
+??accumulate_phase_energies_1:
+        MOV.W   R12, R14
+        MOV.W   R13, R15
+        CMP.W   #0x0, R13
+        JGE     ??accumulate_phase_energies_0
+        XOR.W   #0xffff, R14
+        XOR.W   #0xffff, R15
+        ADD.W   #0x1, R14
+        ADDC.W  #0x0, R15
+??accumulate_phase_energies_0:
+        CMP.W   #0x0, R15
+        JL      ??accumulate_phase_energies_2
+        JNE     ??accumulate_phase_energies_4
+        CMP.W   #0xfa, R14
+        JNC     ??accumulate_phase_energies_2
+??accumulate_phase_energies_4:
+        MOV.B   &working_data + 359, R14
+        SXT     R14
+        CMP.W   #0x0, R13
+        JL      ??accumulate_phase_energies_5
+        MOV.W   #0x0, R15
+        JMP     ??accumulate_phase_energies_6
+??accumulate_phase_energies_5:
+        MOV.W   #0x1, R15
+        XOR.W   #0xffff, R12
+        XOR.W   #0xffff, R13
+        ADD.W   #0x1, R12
+        ADDC.W  #0x0, R13
+??accumulate_phase_energies_6:
+        RLA.W   R14
+        MOV.W   R14, R11
+        RLA.W   R14
+        RLA.W   R14
+        ADD.W   R14, R11
+        RLA.W   R14
+        RLA.W   R14
+        ADD.W   R11, R14
+        MOV.W   working_data + 284(R14), R14
+        RLA.W   R15
+        RLA.W   R15
+        MOV.W   R15, R11
+        RLA.W   R15
+        ADD.W   R11, R15
+        ADD.W   #working_data + 54, R15
+        MOV.W   R15, 0(SP)
+        MOV.W   R14, R15
+        XOR.W   #0xffff, R15
+        RLA.W   R15
+        SUBC.W  R15, R15
+        CALL    #_Mul32s32sto64i
+        MOV.W   R12, R4
+        MOV.W   R13, R5
+        MOV.W   R15, R7
+        MOV.W   @SP, R15
+        MOV.W   0x8(R15), R8
+        MOV.W   0xa(R15), R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        ADD.W   R8, R4
+        ADDC.W  R9, R5
+        ADDC.W  R10, R14
+        ADDC.W  R10, R7
+        CMP.W   #0x0, R7
+        JL      ??accumulate_phase_energies_7
+        JNE     ??accumulate_phase_energies_8
+        CMP.W   #0x0, R14
+        JNE     ??accumulate_phase_energies_8
+        CMP.W   #0xaba9, R5
+        JNC     ??accumulate_phase_energies_7
+        JNE     ??accumulate_phase_energies_8
+        CMP.W   #0x5000, R4
+        JNC     ??accumulate_phase_energies_7
+??accumulate_phase_energies_8:
+        MOV.W   #0x5000, R8
+        MOV.W   #0xaba9, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        MOV.W   R4, R12
+        MOV.W   R5, R13
+        MOV.W   R7, R15
+        CALL    #_Div64s
+        MOV.W   @SP, R11
+        ADD.W   R12, 0(R11)
+        ADDC.W  R13, 0x2(R11)
+        ADDC.W  R14, 0x4(R11)
+        ADDC.W  R15, 0x6(R11)
+        MOV.W   #0xb000, R8
+        MOV.W   #0x5456, R9
+        MOV.W   #0xffff, R10
+        MOV.W   #0xffff, R11
+        CALL    #_Mul64i
+        ADD.W   R12, R4
+        ADDC.W  R13, R5
+??accumulate_phase_energies_7:
+        MOV.W   @SP, R15
+        MOV.W   R4, 0x8(R15)
+        MOV.W   R5, 0xa(R15)
+          CFI EndBlock cfiBlock12
+??accumulate_phase_energies_2:
+        REQUIRE ?Subroutine0
+        // Fall through to label ?Subroutine0
+// 1073 #endif
+// 1074 
+// 1075 #if defined(ENERGY_SUPPORT)
+
+        RSEG CODE:CODE:NOROOT(1)
+?Subroutine0:
+          CFI Block cfiBlock13 Using cfiCommon0
+          CFI NoFunction
+          CFI CFA SP+20
+          CFI R4 Frame(CFA, -16)
+          CFI R5 Frame(CFA, -18)
+          CFI R6 Frame(CFA, -12)
+          CFI R7 Frame(CFA, -14)
+          CFI R8 Frame(CFA, -8)
+          CFI R9 Frame(CFA, -10)
+          CFI R10 Frame(CFA, -4)
+          CFI R11 Frame(CFA, -6)
+        ADD.W   #0x2, SP
+          CFI CFA SP+18
+        BR      #?Epilogue8
+          CFI EndBlock cfiBlock13
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+// 1076 void integrate_power_to_energy(struct energy_integrator_t *en, power_t pow, int samples)
+integrate_power_to_energy:
+          CFI Block cfiBlock14 Using cfiCommon0
+          CFI Function integrate_power_to_energy
+// 1077 {
+        FUNCALL integrate_power_to_energy, _Div64s
+        LOCFRAME CSTACK, 20, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+        PUSH.W  R4
+          CFI R4 Frame(CFA, -16)
+          CFI CFA SP+16
+        PUSH.W  R5
+          CFI R5 Frame(CFA, -18)
+          CFI CFA SP+18
+        PUSH.W  R12
+          CFI CFA SP+20
+        MOV.W   R13, R11
+// 1078     energy_t energy;
+// 1079 
+// 1080     energy = (energy_t) pow*samples + en->energy_residual;
+        MOV.W   R14, R12
+        MOV.W   R15, R13
+        MOV.W   R11, R14
+        MOV.W   R11, R15
+        XOR.W   #0xffff, R15
+        RLA.W   R15
+        SUBC.W  R15, R15
+        CALL    #_Mul32s32sto64i
+        MOV.W   @SP, R11
+        MOV.W   0x8(R11), R8
+        MOV.W   0xa(R11), R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        ADD.W   R8, R12
+        ADDC.W  R9, R13
+        ADDC.W  R10, R14
+        ADDC.W  R10, R15
+        MOV.W   R12, R4
+        MOV.W   R13, R5
+        CMP.W   #0x0, R15
+        JL      ??integrate_power_to_energy_0
+        JNE     ??integrate_power_to_energy_1
+        CMP.W   #0x0, R14
+        JNE     ??integrate_power_to_energy_1
+        CMP.W   #0xaba9, R13
+        JNC     ??integrate_power_to_energy_0
+        JNE     ??integrate_power_to_energy_1
+        CMP.W   #0x5000, R12
+        JNC     ??integrate_power_to_energy_0
+??integrate_power_to_energy_1:
+        MOV.W   #0x5000, R8
+        MOV.W   #0xaba9, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        CALL    #_Div64s
+        MOV.W   @SP, R11
+        ADD.W   R12, 0(R11)
+        ADDC.W  R13, 0x2(R11)
+        ADDC.W  R14, 0x4(R11)
+        ADDC.W  R15, 0x6(R11)
+        MOV.W   #0xb000, R8
+        MOV.W   #0x5456, R9
+        MOV.W   #0xffff, R10
+        MOV.W   #0xffff, R11
+        CALL    #_Mul64i
+        ADD.W   R12, R4
+        ADDC.W  R13, R5
+// 1081     while (energy >= ENERGY_100MWATT_HOUR_THRESHOLD)
+// 1082     {
+// 1083         energy -= ENERGY_100MWATT_HOUR_THRESHOLD;
+// 1084         en->energy++;
+// 1085     }
+// 1086     en->energy_residual = energy;
+??integrate_power_to_energy_0:
+        MOV.W   @SP, R15
+        MOV.W   R4, 0x8(R15)
+        MOV.W   R5, 0xa(R15)
+// 1087 }
+        JMP     ?Subroutine0
+          CFI EndBlock cfiBlock14
+// 1088 
+// 1089     #if NUM_PHASES == 1
+// 1090 static void accumulate_phase_energies(void)
+// 1091     #else
+// 1092 static void accumulate_phase_energies(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+// 1093     #endif
+// 1094 {
+// 1095     power_t pow;
+// 1096     int which;
+// 1097     int dp;
+// 1098 
+// 1099     if (phase->readings.active_power == POWER_OVERRANGE)
+// 1100         return;
+// 1101     if (abs32(phase->readings.active_power) < RESIDUAL_POWER_CUTOFF/10)
+// 1102         return;
+// 1103     dp = phase->metrology.dp_set;
+// 1104     #if defined(ACTIVE_ENERGY_SUPPORT)
+// 1105     pow = phase->readings.active_power;
+// 1106     if (phase->readings.active_power >= 0)
+// 1107     {
+// 1108         which = ENERGY_DIRECTION_IMPORT;
+// 1109     }
+// 1110     else
+// 1111     {
+// 1112         which = ENERGY_DIRECTION_EXPORT;
+// 1113         pow = -pow;
+// 1114     }
+// 1115     integrate_power_to_energy(&phase->energy.active[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1116     #endif
+// 1117     #if defined(FUNDAMENTAL_ACTIVE_ENERGY_SUPPORT)
+// 1118     pow = phase->readings.fundamental_active_power;
+// 1119     if (phase->readings.fundamental_active_power >= 0)
+// 1120     {
+// 1121         which = ENERGY_DIRECTION_IMPORT;
+// 1122     }
+// 1123     else
+// 1124     {
+// 1125         which = ENERGY_DIRECTION_EXPORT;
+// 1126         pow = -pow;
+// 1127     }
+// 1128     integrate_power_to_energy(&phase->energy.fundamental_active[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1129     #endif
+// 1130     #if defined(REACTIVE_ENERGY_SUPPORT)
+// 1131     pow = phase->readings.reactive_power;
+// 1132     if (phase->readings.reactive_power >= 0)
+// 1133     {
+// 1134         which = (phase->readings.active_power >= 0)  ?  ENERGY_QUADRANT_I  :  ENERGY_QUADRANT_II;
+// 1135     }
+// 1136     else
+// 1137     {
+// 1138         which = (phase->readings.active_power >= 0)  ?  ENERGY_QUADRANT_IV  :  ENERGY_QUADRANT_III;
+// 1139         pow = -pow;
+// 1140     }
+// 1141     integrate_power_to_energy(&phase->energy.reactive[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1142     #endif
+// 1143     #if defined(FUNDAMENTAL_REACTIVE_ENERGY_SUPPORT)
+// 1144     pow = phase->readings.fundamental_reactive_power;
+// 1145     if (phase->readings.fundamental_reactive_power >= 0)
+// 1146     {
+// 1147         which = (phase->readings.active_power >= 0)  ?  ENERGY_QUADRANT_I  :  ENERGY_QUADRANT_II;
+// 1148     }
+// 1149     else
+// 1150     {
+// 1151         which = (phase->readings.active_power >= 0)  ?  ENERGY_QUADRANT_IV  :  ENERGY_QUADRANT_III;
+// 1152         pow = -pow;
+// 1153     }
+// 1154     integrate_power_to_energy(&phase->energy.fundamental_reactive[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1155     #endif
+// 1156     #if defined(APPARENT_ENERGY_SUPPORT)
+// 1157     pow = phase->readings.apparent_power;
+// 1158     if (phase->readings.active_power >= 0)
+// 1159     {
+// 1160         which = ENERGY_DIRECTION_IMPORT;
+// 1161     }
+// 1162     else
+// 1163     {
+// 1164         which = ENERGY_DIRECTION_EXPORT;
+// 1165         pow = -pow;
+// 1166     }
+// 1167     integrate_power_to_energy(&phase->energy.apparent[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1168     #endif
+// 1169 }
+// 1170 #endif
+// 1171 
+// 1172 #if defined(TOTAL_ENERGY_SUPPORT)
+// 1173     #if NUM_PHASES == 1
+// 1174 static void accumulate_total_energies(void)
+// 1175     #else
+// 1176 static void accumulate_total_energies(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+// 1177     #endif
+// 1178 {
+// 1179     power_t pow;
+// 1180     int which;
+// 1181     int dp;
+// 1182 
+// 1183     if (working_data.totals.readings.active_power == POWER_OVERRANGE)
+// 1184         return;
+// 1185     if (abs32(working_data.totals.readings.active_power) < TOTAL_RESIDUAL_POWER_CUTOFF)
+// 1186         return;
+// 1187     dp = phase->metrology.dp_set;
+// 1188     #if defined(TOTAL_ACTIVE_ENERGY_SUPPORT)
+// 1189     pow = phase->readings.active_power;
+// 1190     if (working_data.totals.readings.active_power >= 0)
+// 1191     {
+// 1192         which = ENERGY_DIRECTION_IMPORT;
+// 1193     }
+// 1194     else
+// 1195     {
+// 1196         which = ENERGY_DIRECTION_EXPORT;
+// 1197         pow = -pow;
+// 1198     }
+// 1199     integrate_power_to_energy(&working_data.totals.energy.active[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1200     #endif
+// 1201     #if defined(TOTAL_FUNDAMENTAL_ACTIVE_ENERGY_SUPPORT)
+// 1202     pow = phase->readings.fundamental_active_power;
+// 1203     if (working_data.totals.readings.fundamental_active_power >= 0)
+// 1204     {
+// 1205         which = ENERGY_DIRECTION_IMPORT;
+// 1206     }
+// 1207     else
+// 1208     {
+// 1209         which = ENERGY_DIRECTION_EXPORT;
+// 1210         pow = -pow;
+// 1211     }
+// 1212     integrate_power_to_energy(&working_data.totals.energy.fundamental_active[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1213     #endif
+// 1214     #if defined(TOTAL_REACTIVE_ENERGY_SUPPORT)
+// 1215     pow = phase->readings.reactive_power;
+// 1216     if (working_data.totals.readings.reactive_power >= 0)
+// 1217     {
+// 1218         which = (working_data.totals.readings.active_power >= 0)  ?  ENERGY_QUADRANT_I  :  ENERGY_QUADRANT_II;
+// 1219     }
+// 1220     else
+// 1221     {
+// 1222         which = (working_data.totals.readings.active_power >= 0)  ?  ENERGY_QUADRANT_IV  :  ENERGY_QUADRANT_III;
+// 1223         pow = -pow;
+// 1224     }
+// 1225     integrate_power_to_energy(&working_data.totals.energy.reactive[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1226     #endif
+// 1227     #if defined(TOTAL_FUNDAMENTAL_REACTIVE_ENERGY_SUPPORT)
+// 1228     pow = phase->readings.fundamental_reactive_power;
+// 1229     if (working_data.totals.readings.fundamental_reactive_power >= 0)
+// 1230     {
+// 1231         which = (working_data.totals.readings.active_power >= 0)  ?  ENERGY_QUADRANT_I  :  ENERGY_QUADRANT_II;
+// 1232     }
+// 1233     else
+// 1234     {
+// 1235         which = (working_data.totals.readings.active_power >= 0)  ?  ENERGY_QUADRANT_IV  :  ENERGY_QUADRANT_III;
+// 1236         pow = -pow;
+// 1237     }
+// 1238     integrate_power_to_energy(&working_data.totals.energy.fundamental_reactive[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1239     #endif
+// 1240     #if defined(TOTAL_APPARENT_ENERGY_SUPPORT)
+// 1241     pow = phase->readings.apparent_power;
+// 1242     if (working_data.totals.readings.active_power >= 0)
+// 1243     {
+// 1244         which = ENERGY_DIRECTION_IMPORT;
+// 1245     }
+// 1246     else
+// 1247     {
+// 1248         which = ENERGY_DIRECTION_EXPORT;
+// 1249         pow = -pow;
+// 1250     }
+// 1251     integrate_power_to_energy(&working_data.totals.energy.apparent[which], pow, phase->metrology.current[0].dot_prod[dp].sample_count);
+// 1252     #endif
+// 1253 }
+// 1254 #endif
+// 1255 
+// 1256 #if defined(SAG_SWELL_SUPPORT)
+// 1257     #if NUM_PHASES == 1
+// 1258 static void sag_swell_control(void)
+// 1259     #else
+// 1260 static void sag_swell_control(struct phase_parms_s *phase, struct phase_calibration_data_s const *phase_cal)
+// 1261     #endif
+// 1262 {
+// 1263     int64_t xxx;
+// 1264     int32_t yyy;
+// 1265     int64_t zzz;
+// 1266 
+// 1267     /* Find the current sag and swell thresholds, based on the current mains period */
+// 1268     xxx = MAINS_NOMINAL_VOLTAGE*1000L*1024L;
+// 1269     xxx /= phase_cal->V_rms_scale_factor[normal_limp];
+// 1270     xxx = xxx*xxx;
+// 1271     yyy = (phase->metrology.mains_period >> 24)*5;
+// 1272     xxx *= yyy;
+// 1273     zzz = xxx*207LL;
+// 1274     zzz >>= 8;
+// 1275     phase->metrology.sag_threshold[1] = zzz >> 16;
+// 1276     phase->metrology.sag_threshold[2] = zzz >> 32;
+// 1277     zzz = xxx*310LL;
+// 1278     zzz >>= 8;
+// 1279     phase->metrology.swell_threshold[1] = zzz >> 16;
+// 1280     phase->metrology.swell_threshold[2] = zzz >> 32;
+// 1281 }
+// 1282 #endif
+// 1283 
+// 1284 #if defined(TEMPERATURE_SUPPORT)
+// 1285 static void evaluate_temperature(void)
+// 1286 {
+// 1287     int32_t temp;
+// 1288 
+// 1289     /* Find the temperature, in Celsius, based on the values for the slope and intercept of the
+// 1290        sensor characteristic found at calibration time. */
+// 1291     /* The temperature in Celsius is approx. (Vsensor - 986mV)/3.55mV . The exact voltages
+// 1292        are the subject of calibration. */
+// 1293     temp = 100L * ((raw_temperature_from_adc) - cal_info->temperature_sensor_intercept);
+// 1294     /* We now have the temperature in degrees C. */
+// 1295     temperature_in_celsius = (int16_t)(temp / cal_info->temperature_sensor_slope) + cal_info->temperature_at_calibration;
+// 1296 }
+// 1297 #endif
+// 1298 
+// 1299 #if defined(LIMP_MODE_SUPPORT)
+// 1300 void metrology_limp_normal_detection(void)
+// 1301 {
+// 1302     static const rms_voltage_t thresholds[] = {(rms_voltage_t) LIMP_MODE_VOLTAGE_THRESHOLD*1000, (rms_voltage_t) NORMAL_MODE_VOLTAGE_THRESHOLD*1000};
+// 1303 
+// 1304     /* The voltage channel DC offset will not move very much when the meter is
+// 1305        operating normally, even over wide temperature changes. If our estimate
+// 1306        moves, there must be some tampering introducing DC into the voltage
+// 1307        signal, such as a diode between the grid and the meter. */
+// 1308     if (phase->readings.V_rms >= thresholds[normal_limp]
+// 1309         &&
+// 1310         (phase->metrology.V_dc_estimate[normal_limp][0] >> 16) <= phase_cal->upper_v_dc_estimate[normal_limp]
+// 1311         &&
+// 1312         (phase->metrology.V_dc_estimate[normal_limp][0] >> 16) >= phase_cal->lower_v_dc_estimate[normal_limp])
+// 1313     {
+// 1314         if (operating_mode == OPERATING_MODE_LIMP)
+// 1315             switch_to_normal_mode();
+// 1316     }
+// 1317     else
+// 1318     {
+// 1319         if (operating_mode == OPERATING_MODE_NORMAL)
+// 1320             switch_to_limp_mode();
+// 1321     }
+// 1322 }
+// 1323 #endif
+// 1324 
+// 1325 #if defined(LIMP_MODE_SUPPORT)
+// 1326     #if NUM_PHASES == 1
+// 1327 static power_t calculate_limp_phase_readings(void)
+// 1328     #else
+// 1329 static power_t calculate_limp_phase_readings(int ph)
+// 1330     #endif
+// 1331 {
+// 1332     #if NUM_PHASES > 1
+// 1333     struct phase_parms_s *phase;
+// 1334     struct phase_calibration_data_s const *phase_cal;
+// 1335 
+// 1336     phase = &chan[ph];
+// 1337     phase_cal = &cal_info->phases[ph];
+// 1338     #endif
+// 1339     /* In limp mode we must assess estimated power from only the measured current. */
+// 1340     /* We cannot properly determine current reversal in this mode. Also, current
+// 1341        imbalance is really just a measure of which lead is still connected.
+// 1342        Just treat both the imbalance and reversal conditions as OK */
+// 1343     #if NUM_PHASES == 1
+// 1344         #if defined(VRMS_SUPPORT)
+// 1345     phase->readings.V_rms = evaluate_rms_voltage();
+// 1346         #endif
+// 1347         #if defined(IRMS_SUPPORT)
+// 1348     phase->readings.I_rms = evaluate_rms_current();
+// 1349         #endif
+// 1350     #else
+// 1351         #if defined(VRMS_SUPPORT)
+// 1352     phase->V_rms = evaluate_rms_voltage(phase, phase_cal);
+// 1353         #endif
+// 1354         #if defined(IRMS_SUPPORT)
+// 1355     phase->readings.I_rms = evaluate_rms_current(phase, phase_cal, ch);
+// 1356         #endif
+// 1357     #endif
+// 1358     phase->readings.active_power = phase->readings.I_rms*MAINS_NOMINAL_VOLTAGE/1000;
+// 1359     return phase->readings.active_power;
+// 1360 }
+// 1361 #endif
+// 1362 
+// 1363 
+// 1364 
+// 1365 #if defined(CAPACITOR_COMPENSATE_ON)
+// 1366 static rms_current_t capacitor_compensate (int phx)
+// 1367 {
+// 1368     int64_t Temp;
+// 1369     int64_t Temp1;
+// 1370     uint16_t Cap = cal_info->phases[phx].initial_compensate_capacitance[0];
+// 1371     
+// 1372     if (Cap > 0x8000)
+// 1373       Cap = 0;
+// 1374     
+// 1375     // Resolution : important to set a proper scaling factor
+// 1376     // Power resolution 1mW
+// 1377     // Frequency resolution 0.01Hz
+// 1378     // Irms resolution 1uA
+// 1379     // Vrms resolution 1mA
+// 1380     // CAP 1/64uF
+// 1381     // Temp is 2*pi*f*c*Vrms the number calculated here is 2*pi*100f*64000000C*1000Vrms which is 6.4*10^12 time
+// 1382     // it should be. Thus the constant is 2*pi/6.4*10^12 = 9.81747704 * 10^-13
+// 1383     // in order to get 1uA resolution (as to compatable with the current resolution) we need Temp be 10^6 times of the value it should be
+// 1384     // thus the final scaling factor is 9.81747704 * 10^-7 which is about 527 / 2^29 (0.01% error) - new value
+// 1385     Temp = (((int64_t)527 * phase->readings.frequency * (phase->readings.V_rms) * Cap) >> (29));
+// 1386     
+// 1387     // similiar to above Temp1 is 4*pi*100f*640000000C*1000Preactive same 6.4*10^12 time it should be
+// 1388     // in order to get 1uA reolution we need Temp1 to be 10^12 times of the value
+// 1389     // thus the final scaling factor is 7.853981634 which is about 4021 / 2048 (0.0059% error)
+// 1390 	// leaving 2048 to be divided later
+// 1391     Temp1 = ((((int64_t)4021 * phase->readings.frequency * Cap)));
+// 1392     
+// 1393     Temp = -(((int64_t)Temp1 * phase->readings.reactive_power) / 2048) + ((int64_t)Temp * Temp) + ((int64_t)phase->readings.I_rms * phase->readings.I_rms);
+// 1394     return (isqrt64i (Temp));
+// 1395 }
+// 1396 #endif
+// 1397 
+// 1398 
+// 1399 
+// 1400 #ifndef AVERAGE
+// 1401 #define AVERAGE 0
+// 1402 #endif
+// 1403 
+// 1404 #if NUM_PHASES == 1
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+// 1405 power_t calculate_phase_readings(void)
+calculate_phase_readings:
+          CFI Block cfiBlock15 Using cfiCommon0
+          CFI Function calculate_phase_readings
+// 1406 #else
+// 1407 power_t calculate_phase_readings(int ph)
+// 1408 #endif
+// 1409 {
+        FUNCALL calculate_phase_readings, FOREGROUND_PROCESS_ON
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, _Div64s
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, mul48_32_16
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_fundamental_active_power
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_reactive_power
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_fundamental_reactive_power
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_rms_voltage
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_fundamental_rms_voltage
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_voltage_thd
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_rms_current
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, _Div64s
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_fundamental_rms_current
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_current_thd
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, evaluate_power_factor
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, _Div64s
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, accumulate_phase_energies
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, memset
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, memset
+        LOCFRAME CSTACK, 14, STACK
+        FUNCALL calculate_phase_readings, FOREGROUND_PROCESS_OFF
+        LOCFRAME CSTACK, 14, STACK
+        PUSH.W  R10
+          CFI R10 Frame(CFA, -4)
+          CFI CFA SP+4
+        PUSH.W  R11
+          CFI R11 Frame(CFA, -6)
+          CFI CFA SP+6
+        PUSH.W  R8
+          CFI R8 Frame(CFA, -8)
+          CFI CFA SP+8
+        PUSH.W  R9
+          CFI R9 Frame(CFA, -10)
+          CFI CFA SP+10
+        PUSH.W  R6
+          CFI R6 Frame(CFA, -12)
+          CFI CFA SP+12
+        PUSH.W  R7
+          CFI R7 Frame(CFA, -14)
+          CFI CFA SP+14
+// 1410     int dp;
+// 1411 
+// 1412     FOREGROUND_PROCESS_ON ();
+        CALL    #FOREGROUND_PROCESS_ON
+// 1413 #if NUM_PHASES == 1
+// 1414     #if defined(LIMP_MODE_SUPPORT)
+// 1415     if (operating_mode == OPERATING_MODE_LIMP)
+// 1416         return calculate_limp_phase_readings();
+// 1417     #endif
+// 1418 
+// 1419 //    phase->readings.active_power = evaluate_active_power();
+// 1420     phase->readings.active_power = phase->readings.active_power + ((evaluate_active_power() - phase->readings.active_power) >> AVERAGE);
+        BIT.B   #0xb0, &working_data + 360
+        JEQ     ??calculate_phase_readings_0
+        MOV.W   #0xffff, R12
+        MOV.W   #0x7fff, R13
+        JMP     ??calculate_phase_readings_1
+??calculate_phase_readings_0:
+        MOV.B   &working_data + 359, R7
+        SXT     R7
+        RLA.W   R7
+        MOV.W   R7, R11
+        RLA.W   R7
+        RLA.W   R7
+        ADD.W   R7, R11
+        RLA.W   R7
+        RLA.W   R7
+        ADD.W   R11, R7
+        MOV.W   working_data + 284(R7), R8
+        MOV.W   R8, R9
+        XOR.W   #0xffff, R9
+        RLA.W   R9
+        SUBC.W  R9, R9
+        MOV.W   R9, R10
+        XOR.W   #0xffff, R10
+        RLA.W   R10
+        SUBC.W  R10, R10
+        MOV.W   R10, R11
+        ADD.W   #working_data + 244, R7
+        MOV.W   @R7+, R12
+        MOV.W   @R7+, R13
+        MOV.W   @R7+, R14
+        MOV.W   @R7+, R15
+        CALL    #_Div64s
+        MOV.W   R14, R10
+        MOV.W   R15, R11
+        MOV.W   &nv_parms + 14, R14
+        SWPB    R11
+        SWPB    R10
+        SWPB    R13
+        SWPB    R12
+        XOR.B   R13, R12
+        XOR.W   R13, R12
+        XOR.B   R10, R13
+        XOR.W   R10, R13
+        XOR.B   R11, R10
+        XOR.W   R11, R10
+        SXT     R11
+        RRA.W   R11
+        RRC.W   R10
+        RRC.W   R13
+        RRC.W   R12
+        CALL    #mul48_32_16
+??calculate_phase_readings_1:
+        SUB.W   &working_data + 20, R12
+        SUBC.W  &working_data + 22, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 20
+        ADDC.W  R13, &working_data + 22
+// 1421 
+// 1422     if (!(phase->status & PHASE_STATUS_DC_MODE))
+        CMP.W   #0x0, &working_data + 360
+        JL      ??calculate_phase_readings_2
+// 1423     {
+// 1424       #if defined(FUNDAMENTAL_ACTIVE_POWER_SUPPORT)
+// 1425 //      phase->readings.fundamental_active_power = evaluate_fundamental_active_power();
+// 1426       phase->readings.fundamental_active_power = phase->readings.fundamental_active_power + ((evaluate_fundamental_active_power()- phase->readings.fundamental_active_power) >> AVERAGE);
+        CALL    #evaluate_fundamental_active_power
+        SUB.W   &working_data + 24, R12
+        SUBC.W  &working_data + 26, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 24
+        ADDC.W  R13, &working_data + 26
+// 1427       #endif
+// 1428       #if defined(REACTIVE_POWER_SUPPORT)
+// 1429 //      phase->readings.reactive_power = evaluate_reactive_power();
+// 1430       phase->readings.reactive_power = phase->readings.reactive_power + ((evaluate_reactive_power() - phase->readings.reactive_power) >> AVERAGE);
+        CALL    #evaluate_reactive_power
+        SUB.W   &working_data + 28, R12
+        SUBC.W  &working_data + 30, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 28
+        ADDC.W  R13, &working_data + 30
+// 1431       #endif
+// 1432       #if defined(FUNDAMENTAL_REACTIVE_POWER_SUPPORT)
+// 1433 //      phase->readings.fundamental_reactive_power = evaluate_fundamental_reactive_power();
+// 1434       phase->readings.fundamental_reactive_power = phase->readings.fundamental_reactive_power + ((evaluate_fundamental_reactive_power() - phase->readings.fundamental_reactive_power) >> AVERAGE) ;
+        CALL    #evaluate_fundamental_reactive_power
+        SUB.W   &working_data + 32, R12
+        SUBC.W  &working_data + 34, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 32
+        ADDC.W  R13, &working_data + 34
+        JMP     ??calculate_phase_readings_3
+// 1435       #endif
+// 1436   
+// 1437     }
+// 1438     else
+// 1439     {
+// 1440       #if defined(FUNDAMENTAL_ACTIVE_POWER_SUPPORT)
+// 1441       phase->readings.fundamental_active_power = 0;
+??calculate_phase_readings_2:
+        MOV.W   #0x0, &working_data + 24
+        MOV.W   #0x0, &working_data + 26
+// 1442       #endif
+// 1443       #if defined(REACTIVE_POWER_SUPPORT)
+// 1444       phase->readings.reactive_power = 0;
+        MOV.W   #0x0, &working_data + 28
+        MOV.W   #0x0, &working_data + 30
+// 1445       #endif
+// 1446       #if defined(FUNDAMENTAL_REACTIVE_POWER_SUPPORT)
+// 1447       phase->readings.fundamental_reactive_power = 0;
+        MOV.W   #0x0, &working_data + 32
+        MOV.W   #0x0, &working_data + 34
+// 1448       #endif
+// 1449   
+// 1450       #if defined(APPARENT_POWER_SUPPORT)
+// 1451       phase->readings.apparent_power = 0;
+        MOV.W   #0x0, &working_data + 36
+        MOV.W   #0x0, &working_data + 38
+// 1452       #endif
+// 1453     }
+// 1454     
+// 1455     #if defined(VRMS_SUPPORT)
+// 1456 //    phase->readings.V_rms = evaluate_rms_voltage();
+// 1457     phase->readings.V_rms = phase->readings.V_rms + ((evaluate_rms_voltage() - phase->readings.V_rms) >> AVERAGE);
+??calculate_phase_readings_3:
+        CALL    #evaluate_rms_voltage
+        SUB.W   &working_data, R12
+        SUBC.W  &working_data + 2, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data
+        ADDC.W  R13, &working_data + 2
+// 1458     #endif
+// 1459 
+// 1460     if (!(phase->status & PHASE_STATUS_DC_MODE))
+        CMP.W   #0x0, &working_data + 360
+        JL      ??calculate_phase_readings_4
+// 1461     {
+// 1462       #if defined(FUNDAMENTAL_VRMS_SUPPORT)
+// 1463 //      phase->readings.fundamental_V_rms = evaluate_fundamental_rms_voltage();
+// 1464       phase->readings.fundamental_V_rms = phase->readings.fundamental_V_rms + ((evaluate_fundamental_rms_voltage() - phase->readings.fundamental_V_rms) >> AVERAGE);
+        CALL    #evaluate_fundamental_rms_voltage
+        SUB.W   &working_data + 4, R12
+        SUBC.W  &working_data + 6, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 4
+        ADDC.W  R13, &working_data + 6
+// 1465       #endif
+// 1466       #if defined(VOLTAGE_THD_SUPPORT)
+// 1467 //      phase->readings.voltage_thd = evaluate_voltage_thd();
+// 1468       phase->readings.voltage_thd = phase->readings.voltage_thd + ((evaluate_voltage_thd() - phase->readings.voltage_thd) >> AVERAGE);
+        CALL    #evaluate_voltage_thd
+        SUB.W   &working_data + 8, R12
+        RRA.W   R12
+        RRA.W   R12
+        RRA.W   R12
+        ADD.W   R12, &working_data + 8
+        JMP     ??calculate_phase_readings_5
+// 1469       #endif
+// 1470     }
+// 1471     else
+// 1472     {
+// 1473       #if defined(FUNDAMENTAL_VRMS_SUPPORT)
+// 1474       phase->readings.fundamental_V_rms = 0;
+??calculate_phase_readings_4:
+        MOV.W   #0x0, &working_data + 4
+        MOV.W   #0x0, &working_data + 6
+// 1475       #endif
+// 1476       #if defined(VOLTAGE_THD_SUPPORT)
+// 1477       phase->readings.voltage_thd = 0;
+        MOV.W   #0x0, &working_data + 8
+// 1478       #endif
+// 1479     }
+// 1480 
+// 1481 
+// 1482     #if defined(IRMS_SUPPORT)
+// 1483 //    phase->readings.I_rms = evaluate_rms_current();
+// 1484     phase->readings.I_rms = phase->readings.I_rms + ((evaluate_rms_current() - phase->readings.I_rms) >> AVERAGE);
+??calculate_phase_readings_5:
+        CALL    #evaluate_rms_current
+        SUB.W   &working_data + 10, R12
+        SUBC.W  &working_data + 12, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 10
+        ADDC.W  R13, &working_data + 12
+// 1485     #endif
+// 1486     
+// 1487     if (!(phase->status & PHASE_STATUS_DC_MODE))
+        CMP.W   #0x0, &working_data + 360
+        JL      ??calculate_phase_readings_6
+// 1488     {
+// 1489       #if defined(CAPACITOR_COMPENSATE_ON)
+// 1490 //      phase->readings.I_rms = capacitor_compensate (ph);
+// 1491           #if defined(APPARENT_POWER_SUPPORT)
+// 1492       phase->readings.apparent_power = ((int64_t)(phase->readings.V_rms) * phase->readings.I_rms) / 1000000LL;
+        MOV.W   #0x4240, R8
+        MOV.W   #0xf, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        MOV.W   &working_data, R12
+        MOV.W   &working_data + 2, R13
+        MOV.W   &working_data + 10, R14
+        MOV.W   &working_data + 12, R15
+        CALL    #_Mul32s32sto64i
+        CALL    #_Div64s
+        MOV.W   R12, &working_data + 36
+        MOV.W   R13, &working_data + 38
+// 1493           #endif
+// 1494       #else
+// 1495           #if defined(APPARENT_POWER_SUPPORT)
+// 1496       //      ph-ase->readings.apparent_power = evaluate_apparent_power();
+// 1497             phase->readings.apparent_power = phase->readings.apparent_power + ((evaluate_apparent_power() - phase->readings.apparent_power) >> AVERAGE);
+// 1498           #endif
+// 1499       #endif
+// 1500 
+// 1501       #if defined(FUNDAMENTAL_IRMS_SUPPORT)
+// 1502 //      phase->readings.fundamental_I_rms = evaluate_fundamental_rms_current();
+// 1503       phase->readings.fundamental_I_rms = phase->readings.fundamental_I_rms + ((evaluate_fundamental_rms_current() - phase->readings.fundamental_I_rms) >> AVERAGE);
+        CALL    #evaluate_fundamental_rms_current
+        SUB.W   &working_data + 14, R12
+        SUBC.W  &working_data + 16, R13
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        RRA.W   R13
+        RRC.W   R12
+        ADD.W   R12, &working_data + 14
+        ADDC.W  R13, &working_data + 16
+// 1504       #endif
+// 1505       #if defined(CURRENT_THD_SUPPORT)
+// 1506 //      phase->readings.current_thd = evaluate_current_thd();
+// 1507       phase->readings.current_thd = phase->readings.current_thd + ((evaluate_current_thd() - phase->readings.current_thd) >> AVERAGE);
+        CALL    #evaluate_current_thd
+        SUB.W   &working_data + 18, R12
+        RRA.W   R12
+        RRA.W   R12
+        RRA.W   R12
+        ADD.W   R12, &working_data + 18
+// 1508       #endif
+// 1509 
+// 1510       #if defined(POWER_FACTOR_SUPPORT)
+// 1511       /* The power factor should be calculated last */
+// 1512       phase->readings.power_factor = evaluate_power_factor();
+        CALL    #evaluate_power_factor
+        MOV.W   R12, &working_data + 42
+// 1513       #endif
+// 1514 
+// 1515       #if defined(MAINS_FREQUENCY_SUPPORT)
+// 1516       phase->readings.frequency = evaluate_mains_frequency();
+        MOV.W   &working_data + 350, R8
+        MOV.W   &working_data + 352, R7
+        MOV.W   R7, R14
+        CLRC
+        RRC.W   R14
+        RRA.W   R14
+        ADD.W   #0x80, R14
+        MOV.W   R14, R15
+        SWPB    R15
+        SXT     R15
+        ADD.W   #0x2, R15
+        MOV.W   R15, &working_data + 332
+        MOV.W   #0x7f, R11
+        RRA.B   R14
+        MOV.B   R14, R15
+        SXT     R15
+        AND.W   R11, R15
+        MOV.W   R11, R14
+        SUB.W   R15, R14
+        RLA.W   R14
+        RLA.W   R14
+        MOV.W   fir_coeffs(R14), &working_data + 334
+        MOV.W   fir_coeffs + 2(R14), &working_data + 336
+        MOV.W   R7, R9
+        MOV.W   #0x0, R10
+        MOV.W   #0x0, R11
+        MOV.W   #0x0, R12
+        MOV.W   #0x0, R13
+        MOV.W   #0x0, R14
+        MOV.W   #0x100, R15
+        CALL    #_Div64s
+        MOV.W   R12, &working_data + 192
+        MOV.W   R13, &working_data + 194
+// 1517       #endif
+// 1518     }
+        MOV.W   #0x0, R12
+        MOV.W   #0xc35, R13
+        MOV.W   R7, R14
+        MOV.W   #0x0, R15
+        CALL    #?DivMod32u
+        MOV.W   R12, &working_data + 40
+        JMP     ??calculate_phase_readings_7
+// 1519     else
+// 1520     {
+// 1521       #if defined(FUNDAMENTAL_IRMS_SUPPORT)
+// 1522       phase->readings.fundamental_I_rms = 0;
+??calculate_phase_readings_6:
+        MOV.W   #0x0, &working_data + 14
+        MOV.W   #0x0, &working_data + 16
+// 1523       #endif
+// 1524       #if defined(CURRENT_THD_SUPPORT)
+// 1525       phase->readings.current_thd = 0;
+        MOV.W   #0x0, &working_data + 18
+// 1526       #endif
+// 1527 
+// 1528       #if defined(POWER_FACTOR_SUPPORT)
+// 1529       /* The power factor should be calculated last */
+// 1530       phase->readings.power_factor = 0;
+        MOV.W   #0x0, &working_data + 42
+// 1531       #endif
+// 1532 
+// 1533       #if defined(MAINS_FREQUENCY_SUPPORT)
+// 1534       phase->readings.frequency = 0;
+        MOV.W   #0x0, &working_data + 40
+// 1535       #endif
+// 1536     }
+// 1537 
+// 1538     #if defined(ENERGY_SUPPORT)  ||  defined(TOTAL_ENERGY_SUPPORT)
+// 1539     accumulate_phase_energies();
+??calculate_phase_readings_7:
+        CALL    #accumulate_phase_energies
+// 1540     #endif
+// 1541 
+// 1542     #if defined(SAG_SWELL_SUPPORT)
+// 1543     sag_swell_control();
+// 1544     #endif
+// 1545     
+// 1546 #else
+// 1547     struct phase_parms_s *phase;
+// 1548     struct phase_calibration_data_s const *phase_cal;
+// 1549 
+// 1550     #if defined(LIMP_MODE_SUPPORT)
+// 1551     if (operating_mode == OPERATING_MODE_LIMP)
+// 1552         return calculate_limp_phase_readings(ph);
+// 1553     #endif
+// 1554     phase = &working_data.phases[ph];
+// 1555     phase_cal = &cal_info->phases[ph];
+// 1556 
+// 1557     phase->readings.active_power = evaluate_active_power(phase, phase_cal);
+// 1558     #if defined(TOTAL_ACTIVE_POWER_SUPPORT)
+// 1559     working_data.totals.readings.active_power = working_data.phases[0].readings.active_power;
+// 1560         #if NUM_PHASES >= 2
+// 1561     working_data.totals.readings.active_power += working_data.phases[1].readings.active_power;
+// 1562         #endif
+// 1563         #if NUM_PHASES >= 3
+// 1564     working_data.totals.readings.active_power += working_data.phases[2].readings.active_power;
+// 1565         #endif
+// 1566     #endif
+// 1567     
+// 1568     #if defined(FUNDAMENTAL_ACTIVE_POWER_SUPPORT)
+// 1569     phase->readings.fundamental_active_power = evaluate_fundamental_active_power(phase, phase_cal);
+// 1570     #endif
+// 1571 
+// 1572     #if defined(REACTIVE_POWER_SUPPORT)
+// 1573     phase->readings.reactive_power = evaluate_reactive_power(phase, phase_cal);
+// 1574         #if defined(TOTAL_REACTIVE_POWER_SUPPORT)
+// 1575     working_data.totals.readings.reactive_power = working_data.phases[0].readings.reactive_power;
+// 1576             #if NUM_PHASES >= 2
+// 1577     working_data.totals.readings.reactive_power += working_data.phases[1].readings.reactive_power;
+// 1578             #endif
+// 1579             #if NUM_PHASES >= 3
+// 1580     working_data.totals.readings.reactive_power += working_data.phases[2].readings.reactive_power;
+// 1581             #endif
+// 1582         #endif
+// 1583     #endif
+// 1584     #if defined(FUNDAMENTAL_REACTIVE_POWER_SUPPORT)
+// 1585     phase->readings.fundamental_reactive_power = evaluate_fundamental_reactive_power(phase, phase_cal);
+// 1586     #endif
+// 1587 
+// 1588     #if defined(APPARENT_POWER_SUPPORT)
+// 1589     phase->readings.apparent_power = evaluate_apparent_power(phase, phase_cal);
+// 1590         #if defined(TOTAL_APPARENT_POWER_SUPPORT)
+// 1591     working_data.totals.readings.apparent_power = working_data.phases[0].readings.apparent_power;
+// 1592             #if NUM_PHASES >= 2
+// 1593     working_data.totals.readings.apparent_power += working_data.phases[1].readings.apparent_power;
+// 1594             #endif
+// 1595             #if NUM_PHASES >= 3
+// 1596     working_data.totals.readings.apparent_power += working_data.phases[2].readings.apparent_power;
+// 1597             #endif
+// 1598         #endif
+// 1599     #endif
+// 1600 
+// 1601     #if defined(VRMS_SUPPORT)
+// 1602     phase->readings.V_rms = evaluate_rms_voltage(phase, phase_cal);
+// 1603     #endif
+// 1604     #if defined(FUNDAMENTAL_VRMS_SUPPORT)
+// 1605     phase->readings.fundamental_V_rms = evaluate_fundamental_rms_voltage(phase, phase_cal);
+// 1606     #endif
+// 1607     #if defined(VOLTAGE_THD_SUPPORT)
+// 1608     phase->readings.voltage_thd = evaluate_voltage_thd(phase, phase_cal);
+// 1609     #endif
+// 1610 
+// 1611     #if defined(IRMS_SUPPORT)
+// 1612     phase->readings.I_rms = evaluate_rms_current(phase, phase_cal, ph);
+// 1613     #endif
+// 1614     #if defined(FUNDAMENTAL_IRMS_SUPPORT)
+// 1615     phase->readings.fundamental_I_rms = evaluate_fundamental_rms_current(phase, phase_cal);
+// 1616     #endif
+// 1617     #if defined(CURRENT_THD_SUPPORT)
+// 1618     phase->readings.current_thd = evaluate_current_thd(phase, phase_cal);
+// 1619     #endif
+// 1620 
+// 1621     #if defined(POWER_FACTOR_SUPPORT)
+// 1622     /* The power factor should be calculated last */
+// 1623     phase->readings.power_factor = evaluate_power_factor(phase, phase_cal);
+// 1624     #endif
+// 1625 
+// 1626     #if defined(MAINS_FREQUENCY_SUPPORT)
+// 1627     phase->readings.frequency = evaluate_mains_frequency(phase, phase_cal);
+// 1628     #endif
+// 1629 
+// 1630     #if defined(ENERGY_SUPPORT)
+// 1631     accumulate_phase_energies(phase, phase_cal);
+// 1632     #endif
+// 1633 
+// 1634     #if defined(TOTAL_ENERGY_SUPPORT)
+// 1635     accumulate_total_energies(phase, phase_cal);
+// 1636     #endif
+// 1637 
+// 1638     #if defined(SAG_SWELL_SUPPORT)
+// 1639     sag_swell_control(phase, phase_cal);
+// 1640     #endif
+// 1641 #endif
+// 1642 
+// 1643 #if defined(TEMPERATURE_SUPPORT)
+// 1644     #if NUM_PHASES > 1
+// 1645     if (ph == 0)
+// 1646     #endif
+// 1647         evaluate_temperature();
+        MOV.W   &raw_temperature_from_adc, R14
+        SUB.W   &nv_parms + 30, R14
+        MOV.W   R14, R15
+        XOR.W   #0xffff, R15
+        RLA.W   R15
+        SUBC.W  R15, R15
+        PUSH.W  SR
+          CFI CFA SP+16
+        DINT
+        NOP
+        MOV.W   R14, &0x130
+        MOV.W   #0x64, &0x138
+        MOV.W   &0x13a, R12
+        MOV.W   &0x13c, &0x13a
+        MOV.W   R15, &0x134
+        MOV.W   #0x64, &0x138
+        MOV.W   &0x13a, R13
+        POP.W   SR
+          CFI CFA SP+14
+        MOV.W   &nv_parms + 32, R14
+        MOV.W   #0x0, R15
+        CALL    #?DivMod32s
+        ADD.W   &nv_parms + 28, R12
+        MOV.W   R12, &temperature_in_celsius
+// 1648 #endif
+// 1649     dp = phase->metrology.dp_set;
+        MOV.B   &working_data + 359, R11
+        SXT     R11
+// 1650     memset(&phase->metrology.dot_prod[dp], 0, sizeof(phase->metrology.dot_prod[0]));
+        MOV.W   #0xe, R14
+        MOV.W   #0x0, R13
+        MOV.W   R11, R12
+        RLA.W   R12
+        MOV.W   R12, R15
+        RLA.W   R12
+        ADD.W   R12, R15
+        RLA.W   R12
+        ADD.W   R15, R12
+        ADD.W   #working_data + 202, R12
+        CALL    #memset
+// 1651     memset(&phase->metrology.current[0].dot_prod[dp], 0, sizeof(phase->metrology.current[0].dot_prod[0]));
+        MOV.W   #0x2a, R14
+        MOV.W   #0x0, R13
+        RLA.W   R11
+        MOV.W   R11, R15
+        RLA.W   R11
+        RLA.W   R11
+        ADD.W   R11, R15
+        RLA.W   R11
+        RLA.W   R11
+        ADD.W   R15, R11
+        ADD.W   #working_data + 244, R11
+        MOV.W   R11, R12
+        CALL    #memset
+// 1652 #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+// 1653     memset(&phase->metrology.current[1].dot_prod[dp], 0, sizeof(phase->metrology.current[1].dot_prod[0]));
+// 1654 #endif
+// 1655 
+// 1656     FOREGROUND_PROCESS_OFF ();
+        CALL    #FOREGROUND_PROCESS_OFF
+// 1657     
+// 1658     return phase->readings.active_power;
+        MOV.W   &working_data + 20, R12
+        MOV.W   &working_data + 22, R13
+        BR      #?Epilogue6
+          CFI EndBlock cfiBlock15
+// 1659 }
+// 1660 
+// 1661 #if NUM_PHASES > 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+// 1662 /* Calculate the neutral readings for a 3-phase meter with neutral monitoring. */
+// 1663 void calculate_neutral_readings(void)
+// 1664 {
+// 1665     int dp;
+// 1666 
+// 1667     #if defined(IRMS_SUPPORT)
+// 1668     working_data.neutral.readings.I_rms = evaluate_neutral_rms_current();
+// 1669     #endif
+// 1670     #if defined(RESIDUAL_IRMS_SUPPORT)
+// 1671     working_data.neutral.readings.residual_I_rms = evaluate_residual_3phase_rms_current();
+// 1672     #endif
+// 1673     dp = working_data.neutral.metrology.dp_set;
+// 1674     memset(&working_data.neutral.metrology.dot_prod[dp], 0, sizeof(working_data.neutral.metrology.dot_prod[0]));
+// 1675 }
+// 1676 #endif
+// 1677 
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+// 1678 void align_metrology_with_calibration_data(void)
+align_metrology_with_calibration_data:
+          CFI Block cfiBlock16 Using cfiCommon0
+          CFI Function align_metrology_with_calibration_data
+// 1679 {
+// 1680 #if NUM_PHASES > 1
+// 1681     int ph;
+// 1682     static struct phase_parms_s *phase;
+// 1683     static struct phase_calibration_data_s const *phase_cal;
+// 1684 #endif
+// 1685 
+// 1686     metrology_disable_analog_front_end();
+        FUNCALL align_metrology_with_calibration_data, metrology_disable_analog_front_end
+        LOCFRAME CSTACK, 2, STACK
+        FUNCALL align_metrology_with_calibration_data, metrology_init_analog_front_end_normal_mode
+        LOCFRAME CSTACK, 2, STACK
+        FUNCALL align_metrology_with_calibration_data, metrology_init_from_nv_data
+        LOCFRAME CSTACK, 2, STACK
+        CALL    #metrology_disable_analog_front_end
+// 1687     metrology_init_analog_front_end_normal_mode();
+        CALL    #metrology_init_analog_front_end_normal_mode
+// 1688 
+// 1689 #if NUM_PHASES > 1
+// 1690     phase = working_data.phases;
+// 1691     phase_cal = cal_info->phases;
+// 1692     for (ph = 0;  ph < NUM_PHASES;  ph++, phase++, phase_cal++)
+// 1693 #endif
+// 1694         set_sd_phase_correction(&phase->metrology.current[0].in_phase_correction, ph, phase_cal->current[0].phase_correction);
+        MOV.W   &nv_parms + 10, R14
+        CMP.B   #0x0, &operating_mode
+        JNE     ??align_metrology_with_calibration_data_0
+        MOV.B   &working_data + 330, R15
+        SUB.B   R14, R15
+        JEQ     ??align_metrology_with_calibration_data_0
+        MOV.B   R15, &0xb9
+??align_metrology_with_calibration_data_0:
+        MOV.W   #0x2, R13
+        MOV.W   R14, R15
+        SWPB    R15
+        SXT     R15
+        SUB.W   R15, R13
+        MOV.W   R13, &working_data + 328
+        AND.B   #0xff, R14
+        MOV.W   R14, &working_data + 330
+// 1695 #if NUM_PHASES == 1  &&  defined(NEUTRAL_MONITOR_SUPPORT)
+// 1696     set_sd_phase_correction(&phase->metrology.current[1].in_phase_correction, NUM_PHASES, phase_cal->current[1].phase_correction);
+// 1697 #endif
+// 1698 
+// 1699 
+// 1700     metrology_init_from_nv_data ();
+        BR      #metrology_init_from_nv_data
+          CFI EndBlock cfiBlock16
+// 1701 //    return 0;
+// 1702 }
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+?setjmp_save_r4:
+        REQUIRE ?setjmp_r4
+        REQUIRE ?longjmp_r4
+
+        RSEG CODE:CODE:REORDER:NOROOT(1)
+?setjmp_save_r5:
+        REQUIRE ?setjmp_r5
+        REQUIRE ?longjmp_r5
+
+        END
+// 
+// 3 114 bytes in segment CODE
+//     1 byte  in segment DATA16_AN
+//     2 bytes in segment DATA16_C
+//   365 bytes in segment DATA16_Z
+// 
+// 3 114 bytes of CODE  memory
+//     2 bytes of CONST memory
+//   365 bytes of DATA  memory (+ 1 byte shared)
+//
+//Errors: none
+//Warnings: 2

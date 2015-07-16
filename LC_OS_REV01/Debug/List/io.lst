@@ -1,0 +1,186 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:39
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\io.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\io.c" -D
+#        LC_OCCUPANCY -D OS_TEST_MODE -lcN "U:\LightCloud - Occupancy Sensor\17
+#        - Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug -D__MSP430i2041__
+#        -e --double=32 --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\io.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\io.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\io.c
+      1          /*****************************************************************************
+      2          *
+      3          *   File name: io.c
+      4          *
+      5          *   LC - Controller
+      6          *   UART        - P1.2, P1.3
+      7          *   I2C         - P1.6, P1.7
+      8          *   Outputs (1) - P2.6(PWM); P1.0(RLY); P2.1-P2.5,P2.7,P1.1(LEDs)
+      9          *   Inputs (0)  - P1.1(P2.0)(Btn); P1.4(PWR_OK); A0.0(V), A1.0(I)
+     10          *
+     11          *****************************************************************************/
+     12          
+     13          #define IO_DEF
+     14          #include  <stdbool.h>
+     15          #include "msp430.h"
+     16          #include "io.h"
+     17          #include "timer.h"
+     18          #include "ctrl_pkt.h"
+     19          #include "flash.h"
+     20          #include "global.h"
+     21          #include "dim.h"
+     22          
+     23          
+     24          /****************************************************************
+     25          *
+     26          * Function: io_init
+     27          *
+     28          * Description: Digital IO port Initialization
+     29          * Initialize input and output pins
+     30          *
+     31          *****************************************************************/
+     32          int io_init()
+     33          {
+     34          #ifdef LC_CONTROLLER
+     35            
+     36            P1DIR |= BIT0 + BIT1;         // Set P1.0, P1.1 as output    
+     37            P2DIR = 0xFE;                 // Set P2.1-P2.7 as outputs
+     38            //P2IES |= BIT0;                // P2.0 power ok high-low transition interrupt
+     39            //P2IE |= BIT0;                 // Enable interrupt
+     40            //P2IFG &= ~BIT0;               // Clear interrupt flag
+     41            P1DIR &= ~BIT4;
+     42            P1IES |= BIT4;                // P1.4 power ok high-low transition interrupt
+     43            P1IE |= BIT4;                 // Enable interrupt
+     44            P1IFG &= ~BIT4;               // Clear interrupt flag
+     45            LED_ALL_OFF;
+     46            RLY_OFF;
+     47            PWM_OFF;
+     48            
+     49          
+     50          #elif  LC_OCCUPANCY
+     51           
+     52            /*Set as output*/
+     53            P1DIR |= BIT0;        // White LED
+     54            P1DIR |= BIT4;        // White REL
+     55            P1DIR |= BIT5;        // White PWM
+     56            
+     57            P2DIR |=BIT0;         // GREEN1 LED
+     58            P2DIR |=BIT1;         // BLUE1  LED  
+     59            P2DIR |=BIT2;         // BLUE2  LED    
+     60            P2DIR |=BIT3;         // BLUE3  LED  
+     61            P2DIR |=BIT4;         // BLUE3  LED
+     62            P2DIR |=BIT5;         // GREEN  LED 
+     63            P2DIR |=BIT6;         // BLUE   LED   
+     64              
+     65            /*Set as Input*/
+     66            P1DIR &= ~BIT1;       // BTN
+     67            P1DIR &= ~BIT7;       // Pwr ok
+     68            P2IES |= BIT7;        // Power ok high-low transition interrupt
+     69            P2IE |= BIT7;         // Enable interrupt
+     70            P2IFG &= ~BIT7;       // Clear interrupt flag
+     71            
+     72            RLY_OFF;
+     73            PWM_OFF;
+     74            
+     75            
+     76          #endif
+     77          
+     78            return 0;
+     79          }
+     80          
+     81          /****************************************************************
+     82          *
+     83          * Function: PORT1_ISR
+     84          *
+     85          * Description: Digital IO port 1 interrupt handler
+     86          *
+     87          * Interrupt handling for P1 IO pins
+     88          *
+     89          *****************************************************************/
+     90          #pragma vector=PORT1_VECTOR
+     91          __interrupt void PORT1_ISR(void)
+     92          {
+     93              switch(__even_in_range(P1IV,0x10)){
+     94                  case 0x00: break;               // No interrupt
+     95                  case 0x02: break;               // P1.0 interrupt
+     96                  case 0x04: break;               // P1.1 interrupt
+     97                  case 0x06: break;               // P1.2 interrupt
+     98                  case 0x08: break;               // P1.3 interrupt
+     99                  case 0x0A:                      // P1.4 interrupt
+    100                    LED_ALL_OFF;
+    101                    powerloss_image[0] = RLY_READ;
+    102                    powerloss_image[1] = TA0CCR1;
+    103                    powerloss_image[2] = TA0CCR1 >> 8;
+    104                    RLY_OFF;
+    105                    flash_powerloss_update();
+    106                    //LED_B0_ON;
+    107                    send_power_loss_detect();
+    108                    P1IFG &= ~BIT4;               // Clear IFG
+    109                    break;
+    110                  case 0x0C: break;               // P1.5 interrupt
+    111                  case 0x0E: break;               // P1.6 interrupt
+    112                  case 0x10: break;               // P1.7 interrupt
+    113              }
+    114          }
+    115          
+    116          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+     12   PORT1_ISR
+       12   -> flash_powerloss_update
+       12   -> send_power_loss_detect
+      2   io_init
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  P1IV
+      84  PORT1_ISR
+       2  PORT1_ISR::??INTVEC 8
+       2  TA0CCR1
+       2  _A_PADIR_L
+       2  _A_PAIES_L
+       2  _A_PAIE_L
+       2  _A_PAIFG_L
+       2  _A_PAIN_L
+       2  _A_PAOUT_L
+      94  io_init
+
+ 
+ 178 bytes in segment CODE
+  16 bytes in segment DATA16_AN
+   2 bytes in segment INTVEC
+ 
+ 178 bytes of CODE  memory
+   0 bytes of CONST memory (+  2 bytes shared)
+   0 bytes of DATA  memory (+ 16 bytes shared)
+
+Errors: none
+Warnings: none

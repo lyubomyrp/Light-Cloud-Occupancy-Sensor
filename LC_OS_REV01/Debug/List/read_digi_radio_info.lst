@@ -1,0 +1,209 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:39
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\read_digi_radio_info.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\read_digi_radio_info.c" -D LC_OCCUPANCY -D
+#        OS_TEST_MODE -lcN "U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug -D__MSP430i2041__
+#        -e --double=32 --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\read_digi_radio_info.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\read_digi_radio_info.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\read_digi_radio_info.c
+      1          #include "msp430.h"
+      2          #include <string.h>
+      3          #include  <stdbool.h>
+      4          #include "io.h"
+      5          #include "serial.h"
+      6          #include "lcp_constants.h"
+      7          #include "api_pkt.h"
+      8          #include "ctrl_pkt.h"
+      9          #include "global.h"
+     10          #include "timer.h"
+     11          
+     12          //unsigned char panID[8] = {0};
+     13          unsigned char blankPanID[8] = {0};
+     14          //unsigned char channel = 0;
+     15          unsigned char panID64[8] = {0};
+     16          unsigned char panID16[2] = {0};
+     17          unsigned char gatewayHigh[4];
+     18          unsigned char gatewayLow[4];
+     19            
+     20          
+     21          void read_digi_radio_info(void)
+     22          {
+     23            unsigned char i;
+     24            unsigned char *srcPtr;
+     25            unsigned char *destPtr; 
+     26          
+     27            ResetRvBuf();
+     28            radioResponseDelay = RADIORSPDELAY;
+     29            send_radio_api_packet_param('A', 'P', 1);
+     30            while((packet_rx_flag == true) || (radioResponseDelay==0));
+     31            
+     32            ResetRvBuf();
+     33            radioResponseDelay = RADIORSPDELAY;
+     34            send_radio_api_packet_param('S', 'M', 0);
+     35            while((packet_rx_flag == true) || (radioResponseDelay==0));
+     36            
+     37            ResetRvBuf();
+     38            radioResponseDelay = RADIORSPDELAY;
+     39            send_radio_api_packet_param_int('D', 'D', 0xFF01);
+     40            while((packet_rx_flag == true) || (radioResponseDelay==0));
+     41            
+     42            ResetRvBuf();
+     43            radioResponseDelay = RADIORSPDELAY;
+     44            send_radio_api_packet('S', 'H');
+     45            while((packet_rx_flag == true) || (radioResponseDelay==0));
+     46            packet_rx_flag = false;               // reset flag
+     47            srcPtr = rx_buf+8;                   // Copy address from buffer
+     48            destPtr = (unsigned char *)&sourceAddressHigh;
+     49            for(i=4; i > 0; i--)
+     50            {
+     51              *destPtr = *srcPtr;
+     52              srcPtr--;
+     53              destPtr++;
+     54            }
+     55            
+     56            ResetRvBuf();
+     57            radioResponseDelay = RADIORSPDELAY;
+     58            send_radio_api_packet('S', 'L');
+     59            while((packet_rx_flag == true) || (radioResponseDelay==0));
+     60            packet_rx_flag = false;               // reset flag
+     61            srcPtr = rx_buf+8;                   // Copy address from buffer
+     62            destPtr = (unsigned char *)&sourceAddressLow;
+     63            for(i=4; i > 0; i--)
+     64            {
+     65              *destPtr = *srcPtr;
+     66              srcPtr--;
+     67              destPtr++;
+     68            }
+     69            
+     70          /*  ResetRvBuf();
+     71            radioResponseDelay = RADIORSPDELAY;
+     72            send_radio_api_packet_param_string('D', 'H', 4, gatewayHigh);
+     73            while((!(packet_rx_flag == true)) || (radioResponseDelay==0));
+     74            
+     75            ResetRvBuf();
+     76            send_radio_api_packet_param_string('D', 'L', 4, gatewayLow);
+     77            while((!(packet_rx_flag == true)) || (radioResponseDelay==0));
+     78          */  
+     79            ResetRvBuf();
+     80            radioResponseDelay = RADIORSPDELAY;
+     81            send_radio_api_packet('A', 'I');
+     82            while((packet_rx_flag == true) || (radioResponseDelay==0));
+     83            if((rx_buf[2] == 'A') && (rx_buf[3] == 'I')){
+     84              if((rx_buf[CMD_RSP_STATUS] == 0) && (rx_buf[CMD_RSP_DATA] == 0)){
+     85                AssoFlag = true;
+     86                LED_R_OFF;
+     87                LED_G_ON;
+     88                radioResponseDelay = RADIORSPDELAY;
+     89                send_radio_api_packet('O', 'P');    // Get PAN ID
+     90                while((packet_rx_flag == true) || (radioResponseDelay==0));           
+     91                memcpy(&panID, rx_buf+5, 8);        // Copy address from buffer
+     92              
+     93                ResetRvBuf();
+     94                radioResponseDelay = RADIORSPDELAY;
+     95                send_radio_api_packet('M', 'Y');    // Get 16 bit address
+     96                while((packet_rx_flag == true) || (radioResponseDelay==0));
+     97                memcpy(&panID16, rx_buf+5, 2);      // Copy address from buffer
+     98              
+     99                ResetRvBuf();
+    100                radioResponseDelay = RADIORSPDELAY;
+    101                send_radio_api_packet('C', 'H');    // Read channel number
+    102                while((packet_rx_flag == true) || (radioResponseDelay==0));
+    103                channel = rx_buf[5];
+    104              
+    105              // Write PAN ID to flash (segment 1) here!!
+    106          /*  flash_info_copy(DATA_STORAGE_SEGMENT);
+    107              info_ptr = (flash_info *)flash_image;
+    108              memcpy(info_ptr, &panID, 8);
+    109              flash_info_update(DATA_STORAGE_SEGMENT);
+    110          */  
+    111              }
+    112            }
+    113            else
+    114            {
+    115              AssoFlag = false;
+    116              LED_G_OFF;
+    117              led_30s_19_delay = TIMER_30S_19;
+    118              led_1s_9s_delay = TIMER_1S;
+    119              led_9s_1s_delay = TIMER_9S;
+    120              ResetRvBuf();
+    121              radioResponseDelay = RADIORSPDELAY;
+    122              StrengthLevel = 0;
+    123              send_radio_api_packet_param('N', 'R', 0);
+    124              while((packet_rx_flag == true) || (radioResponseDelay==0));
+    125            }
+    126            
+    127              ResetRvBuf();
+    128              radioResponseDelay = RADIORSPDELAY;
+    129              send_radio_api_packet('W', 'R');    // Write PAN ID to non-volatile memory
+    130              while((packet_rx_flag == true) || (radioResponseDelay==0));
+    131          }
+    132            
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      8   read_digi_radio_info
+       10   -> ResetRvBuf
+        8   -> ResetRvBuf
+       10   -> memcpy
+        8   -> send_radio_api_packet
+        8   -> send_radio_api_packet_param
+        8   -> send_radio_api_packet_param_int
+        8 ?Epilogue3
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      14  ?Subroutine0
+       8  ?Subroutine1
+       8  ?Subroutine2
+       4  ?Subroutine3
+      16  ?Subroutine4
+       8  ?Subroutine5
+       2  _A_PAOUT_L
+       8  blankPanID
+       4  gatewayHigh
+       4  gatewayLow
+       2  panID16
+       8  panID64
+     384  read_digi_radio_info
+
+ 
+ 442 bytes in segment CODE
+   2 bytes in segment DATA16_AN
+  26 bytes in segment DATA16_Z
+ 
+ 442 bytes of CODE memory
+  26 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

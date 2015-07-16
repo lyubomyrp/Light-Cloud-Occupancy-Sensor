@@ -1,0 +1,374 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:38
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\ctrl_pkt.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\ctrl_pkt.c" -D LC_OCCUPANCY -D OS_TEST_MODE -lcN
+#        "U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug -D__MSP430i2041__
+#        -e --double=32 --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\ctrl_pkt.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\ctrl_pkt.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\ctrl_pkt.c
+      1          /*****************************************************************************
+      2          *   File name: ctrl_pkt.c
+      3          *
+      4          *   Description: Controller packet generation
+      5          *     This file contains functions for generating LCP response and information
+      6          *     packets for the Controller Module
+      7          *
+      8          ******************************************************************************
+      9          */
+     10          #include <string.h>
+     11          #include <stdbool.h>
+     12          #define CTRL_PKT_DEF
+     13          #include "msp430.h"
+     14          #include "dim.h"
+     15          #include "lcp.h"
+     16          #include "lcp_constants.h"
+     17          #include "io.h"
+     18          #include "adc.h"
+     19          #include "global.h"
+     20          #include "serial.h"
+     21          #include "ctrl_pkt.h"
+     22          #include "api_pkt.h"
+     23          #include "timer.h"
+     24          
+     25          // Define device identity
+     26          unsigned char hwVersion;
+     27          //unsigned long sourceAddressLow = 0x4099585C;
+     28          //unsigned long sourceAddressHigh = 0x0013a200;
+     29          unsigned long sourceAddressLow;
+     30          unsigned long sourceAddressHigh;
+     31          unsigned char panID[8] = {0};
+     32          unsigned char channel = 0;
+     33          
+     34          /*****************************************************************************
+     35          *
+     36          * Function: send_status_response
+     37          *
+     38          * Description: send LCP status response packet
+     39          *
+     40          * Input:  None
+     41          *
+     42          ******************************************************************************
+     43          */
+     44          
+     45          int send_status_response(void)
+     46          { 
+     47            char index = 0;
+     48              
+     49              // build status packet
+     50              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+     51              pkt_buf[index++] =  0x08;                                                   // Payload Length
+     52              pkt_buf[index++] = myDeviceType;                                            // Device code
+     53              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+     54              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+     55              pkt_buf[index++] = LC_PACKET_CMD_STATUS;                                    // Command code
+     56              pkt_buf[index++] = RLY_READ;                                                // Actuator Status
+     57              pkt_buf[index++] = CurrentLevel>>8;                                         // Dimming level
+     58              pkt_buf[index++] = CurrentLevel;
+     59              pkt_buf[index++] = CurveType;
+     60              pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
+     61              
+     62              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+     63              led_rvpkt_delay = TIMER_2S;
+     64              return 0;
+     65          }
+     66          
+     67          /*****************************************************************************
+     68          *
+     69          * Function: send_discovery_response
+     70          *
+     71          * Description: send LCP discovery response packet
+     72          *
+     73          * Input:  None
+     74          *
+     75          ******************************************************************************
+     76          */
+     77          
+     78          int send_discovery_response(void)
+     79          {
+     80            char index = 0;
+     81              
+     82              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+     83              pkt_buf[index++] =  0x04;                                                   // Payload Length
+     84              pkt_buf[index++] = myDeviceType;                                            // Device code 
+     85              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+     86              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+     87              pkt_buf[index++] = LC_PACKET_CMD_DISCOVERY;                                 // Command code
+     88              pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
+     89              
+     90              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+     91              led_rvpkt_delay = TIMER_2S;
+     92              return 0;
+     93          }
+     94          
+     95          /*****************************************************************************
+     96          *
+     97          * Function: send_identity_response
+     98          *
+     99          * Description: send LCP identity response packet
+    100          *
+    101          * Input:  None
+    102          *
+    103          ******************************************************************************
+    104          */
+    105          
+    106          int send_identity_response()
+    107          {
+    108            char index = 0;
+    109              
+    110              // build identity packet
+    111              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+    112              pkt_buf[index++] =  0;                                                      // Payload Length
+    113              pkt_buf[index++] = myDeviceType;                                            // Device code
+    114              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+    115              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+    116              pkt_buf[index++] = LC_PACKET_CMD_IDENTITY;                                  // Command Type
+    117              pkt_buf[index++] = FIRMWARE_VERSION_MAJOR;                                  // Firmware Major
+    118              pkt_buf[index++] = FIRMWARE_VERSION_MINOR;                                  // Firmware Minor
+    119              pkt_buf[index++] = hwVersion;                                               // Hardware version
+    120              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+    121              pkt_buf[index++] = (unsigned char) (sourceAddressHigh >> 24);               // MAC address high
+    122              pkt_buf[index++] = (unsigned char) ((sourceAddressHigh >> 16) & 0x00FF);
+    123              pkt_buf[index++] = (unsigned char) ((sourceAddressHigh >> 8) & 0x00FF);
+    124              pkt_buf[index++] = (unsigned char) (sourceAddressHigh & 0x00FF);
+    125              pkt_buf[index++] = (unsigned char) (sourceAddressLow >> 24);                // MAC address low
+    126              pkt_buf[index++] = (unsigned char) ((sourceAddressLow >> 16) & 0x00FF);
+    127              pkt_buf[index++] = (unsigned char) ((sourceAddressLow >> 8) & 0x00FF);
+    128              pkt_buf[index++] = (unsigned char) (sourceAddressLow & 0x00FF);
+    129              memcpy(&pkt_buf[index], &panID, 8);                                         // PAN ID
+    130              index += 8;
+    131              pkt_buf[index++] = responseFlag;                                            // Response request
+    132              pkt_buf[1] = index-2;                                                       // Add length
+    133              pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
+    134              
+    135              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+    136              led_rvpkt_delay = TIMER_2S;
+    137              return 0;
+    138          }
+    139          
+    140          /*************** Controller Specific Response Packets ******************************/
+    141          
+    142          /*****************************************************************************
+    143          *
+    144          * Function: state_change_report
+    145          *
+    146          * Description: send LCP state change report packet
+    147          *
+    148          * Input:  None
+    149          *
+    150          ******************************************************************************
+    151          */
+    152          
+    153          int state_change_report(void)
+    154          { 
+    155            char index = 0;
+    156              
+    157              // build state packet
+    158              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+    159              pkt_buf[index++] =  0x07;                                                   // Payload Length
+    160              pkt_buf[index++] = myDeviceType;                                            // Device code
+    161              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+    162              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+    163              pkt_buf[index++] = LC_PACKET_CMD_STATE_CHANGE;                              // Command code
+    164              pkt_buf[index++] = ((PrevRLY>>3)|(RLY_READ>>4));                            // Actuator Status
+    165              pkt_buf[index++] = CurrentLevel>>8;                                         // Dimming level
+    166              pkt_buf[index++] = CurrentLevel;
+    167              pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
+    168              
+    169              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+    170              led_rvpkt_delay = TIMER_2S;
+    171              return 0;
+    172          }
+    173          
+    174          /*****************************************************************************
+    175          *
+    176          * Function: send_power_loss_detect
+    177          *
+    178          * Description: send LCP power loss detect packet
+    179          *
+    180          * Input:  None
+    181          *
+    182          ******************************************************************************
+    183          */
+    184          
+    185          int send_power_loss_detect(void)
+    186          {
+    187            char index = 0;
+    188              
+    189              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+    190              pkt_buf[index++] = 0x05;                                                   // Payload Length
+    191              pkt_buf[index++] = myDeviceType;                                            // Device code 
+    192              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+    193              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+    194              pkt_buf[index++] = LC_PACKET_POWER_LOSS;                                    // Command code
+    195              pkt_buf[index++] = 0x01;                                                    // power loss signal
+    196              pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
+    197              
+    198              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+    199              return 0;
+    200          }
+    201          
+    202          /*****************************************************************************
+    203          *
+    204          * Function: send_power_response
+    205          *
+    206          * Description: send power response packet
+    207          *
+    208          * Input:  None
+    209          *
+    210          ******************************************************************************
+    211          */
+    212          
+    213          int send_pm_result(void)
+    214          {
+    215              unsigned char i, index = 0;
+    216              unsigned char checksum = 0;
+    217          
+    218              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+    219              pkt_buf[index++] =  0x0E;                                                   // Payload Length
+    220              pkt_buf[index++] = myDeviceType;                                            // Device code
+    221              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+    222              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+    223              pkt_buf[index++] = LC_PACKET_CMD_POWER_REPORT;
+    224              pkt_buf[index++] = (power_t0 >> 8 & 0xFF);
+    225              pkt_buf[index++] = (power_t0 & 0xFF);
+    226              pkt_buf[index++] = (power_t1 >> 8 & 0xFF);
+    227              pkt_buf[index++] = (power_t1 & 0xFF);
+    228              pkt_buf[index++] = (send_V >> 8 & 0xFF);
+    229              pkt_buf[index++] = (send_V & 0xFF);
+    230              pkt_buf[index++] = (send_I >> 8 & 0xFF);
+    231              pkt_buf[index++] = (send_I & 0xFF);
+    232              pkt_buf[index++] = (send_P >> 8 & 0xFF);
+    233              pkt_buf[index++] = (send_P & 0xFF);
+    234              pkt_buf[index++] = (send_F >> 8 & 0xFF);
+    235              pkt_buf[index++] = (send_F & 0xFF);
+    236              pkt_buf[index++] = (send_PF >> 8 & 0xFF);
+    237              pkt_buf[index++] = (send_PF & 0xFF);
+    238              pkt_buf[index++] = (send_THD >> 8 & 0xFF);
+    239              pkt_buf[index++] = (send_THD & 0xFF);
+    240              for(i=3; i < index; i++)            // calculate checksum
+    241                checksum += tx_buf[i];
+    242              tx_buf[index++] = 0xFF - checksum;  // Checksum
+    243              
+    244              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+    245              led_rvpkt_delay = TIMER_2S;
+    246              return 0;
+    247          }
+    248          
+    249          
+    250          
+    251          
+    252          #ifdef LC_OCCUPANCY
+    253          
+    254          /*****************************************************************************
+    255          *
+    256          * Function: send_occupancy_event
+    257          *
+    258          * Description: send send_occupancy_event
+    259          *
+    260          * Input:  None
+    261          *
+    262          ******************************************************************************
+    263          */
+    264          
+    265          int send_occupancy_event(void)
+    266          {
+    267            char index = 0;
+    268              
+    269              pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
+    270              pkt_buf[index++] = 0x05;                                                    // Payload Length
+    271              pkt_buf[index++] = myDeviceType;                                            // Device code 
+    272              pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
+    273              pkt_buf[index++] = lcpPktID;                                                // Packet ID
+    274              pkt_buf[index++] = LC_PACKET_OCCUPANCY_EVENT;                               // Command code
+    275              pkt_buf[index++] = 0x01;                                                    // power loss signal                    //CHANGEIT 
+    276              pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
+    277              
+    278              send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
+    279              return 0;
+    280          }
+    281          
+    282          #endif
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   send_discovery_response
+        2   -> send_radio_api_packet_data
+      2   send_identity_response
+        2   -> memcpy
+        2   -> send_radio_api_packet_data
+      2   send_occupancy_event
+        2   -> send_radio_api_packet_data
+      2   send_pm_result
+        2   -> send_radio_api_packet_data
+      2   send_power_loss_detect
+        2   -> send_radio_api_packet_data
+      2   send_status_response
+        2   -> send_radio_api_packet_data
+      2   state_change_report
+        2   -> send_radio_api_packet_data
+        2 ?ShiftRight16u_3
+        2 ?ShiftRight16u_4
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      18  ??Subroutine2_0
+      20  ?Subroutine0
+      14  ?Subroutine1
+      12  ?Subroutine2
+      16  ?Subroutine3
+       8  ?Subroutine4
+      14  ?Subroutine5
+       2  _A_PAIN_L
+       1  channel
+       1  hwVersion
+       8  panID
+      28  send_discovery_response
+     136  send_identity_response
+      10  send_occupancy_event
+     148  send_pm_result
+      12  send_power_loss_detect
+      50  send_status_response
+       4  sourceAddressHigh
+       4  sourceAddressLow
+      62  state_change_report
+
+ 
+ 548 bytes in segment CODE
+   2 bytes in segment DATA16_AN
+  18 bytes in segment DATA16_Z
+ 
+ 548 bytes of CODE memory
+  18 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

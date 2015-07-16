@@ -1,0 +1,615 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:39
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\main.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\main.c" -D
+#        LC_OCCUPANCY -D OS_TEST_MODE -lcN "U:\LightCloud - Occupancy Sensor\17
+#        - Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug -D__MSP430i2041__
+#        -e --double=32 --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\main.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\main.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\main.c
+      1          /*******************************************************************
+      2          *
+      3          *       RAB Lighting
+      4          *
+      5          *       LC - Controller
+      6          *
+      7          * This project is based on the TI MSP430I2020 processor. 
+      8          * This file contains PIR sensing and light ambient sensing function 
+      9          * as well as radio and relay control functions, including handling
+     10          * device specific commands and responses.
+     11          *
+     12          * Rev 7-8-15:   Add preproessor defined symbol LC_CONTROLLER
+     13                          Store device configuration in main flash segment 2
+     14                          Store factory default in flash information segment
+     15                          Implement power loss function
+     16          ********************************************************************/
+     17          
+     18          #include "msp430.h"
+     19          #include <stdint.h>
+     20          #include <stdbool.h>
+     21          #define GLOBAL_DEF
+     22          #include "io.h"
+     23          #include "adc.h"
+     24          #include "timer.h"
+     25          #include "serial.h"
+     26          #include "dim.h"
+     27          #include "ctrl_pkt.h"
+     28          #include "api_pkt.h"
+     29          #include "lcp.h"
+     30          #include "lcp_constants.h"
+     31          #include "global.h"
+     32          #include "flash.h"
+     33          
+     34          
+     35          #define STRENGTH_H      50      // signal strength high level definition
+     36          #define STRENGTH_L      70      // signal strength low level definition
+     37          
+     38          #define HOLDTIME        1000    // button hold time 10s
+     39          #define WAITTIME        200     // button wait for expire time 2s
+     40          #define CANCELTIME      400     // button cancel time 4s
+     41          
+     42          #define ASSOCIATECOUNTER 100    // check association every 10s based on 100ms timer loop
+     43          #define SSCOUNTER       30      // check signal strength every 13s based on 100ms timer
+     44          
+     45          unsigned int myDeviceType;      //
+     46          
+     47          // Flag variables
+     48          bool RecFlag = 0, PowerGood = 1, SampleReadyFlag = 0, AssoFlag = 0, WaitControllerRsp = 0, WaitATRsp =0, SignalStrengthFlag = 0;
+     49          bool lcp_goodid_2s_finish=0;
+     50          
+     51          // Button variables
+     52          bool ButtonHold=0, ButtonPressHold=0; 
+     53          bool ButtonPress1=0, ButtonPress1Done=0, ButtonPress1Wait=0;
+     54          bool ButtonPress2=0, ButtonPress2Done=0;
+     55          unsigned int ButtonCounter1 = 0, ButtonCounter2 = 0, WaitCounter1 = 0, WaitCounter2 = 0;
+     56          
+     57          unsigned char StrengthLevel = 0;
+     58          #ifdef LC_OCCUPANCY
+     59          /*******************************************************************************
+     60                                      PIR sensor 
+     61          *******************************************************************************/
+     62          /*                          PIR Variables                                     */
+     63          #include "sensor_motion.h"
+     64          
+     65          #endif
+     66          //**** Reset receive buffer***********************
+     67          void ResetRvBuf(void)
+     68          {
+     69            unsigned int i;
+     70            if(WaitATRsp==0){                     // Clear when not waiting for AT command response
+     71            for(i=0; i< RX_BUF_SIZE; i++)         // Clear recieve buffer
+     72                rx_buf[i] = 0;
+     73            current_rx_ptr = rx_buf;              // reset receive ptr
+     74            rx_byte_count = 0;                    // reset received byte count
+     75            packet_rx_flag = false;               // Reset Rx flag
+     76            }
+     77          }
+     78          
+     79          //**** Reset flash image buffer******************
+     80          void ResetFlashImageBuf(void)
+     81          {
+     82            unsigned int i;
+     83            for(i=0; i<FLASH_IMAGE_SIZE; i++)
+     84              flash_image[i] = 0;
+     85          }
+     86          
+     87          //**** Button press process *********************
+     88          void DoButtons(void)
+     89          {
+     90            if(BTN_READ==0) { // if Button is Pressed
+     91              if((!ButtonPress2) && (!ButtonPressHold)&& (!ButtonHold)){ // if this is the first press
+     92                  if((ButtonPress1Wait == 0)) { // Only 1st press, not wait for second press
+     93                    if(ButtonCounter1 < HOLDTIME) { // if button 1-press counter counts less than 10sec hold time
+     94                      ButtonPress1 = 1;   // 
+     95                      ButtonCounter1 += 1;
+     96                      if(ButtonCounter1 > CANCELTIME){
+     97                        ButtonPress1 = 0;
+     98                        ButtonPress1Wait = 0;
+     99                      }
+    100                    }
+    101                    else {
+    102                      ButtonHold = 1;
+    103                      ButtonPress1 = 0;
+    104                      ButtonPress1Wait = 0;
+    105                      
+    106                      led_30s_05s_delay = 60;     // Do 30seconds led flash
+    107                      led_05s_delay = TIMER_05S;  // set up 0.5s interval
+    108                      ResetRvBuf();               // reset receive buffer
+    109                      send_radio_api_packet_param('N', 'R', 0);    // Send network reset
+    110                      ResetRvBuf();               // reset receive buffer
+    111                      AssoFlag = false;           // clear associate flag
+    112                      LED_G_OFF;                  // turn off Asso/Green LED
+    113                    }
+    114                  }
+    115                  else { // Waiting for 2nd press
+    116                    ButtonPress1 = 0;
+    117                    ButtonPress1Done = 0;
+    118                    ButtonPress1Wait = 0;
+    119                    ButtonPress2 = 1;
+    120                  }
+    121              }   
+    122                  if(ButtonPress2) {
+    123                    ButtonPress1Done = 0;
+    124                    ButtonPress1Wait = 0;
+    125                    ButtonPress1 = 0;
+    126                    if(ButtonCounter2 < WAITTIME) {
+    127                      ButtonCounter2 += 1;
+    128                      ButtonPress2 = 1;
+    129                    }
+    130                    else {
+    131                      ButtonPress2 = 0;
+    132                      ButtonPressHold = 1;
+    133                    }
+    134                  }
+    135            }
+    136            else { // Button Released
+    137              ButtonCounter1 = 0;
+    138              ButtonCounter2 = 0;
+    139              ButtonHold = 0;    
+    140              if(ButtonPressHold){
+    141                ButtonPressHold=0;
+    142                if(ControllerType == LC_CONTROLLER_TYPE_DIMMER)lcp_state_report=1;
+    143              }
+    144              if(ButtonPress1){
+    145                  if(WaitCounter1 < WAITTIME){
+    146                    WaitCounter1 += 1;
+    147                    ButtonPress1Wait = 1;
+    148                    ButtonPress2 = 0;
+    149                    ButtonPress2Done = 0;
+    150                  }
+    151                  else {
+    152                    WaitCounter1 = 0;
+    153                    ButtonPress1 = 0;
+    154                    ButtonPress1Wait = 0;
+    155                    ButtonPress1Done = 1;
+    156                    ButtonPress2 = 0;
+    157                    ButtonPress2Done = 1;
+    158                  }
+    159              }
+    160              else {
+    161                if(ButtonPress2) {
+    162                  ButtonPress2 = 0;
+    163                  ButtonPress2Done = 1;
+    164                }
+    165                ButtonPress1Wait = 0;
+    166                ButtonPress1 = 0;
+    167              }
+    168            }
+    169          }
+    170          
+    171           //**** Button State Machine ********************
+    172          void ButtonState(void)
+    173          {
+    174                if(ButtonPress1Done){ 
+    175                      ButtonPress1Done = 0;
+    176                      ButtonPress2Done = 0;
+    177                      ResetRvBuf();
+    178                      send_identity_response();
+    179                }
+    180                if(ButtonPress2Done) { // Actuator control
+    181                      ButtonPress2Done = 0;
+    182                      ButtonPress1Done = 0;            
+    183                      if(ControllerType == LC_CONTROLLER_TYPE_DIMMER){
+    184                        DoButtonToggle();
+    185                      }
+    186                      if(ControllerType == LC_CONTROLLER_TYPE_TRIGGER){
+    187                        lcp_state_report = 1;
+    188                      }
+    189                }
+    190                if((ButtonPressHold) && (ControllerType == LC_CONTROLLER_TYPE_DIMMER)){ // Dimming function
+    191                      RLY_ON;
+    192                      DoButtonDim();
+    193                }
+    194          }
+    195          
+    196          //**** Process LC Protocol **********************
+    197          void DoLCPReceive(void)
+    198          {
+    199              unsigned int result;
+    200              
+    201              // Check if new LCP packet is available. If so, process it 
+    202              if(lcp_packet_rx_flag == true)
+    203              {
+    204                WaitControllerRsp = true;
+    205                    led_rvpkt_delay = TIMER_2S;
+    206                    lcp_packet_rx_flag = false;
+    207                    result = parse_lcp_packet();
+    208                    switch(result)
+    209                    {
+    210                      case EParseTestOK:
+    211                          lcp_packet_count++;             // bump rx'd packet count
+    212                          parse_device_specific_command();// Not a global command
+    213                                                          // Send response packet
+    214                          break;
+    215                          
+    216                      case EParseGoodDiscovery:
+    217                          lcp_packet_count++;             // bump rx'd packet count
+    218                          ResetRvBuf();
+    219                          send_discovery_response();      // Send discovery response packet
+    220                          ResetRvBuf();
+    221                          break;
+    222                          
+    223                      case EParseGoodStatus:
+    224                          lcp_packet_count++;             // bump rx'd packet count
+    225                          ResetRvBuf();
+    226                          send_status_response();          // Send status response packet
+    227                          ResetRvBuf();
+    228                          break;
+    229                          
+    230                      case EParseGoodIdentity:
+    231                          lcp_packet_count++;             // bump rx'd packet count
+    232                          if(rx_lcp_buf[LCP_OFFSET_USER_FEEDBACK_FLAG] == 0x01){ // Check if we need to generate feedback, and generate it!!
+    233                            led_30s_1s_delay = 30;
+    234                            led_1s_delay = TIMER_1S;
+    235                          }
+    236                          if(rx_lcp_buf[LCP_OFFSET_USER_FEEDBACK_FLAG] == 0x03){
+    237                            led_30s_2s_delay = 16;
+    238                            led_2s_delay = TIMER_2S;
+    239                          }
+    240                          ResetRvBuf();
+    241                          send_identity_response();     // Send identity response packet
+    242                          break;              
+    243                    }
+    244                    if(lcp_pm_inst_flag){
+    245                      lcp_pm_inst_flag = false;
+    246                      send_pm_result();
+    247                    }
+    248                }
+    249          }
+    250          
+    251          
+    252          //**** Process AT Command Response **********************
+    253          void DoATReceive(void)
+    254          {
+    255              unsigned char temp;
+    256              
+    257              // Check if new AT response pkt is available. If so, process it 
+    258              if(packet_rx_flag == true)
+    259              {
+    260                packet_rx_flag = false;
+    261                
+    262                // Do AI command ask for association - 00 indicate associated;
+    263                if((rx_buf[2] == 'A') && (rx_buf[3] == 'I')){
+    264                  if((rx_buf[CMD_RSP_STATUS] == 0) && (rx_buf[CMD_RSP_DATA] == 0)) 
+    265                        AssoFlag = true;  // setup associate flag
+    266                  else {
+    267                    AssoFlag = false;
+    268                    StrengthLevel = 0;
+    269                  }
+    270                }
+    271                // Do DB command ask for signal strength
+    272                else if ((rx_buf[2] == 'D') && (rx_buf[3] == 'B')){
+    273                  temp = rx_buf[CMD_RSP_DATA];
+    274                  if((rx_buf[CMD_RSP_STATUS] == 0) && ( temp > 0x19) && (temp < 0x59)){ 
+    275                    // valid strength value 0x1A - 0x58
+    276                    if(temp < STRENGTH_H) StrengthLevel = 3;
+    277                    else if(temp < STRENGTH_L) StrengthLevel = 2;
+    278                    else StrengthLevel = 1;
+    279                  }
+    280                }
+    281              }
+    282              WaitATRsp = 0;      // clear AT command response flag
+    283          }
+    284          
+    285          
+    286          /****************************************************************
+    287          *
+    288          * Function: main code
+    289          *
+    290          * Description:  initialize microcontroller
+    291          *               setup radio parameters
+    292          *               main loop - flag polling and function call
+    293          *                        
+    294          *****************************************************************/
+    295          int main( void )
+    296          {
+    297            // Stop watchdog timer to prevent time out reset
+    298            WDTCTL = WDTPW | WDTHOLD;                     // Stop watchdog timer
+    299            
+    300            // start up xtal oscillator
+    301            CSCTL1 |= DIVS__1 + DIVM__1;                  // SMCLK = DCO, MCLK = DCO
+    302            FCTL2 = FWKEY + FSSEL_1 + FN4;                // Clk = SMCLK/16
+    303            io_init();                                    // Configure IO ports
+    304            timer_init();                                 // Configure Timer
+    305            serial_init();                                // Configure Serial
+    306            adc_init();                                   // ADC initialization
+    307            __bis_SR_register(GIE);                       // Enable interrupt
+    308            
+    309              
+    310            #ifdef LC_CONTROLLER
+    311            // Define definition for this device
+    312            myDeviceType = LC_DEVICE_TYPE_CONTROLLER;     // We're a Controller module
+    313            ControllerType = LC_CONTROLLER_TYPE_DIMMER;   // set Dimmer as default
+    314            #endif
+    315            #ifdef LC_OCCUPANCY
+    316            //  myDeviceType = LC_DEVICE_TYPE_CSCOUT;
+    317            //* for test only *///
+    318            myDeviceType = LC_DEVICE_TYPE_CONTROLLER;     								// We're a Controller module 
+    319            ControllerType = LC_CONTROLLER_TYPE_DIMMER;   								// set Dimmer as default
+    320            
+    321            #ifdef OS_TEST_MODE
+    322            current_controller_mode = occupancy_sensor;
+    323            #endif
+    324            #endif
+    325            
+    326            
+    327            
+    328            ResetFlashImageBuf();
+    329            ResetRvBuf();
+    330            
+    331            // Define definition for this device
+    332            myDeviceType = LC_DEVICE_TYPE_CONTROLLER;             // We're a Controller module
+    333            LED_W_ON;                                             // if power loss, white LED on?
+    334              
+    335            // Reload flash device configuration to RAM
+    336            flash_info_copy();                                    // copy flash device config to image buffer
+    337            ControllerType = flash_image[FLASH_DEVICE_MODE];
+    338            if((ControllerType < 1) || (ControllerType > 3)){     // if not setup as repeater or trigger
+    339              ResetFlashImageBuf();
+    340              flash_image[FLASH_DEVICE_MODE] = LC_CONTROLLER_TYPE_DIMMER;         // set as a dimmer
+    341              ControllerType = LC_CONTROLLER_TYPE_DIMMER;
+    342              CurveType = CURVE_LINEAR;
+    343              lcp_softon_flag = 0;
+    344            }
+    345            else{
+    346              CurveType = flash_image[FLASH_CURVE_TYPE];            // copy curve type info
+    347              lcp_softon_flag = flash_image[FLASH_SOFT_DIM_ON];     // copy soft on/off setting
+    348              if(lcp_softon_flag > 1) lcp_softon_flag = 1;
+    349            }
+    350            
+    351            // Reload flash power loss information to RAM
+    352            powerloss_copy();                                     // copy flash power loss info to image buffer
+    353            TA0CCR1 = (powerloss_image[2] << 8) + (powerloss_image[1]);   // copy pwm state
+    354            if(TA0CCR1 > PWM_FREQ) TA0CCR1 = PWM_FREQ;                
+    355            if(powerloss_image[0] == 0) RLY_OFF;                  // copy relay state
+    356            else RLY_ON;
+    357            
+    358            // Erase flash segment 2 and store back the device configuration
+    359            flash_info_update();
+    360            
+    361            while(radioInitflag ==0){                             // Waiting for radio to be readyperiod
+    362              if(count_8ms == 0){                                 // run button function during initialization
+    363                count_8ms = 2;
+    364                DoButtons();
+    365                ButtonState();
+    366              }
+    367            }
+    368            read_digi_radio_info();                               // Preset read radio information
+    369          
+    370            
+    371            //**** Loop *************************************************   
+    372            while(1){
+    373              
+    374              // check white led - when no blink function needed, indicate power on
+    375              if((led_30s_2s_delay==0) && (led_30s_05s_delay==0) &&(led_30s_1s_delay==0)) 
+    376                LED_W_ON;
+    377              
+    378              DoLCPReceive();     // decode LC protocol pkt function call
+    379              DoATReceive();      // decode AT command response 
+    380              
+    381              // check if need to send out state change report after dim or actuator toggle
+    382              if((lcp_state_report)&&(ControllerType != LC_CONTROLLER_TYPE_REPEATER)){
+    383                ResetRvBuf();             // clear serial receive buffer
+    384                state_change_report();    // make up state change report pkt
+    385                lcp_state_report = 0;     // clear state change report flag
+    386              }
+    387                 
+    388              //**** Runs every 4ms ***************************************   
+    389              if(count_8ms == 0){
+    390                count_8ms = 2;
+    391                DoButtons();
+    392                ButtonState();
+    393                
+    394                 //**** LCP Dim function ***********************************
+    395                if(lcp_dim_flag) {
+    396                  //if(ControllerType == LC_CONTROLLER_TYPE_DIMMER) 
+    397                    DoDimFunction();
+    398                }
+    399                // Signal Strength and Association************************
+    400                //else if((WaitATRsp == 0)&&(WaitControllerRsp==0)){
+    401                else if(WaitControllerRsp==0){ //Wait for finishing transmit
+    402                    if(SsCounter == 0){
+    403                      SsCounter = SSCOUNTER;
+    404                      ResetRvBuf();
+    405                      send_radio_api_packet('D', 'B');
+    406                      WaitATRsp = 1;
+    407                    }
+    408                    // Associate*****************************************
+    409                    if(AssoCounter == 0){
+    410                      AssoCounter = ASSOCIATECOUNTER;
+    411                      ResetRvBuf();
+    412                      send_radio_api_packet('A', 'I');
+    413                      WaitATRsp = 1;
+    414                    }
+    415                }
+    416                
+    417                if(AssoFlag){
+    418                  if((StrengthLevel==0) || (StrengthLevel > 3))
+    419                    StrengthLevel = 1;
+    420                }
+    421              } // finish 4ms loop
+    422          
+    423          #ifdef LC_OCCUPANCY
+    424                
+    425              //**** Runs every 4ms ***************************************   
+    426              if(pir_tic==0){                                                             //run pir function every timer cycle (if)
+    427                                                                                          //if PIR motion hapen sensor_event_flag = pir_event
+    428                pir_triger();                                                             //one sample of pir trigger function
+    429                pir_tic=1;                                                                //run pir function every timer cycle (reset)
+    430                
+    431                ocupansy_action_check();
+    432              
+    433                
+    434          /**********************************************
+    435           *	 LED driver in main loop
+    436           ****************************************** */
+    437           
+    438              switch (led_current_state_G1) {
+    439          	case led_on:
+    440                    led_green1(TIMER_01S,TIMER_01S);
+    441          	break;
+    442          	case led_off:
+    443                    led_green1(0,TIMER_01S);
+    444          	break;
+    445          	case blink_patern_1:
+    446                    led_green1(TIMER_05S,TIMER_1S);
+    447          	break;
+    448          	case blink_patern_2:
+    449                    led_green1(TIMER_025S,TIMER_1S);
+    450          	break;
+    451          	case blink_patern_3:
+    452                    led_green1(TIMER_025S,TIMER_3S);
+    453          	break;
+    454          	default:
+    455          	break;
+    456              }
+    457            }    
+    458              
+    459          #endif
+    460          
+    461            } // finish while loop
+    462            
+    463            return 0;
+    464          }
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   ButtonState
+        2   -> DoButtonDim
+        2   -> DoButtonToggle
+        2   -> ResetRvBuf
+        2   -> send_identity_response
+      2   DoATReceive
+      2   DoButtons
+        2   -> ResetRvBuf
+        2   -> send_radio_api_packet_param
+      4   DoLCPReceive
+        4   -> ResetRvBuf
+        4   -> parse_device_specific_command
+        4   -> parse_lcp_packet
+        4   -> send_discovery_response
+        4   -> send_identity_response
+        4   -> send_pm_result
+        4   -> send_status_response
+      2   ResetFlashImageBuf
+      2   ResetRvBuf
+      6   main
+        6   -> ButtonState
+        6   -> DoATReceive
+        8   -> DoButtons
+        6   -> DoDimFunction
+        6   -> DoLCPReceive
+        6   -> ResetFlashImageBuf
+        6   -> ResetRvBuf
+        6   -> adc_init
+        6   -> flash_info_copy
+        6   -> flash_info_update
+        6   -> io_init
+        6   -> led_green1
+        6   -> ocupansy_action_check
+        6   -> pir_triger
+        6   -> powerloss_copy
+        6   -> read_digi_radio_info
+        6   -> send_radio_api_packet
+        6   -> serial_init
+        6   -> state_change_report
+        6   -> timer_init
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       1  ?<Initializer for PowerGood>
+      12  ?Subroutine0
+       1  AssoFlag
+       2  ButtonCounter1
+       2  ButtonCounter2
+       1  ButtonHold
+       1  ButtonPress1
+       1  ButtonPress1Done
+       1  ButtonPress1Wait
+       1  ButtonPress2
+       1  ButtonPress2Done
+       1  ButtonPressHold
+      82  ButtonState
+       1  CSCTL1
+     126  DoATReceive
+     266  DoButtons
+     152  DoLCPReceive
+       2  FCTL2
+       2  PIR_diff
+       2  PIR_direction
+       2  PIR_max
+       2  PIR_maxSlopeTime
+       2  PIR_min
+       2  PIR_minSlopeTime
+       2  PIR_newADC
+       2  PIR_sensitivity
+       2  PIR_slopetime
+       1  PowerGood
+       1  RecFlag
+      16  ResetFlashImageBuf
+      36  ResetRvBuf
+       1  SampleReadyFlag
+       1  SignalStrengthFlag
+       1  StrengthLevel
+       2  TA0CCR1
+       2  WDTCTL
+       1  WaitATRsp
+       1  WaitControllerRsp
+       2  WaitCounter1
+       2  WaitCounter2
+       2  _A_PAIN_L
+       2  _A_PAOUT_L
+       1  current_controller_mode
+       2  current_triger_delay
+       2  current_triger_delay_counter
+       2  ipirresult
+       1  lcp_goodid_2s_finish
+       1  led_current_state_G1
+       2  led_green1_tic
+     460  main
+       2  myDeviceType
+       2  pir_tic
+       1  sensor_event_flag
+       1  triger_delay_time_over_report_flag
+
+ 
+ 1 150 bytes in segment CODE
+    11 bytes in segment DATA16_AN
+     1 byte  in segment DATA16_I
+     1 byte  in segment DATA16_ID
+    57 bytes in segment DATA16_Z
+ 
+ 1 150 bytes of CODE  memory
+     1 byte  of CONST memory
+    58 bytes of DATA  memory (+ 11 bytes shared)
+
+Errors: none
+Warnings: 1

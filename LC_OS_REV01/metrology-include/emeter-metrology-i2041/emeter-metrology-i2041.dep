@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>2856116372</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\include\metrology-flash.h</file>
+      <file>$PROJ_DIR$\..\include\metrology-instantiate-adcs.h</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\emeter-metrology-i2041.ulp</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-background.s43</file>
+      <file>$PROJ_DIR$\Debug\Exe\emeter-metrology-i2041.r43</file>
+      <file>$PROJ_DIR$\metrology-template.h</file>
+      <file>$PROJ_DIR$\..\include\metrology-nv-structs.h</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-flash.lst</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-readings.lst</file>
+      <file>$PROJ_DIR$\..\include\metrology-interactions.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-setup.pbi</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl430fn.h</file>
+      <file>$PROJ_DIR$\..\..\emeter-toolkit\include\iar\extra_peripheral_definitions.h</file>
+      <file>$PROJ_DIR$\..\include\metrology-background.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
+      <file>$PROJ_DIR$\..\..\emeter-toolkit\include\sigma_delta_24bit_access.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-background.r43</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-setup.lst</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-flash.s43</file>
+      <file>$PROJ_DIR$\..\include\metrology-types.h</file>
+      <file>$PROJ_DIR$\..\include\metrology-decs.h</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-setup.s43</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ymath.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-foreground.pbi</file>
+      <file>$PROJ_DIR$\..\..\emeter-toolkit\include\isr_compat.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-background.lst</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\..\..\emeter-toolkit\include\sigma_delta_16bit_access.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\signal.h</file>
+      <file>$PROJ_DIR$\..\include\metrology-foreground.h</file>
+      <file>$TOOLKIT_DIR$\inc\in430.h</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-foreground.s43</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-readings.pbi</file>
+      <file>$PROJ_DIR$\..\include\metrology-readings.h</file>
+      <file>$TOOLKIT_DIR$\inc\msp430.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-flash.pbi</file>
+      <file>$PROJ_DIR$\..\include\metrology-structs.h</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-fir-table.s43</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-fir-table.lst</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-foreground.lst</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\xtgmath.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdint.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\inttypes.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-flash.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-setup.r43</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\math.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-background.pbi</file>
+      <file>$PROJ_DIR$\..\include\metrology-host.h</file>
+      <file>$PROJ_DIR$\..\..\emeter-toolkit\include\emeter-toolkit.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-fir-table.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-foreground.r43</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-fir-table.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\msp430i2041.h</file>
+      <file>$PROJ_DIR$\Debug\List\metrology-readings.s43</file>
+      <file>$PROJ_DIR$\Debug\Obj\metrology-readings.r43</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\..\src\metrology-setup.c</file>
+      <file>$PROJ_DIR$\..\include\emeter-metrology.h</file>
+      <file>$PROJ_DIR$\..\..\emeter-toolkit\emeter-toolkit-i2041\Debug\Exe\emeter-toolkit-i2041.r43</file>
+      <file>$PROJ_DIR$\..\src\metrology-background.c</file>
+      <file>$PROJ_DIR$\..\src\metrology-fir-table.c</file>
+      <file>$PROJ_DIR$\..\src\metrology-flash.c</file>
+      <file>$PROJ_DIR$\..\src\metrology-foreground.c</file>
+      <file>$PROJ_DIR$\..\src\metrology-readings.c</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\emeter-metrology-i2041.r43</name>
+      <inputs>
+        <tool>
+          <name>XAR</name>
+          <file> 65 18 52 46 53 60 47</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XAR</name>
+          <file> 6</file>
+        </tool>
+        <tool>
+          <name>ULP430</name>
+          <file> 4</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\metrology-setup.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 23 19 47</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 48 24 43 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 48 24 43 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\metrology-background.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 5 28 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\metrology-fir-table.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 40 41 52</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 57</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 45 55 44 54 61 13 29 16 62 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45 55 44 54 61 13 29 16 62 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\metrology-flash.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 20 9 46</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 38</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 31 55 54 61 13 29 16 62 45 44 37 58 33 2 51 26 14 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 31 55 54 61 13 29 16 62 45 44 37 58 33 2 51 26 14 0</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\metrology-foreground.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 34 42 53</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 25</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 27 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 27 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\metrology-readings.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 59 10 60</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 35</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 48 24 43 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45 55 44 54 61 13 29 16 62 56 3 48 24 43 51 37 58 33 2 26 14 64 7 11 21 32 15 36 0 39 50 22 8 1 17 30</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+
