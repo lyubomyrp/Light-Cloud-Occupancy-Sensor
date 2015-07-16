@@ -1,0 +1,24 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Specific paths to ignore
+
+mcu/code/v.1.0/16F1825_sensor_1.X/build/
+mcu/code/v.1.0/16F1825_sensor_1.X/dist/
+mcu/code/v.1.0/16F1825_sensor_1.X/nbproject/Makefile-*
+mcu/code/v.1.0/16F1825_sensor_1.X/nbproject/Package-*
+mcu/code/v.1.0/16F1825_sensor_1.X/nbproject/private/
+
+funclist
