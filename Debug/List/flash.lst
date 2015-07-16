@@ -1,0 +1,214 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:38
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\flash.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\flash.c"
+#        -D LC_OCCUPANCY -D OS_TEST_MODE -lcN "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud -
+#        Occupancy Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug
+#        -D__MSP430i2041__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\flash.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\flash.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\flash.c
+      1          #include "msp430.h"
+      2          #include <stdbool.h>
+      3          #include <string.h>
+      4          #include "ctrl_pkt.h"
+      5          #include "global.h"
+      6          #include "flash.h"
+      7          
+      8          //unsigned char panID[8] = {0x00, 0x13, 0xa2, 0x00, 0x40, 0xb6, 0x68, 0x3d};
+      9          
+     10          typedef struct flash_def
+     11          {
+     12              unsigned char deviceType;
+     13              unsigned char deviceMode;
+     14              unsigned char curveType;
+     15              unsigned char softDimOn;
+     16              unsigned char powerPktOn;
+     17              unsigned char relayState;
+     18              unsigned char filler[10];
+     19          }flash_info;
+     20          
+     21          unsigned char flash_image[FLASH_IMAGE_SIZE];
+     22          unsigned char powerloss_image[POWER_LOSS_SIZE];
+     23          flash_info *info_ptr;
+     24          
+     25          /****************************************************************
+     26          *
+     27          * Function: flash_erase
+     28          *
+     29          * Description: 
+     30          * 
+     31          * 
+     32          ****************************************************************/
+     33          
+     34          void flash_erase(void) {
+     35            int *addr = (int *)SEGSTART;
+     36            
+     37            while(BUSY & FCTL3);
+     38            FCTL2 = FWKEY + FSSEL_1 + FN3;       // Clk = SMCLK
+     39            FCTL1 = FWKEY + ERASE;               // Set Erase bit
+     40            FCTL3 = FWKEY;                       // Clear Lock bit
+     41            *addr = 0;                           // Dummy write to erase Flash segment
+     42            while(BUSY & FCTL3);                 // Check if Flash being used
+     43            FCTL1 = FWKEY;                       // Clear WRT bit
+     44            FCTL3 = FWKEY + LOCK;                // Set LOCK bit
+     45          }
+     46          
+     47          /****************************************************************
+     48          *
+     49          * Function: flash_info_copy
+     50          *
+     51          * Description: Copy a flash info segment into RAM
+     52          * 
+     53          * 
+     54          ****************************************************************/
+     55          
+     56          unsigned int flash_info_copy(void)
+     57          {
+     58            unsigned int temp_ptr;
+     59              
+     60            temp_ptr = SEGSTART;
+     61            memcpy(&flash_image, (unsigned char *)temp_ptr, FLASH_IMAGE_SIZE);      // Copy flash segment to RAM
+     62          
+     63            return 0;
+     64          }
+     65          
+     66          unsigned int powerloss_copy(void)
+     67          {
+     68            unsigned int temp_ptr;
+     69              
+     70            temp_ptr = POWERLOSSSTART;
+     71            memcpy(&powerloss_image, (unsigned char *)temp_ptr, POWER_LOSS_SIZE);      // Copy flash segment to RAM
+     72          
+     73            return 0;
+     74          }
+     75          
+     76          /****************************************************************
+     77          *
+     78          * Function: flash_powerloss_update
+     79          *
+     80          * Description: store power loss information from 0xF410
+     81          * 
+     82          ****************************************************************/
+     83          
+     84          void flash_powerloss_update(void) 
+     85          {
+     86              unsigned char *Flash_ptr;                   // Flash pointer
+     87              unsigned int i;
+     88          
+     89              Flash_ptr = (unsigned char *)POWERLOSSSTART;// Initialize Flash pointer
+     90          
+     91              if(FCTL3 & LOCKSEG) {                       // If Info Seg is stil locked
+     92                  FCTL3 = FWKEY | LOCKSEG;                // Clear LOCKSEG bit
+     93              }
+     94              FCTL1 = FWKEY | WRT;                        // Set WRT bit for write operation
+     95          
+     96              for (i = 0; i < POWER_LOSS_SIZE; i++) {
+     97                  *Flash_ptr++ = powerloss_image[i];      // Write value to flash
+     98              }
+     99          
+    100              FCTL1 = FWKEY;                              // Clear WRT bit
+    101              FCTL3 = FWKEY | LOCKSEG;                    // Set LOCKSEG bit
+    102          }
+    103          
+    104          /****************************************************************
+    105          *
+    106          * Function: flash_info_update
+    107          *
+    108          * Description: Update a flash info segment block
+    109          * Segments are 64 bytes long and start at address 0x1000
+    110          ****************************************************************/
+    111          
+    112          unsigned int flash_info_update(void)
+    113          {
+    114            unsigned char *flash_ptr;                     // Flash pointer
+    115            unsigned int i;
+    116              
+    117            flash_ptr =  (unsigned char *)SEGSTART;       // Calculate segment address
+    118            
+    119            // Erase segment
+    120            while(FCTL3 & BUSY);                  // Check Flash BUSY bit  
+    121            FCTL2 = FWKEY + FSSEL_1 + FN3;
+    122            FCTL3 = FWKEY;                        // Clear Lock bit
+    123            FCTL1 = FWKEY | ERASE;                // Set Erase bit
+    124            *flash_ptr = 0;                       // Dummy write to erase Flash segment
+    125          
+    126            // Copy RAM area to flash info segment
+    127            while(FCTL3 & BUSY);                  // Check Flash BUSY bit
+    128            FCTL1 = FWKEY | WRT;                  // Set WRT bit for write operation
+    129            for(i = 0; i < FLASH_IMAGE_SIZE; i++)
+    130            {
+    131              while(!(FCTL3 & WAIT));             // WAIT until Flash is ready
+    132              *flash_ptr++ = flash_image[i];      // Write value to flash
+    133            }
+    134            while(FCTL3 & BUSY);                  // Check Flash BUSY bit
+    135            FCTL1 = FWKEY;                        // Clear WRT bit
+    136            FCTL3 = FWKEY | LOCKSEG;              // Set LOCKSEG bit
+    137           
+    138            return 0;
+    139          }
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   flash_erase
+      2   flash_info_copy
+        2   -> memcpy
+      2   flash_info_update
+      2   flash_powerloss_update
+      2   powerloss_copy
+        2   -> memcpy
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       8  ?Subroutine0
+      14  ?Subroutine1
+      14  ?Subroutine2
+       2  FCTL1
+       2  FCTL2
+       2  FCTL3
+      32  flash_erase
+      16  flash_image
+      14  flash_info_copy
+      74  flash_info_update
+      54  flash_powerloss_update
+       2  info_ptr
+      10  powerloss_copy
+       4  powerloss_image
+
+ 
+ 220 bytes in segment CODE
+   6 bytes in segment DATA16_AN
+  22 bytes in segment DATA16_Z
+ 
+ 220 bytes of CODE memory
+  22 bytes of DATA memory (+ 6 bytes shared)
+
+Errors: none
+Warnings: none

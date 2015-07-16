@@ -1,0 +1,562 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:39
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\dim.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\dim.c" -D
+#        LC_OCCUPANCY -D OS_TEST_MODE -lcN "U:\LightCloud - Occupancy Sensor\17
+#        - Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug -D__MSP430i2041__
+#        -e --double=32 --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\dim.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\dim.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\dim.c
+      1          
+      2          #include "msp430.h"
+      3          #include <stdint.h>
+      4          #include <stdbool.h>
+      5          #include "math.h"
+      6          #include "global.h"
+      7          #include "lcp.h"
+      8          #include "timer.h"
+      9          #include "io.h"
+     10          #include "dim.h"
+     11          
+     12          bool PWMrateFlag = 0,pwmincflag=1, soft_on_off_flag = 0, DimDirection = 0; // 0-ramp down, 1-ramp up;
+     13          uint8_t PrevRLY = 0,CurveType = 0;
+     14          uint16_t InitLevel=0, CurrentLevel = 0, SetLevel = 0, pwmStepMax = 0;
+     15          static uint16_t pwmLinearRate = 0, pwmStep = 0, pwmDimStep = 0, pwmSqrtRate = 0;
+     16          double pwmSqRate = 0;
+     17          
+     18          /*******************************************************
+     19           calcTotalPWMStep(uint8_t transitionTime)
+     20          
+     21          uint16_t total step# (from 0% to 100%) =
+     22          Transition time x1000 (in ms) / 8ms timer period
+     23          
+     24           return: uint16_t PWM step number
+     25          ********************************************************/
+     26          uint16_t calcPWMStep(uint8_t transitionTime)
+     27          {
+     28            return(transitionTime * 125);
+     29          }
+     30          
+     31          /*******************************************************
+     32           calcPWMSqOut(uint16_t step, double sqrate)
+     33          
+     34          Calculate square curve output PWM duty cycle value
+     35          based on y = kx^2
+     36          PWM duty cycle = sqrate x (step^2)
+     37          
+     38           return: uint16_t PWM duty cycle output value
+     39          ********************************************************/
+     40          uint32_t calcPWMSqOut(uint16_t step, double sqrate)
+     41          {
+     42            uint32_t fout;
+     43            MPYS =step;
+     44            OP2 = step;
+     45            fout = ((uint32_t)RESHI<<16)| RESLO;
+     46            fout *= sqrate;
+     47            return fout;
+     48          }
+     49          
+     50          /*******************************************************
+     51           calcPWMSqrtOut(uint16_t step, double sqrtrate)
+     52          
+     53          Calculate square root curve output PWM duty cycle value
+     54          based on y = kx^(1/2)
+     55          PWM duty cycle = sqrtrate x (step^(1/2))
+     56          
+     57           return: uint16_t PWM duty cycle output value
+     58          ********************************************************/
+     59          uint16_t calcPWMSqrtOut(uint16_t step, uint16_t sqrtrate)
+     60          {
+     61            uint16_t rout;
+     62            rout = sqrt(step);
+     63            MPYS = rout;
+     64            OP2 = sqrtrate;
+     65            rout = RESLO;
+     66            return rout;
+     67          }
+     68          
+     69          /*******************************************************
+     70           uint16_t DimLinearRate(void)
+     71          
+     72          In Dimming mode 2, calculate Linear PWM change rate =
+     73          PWM dutycycle/percentage level change/ total PWM step #
+     74          
+     75           return: uint16_t PWM linear curve rate/changing slope
+     76          ********************************************************/
+     77          uint16_t DimLinearRate(void)
+     78          {
+     79            uint16_t x;
+     80            if(SetLevel > CurrentLevel) x = (SetLevel-CurrentLevel)/pwmStepMax;
+     81            else x = (CurrentLevel-SetLevel)/pwmStepMax;
+     82            return x;
+     83          }
+     84          
+     85          /*******************************************************
+     86           double DimSquareRate(void)
+     87          
+     88          In Dimming mode 2, calculate Square k rate =
+     89          
+     90          
+     91           return: uint16_t PWM square curve changing rate
+     92          ********************************************************/
+     93          double DimSquareRate(void)
+     94          {
+     95            uint32_t tempSq;
+     96            double x;
+     97            MPYS = pwmStepMax;
+     98            OP2 = pwmStepMax;
+     99            tempSq = ((uint32_t)RESHI<<16)| RESLO;
+    100            if(SetLevel > CurrentLevel) x= (SetLevel - CurrentLevel)/(double)tempSq;
+    101            else x = (CurrentLevel - SetLevel)/(double)tempSq;
+    102            return x;   
+    103          }
+    104          
+    105          /*******************************************************
+    106           unsigned int DimSqrtRate(void)
+    107          
+    108          In Dimming mode 2, calculate Square Root k rate =
+    109          
+    110          
+    111           return: uint16_t PWM square root curve changing rate
+    112          ********************************************************/
+    113          unsigned int DimSqrtRate(void)
+    114          {
+    115            double tempSqrt;
+    116            uint16_t x;
+    117            tempSqrt = sqrt(pwmStepMax);
+    118            if(SetLevel > CurrentLevel) x = (SetLevel-CurrentLevel)/tempSqrt;
+    119            else x = (CurrentLevel-SetLevel)/tempSqrt;
+    120            return x;
+    121          }
+    122          
+    123          //**** Calculate PWM duty cycle output******************
+    124          // x is steps# required to ramp (500steps in 4s)
+    125          // y(x) = kx^2 -> k=0.26214
+    126          // y(x) = kx^(1/2) -> k=2930
+    127          uint16_t calcPWMOutVal(void)
+    128          {
+    129            uint32_t fOut;
+    130            uint16_t rOut;
+    131            switch(CurveType)
+    132            {
+    133              // Linear Curve****************************************
+    134              case CURVE_LINEAR:
+    135                if(DimMode == DIM_MODE_DIM) // if in dim mode
+    136                {
+    137                  if(PWMrateFlag){ // run only first time enter Dim mode
+    138                    pwmLinearRate = DimLinearRate();
+    139                    PWMrateFlag = false;
+    140                  }
+    141                  if(DimDirection) {
+    142                    TA0CCR1 += pwmLinearRate;      // ramp up
+    143                    if(TA0CCR1 > (SetLevel - pwmLinearRate)) TA0CCR1 = SetLevel;
+    144                  }
+    145                  else {
+    146                    TA0CCR1 -= pwmLinearRate;     // ramp down
+    147                    if(TA0CCR1 < (SetLevel + pwmLinearRate)) TA0CCR1 = SetLevel;
+    148                  }
+    149                }
+    150                else {// in other modes
+    151                  if(DimDirection){       // ramp up
+    152                    TA0CCR1 += PWMLINRATEDEF;
+    153                    pwmStep += 1;
+    154                    if(pwmStep > PWMSTEPMAXDEF) pwmStep = PWMSTEPMAXDEF;
+    155                  }
+    156                  else{                   // ramp down
+    157                    TA0CCR1 -= PWMLINRATEDEF;
+    158                    pwmStep -=1;
+    159                  }
+    160                }
+    161              break;
+    162              
+    163              // Square Curve****************************************
+    164              case CURVE_SQUARE:
+    165                if(DimMode == DIM_MODE_DIM)// if in dim mode
+    166                {
+    167                  if(PWMrateFlag){ // run only first time enter Dim mode
+    168                    pwmSqRate = DimSquareRate();
+    169                    PWMrateFlag = false;
+    170                  }
+    171                  if(DimDirection){
+    172                    pwmDimStep += 1;
+    173                    if(pwmDimStep == pwmStepMax) {
+    174                      TA0CCR1 = SetLevel;
+    175                      return 0;
+    176                    }
+    177                    fOut = calcPWMSqOut(pwmDimStep, pwmSqRate);
+    178                    fOut += InitLevel;
+    179                    if(fOut>TA0CCR1) TA0CCR1 = fOut;
+    180                  }
+    181                  else{
+    182                    pwmDimStep -= 1;
+    183                    if(pwmDimStep == 0) {
+    184                      TA0CCR1 = SetLevel;
+    185                      return 0;
+    186                    }
+    187                    fOut = calcPWMSqOut(pwmDimStep, pwmSqRate);
+    188                    fOut += InitLevel;
+    189                    if(fOut<TA0CCR1) TA0CCR1 = fOut;
+    190                  }
+    191                }
+    192                else { // in other modes
+    193                  if(DimDirection){
+    194                    pwmStep +=1;
+    195                    if(pwmStep > PWMSTEPMAXDEF) pwmStep = PWMSTEPMAXDEF;
+    196                    fOut = calcPWMSqOut(pwmStep, PWMSQRATEDEF);
+    197                    if(fOut>TA0CCR1) TA0CCR1 = fOut;
+    198                  }
+    199                  else{
+    200                    pwmStep -=1;
+    201                    fOut = calcPWMSqOut(pwmStep, PWMSQRATEDEF);
+    202                    if(fOut<TA0CCR1) TA0CCR1 = fOut;
+    203                  }
+    204                }
+    205                break;
+    206              
+    207              // Square root Curve****************************************
+    208              case CURVE_SQRT:
+    209                if(DimMode == DIM_MODE_DIM) // if in dim mode
+    210                {
+    211                  if(PWMrateFlag){
+    212                    pwmSqrtRate = DimSqrtRate();
+    213                    PWMrateFlag = false;
+    214                  }
+    215                  if(DimDirection){
+    216                    pwmDimStep += 1;
+    217                    if(pwmDimStep == pwmStepMax) {
+    218                      TA0CCR1 = SetLevel;
+    219                      return 0;
+    220                    }
+    221                    rOut = calcPWMSqrtOut(pwmDimStep, pwmSqrtRate);
+    222                    rOut += InitLevel;
+    223                    if(rOut>TA0CCR1) TA0CCR1 = rOut;
+    224                  }
+    225                  else{
+    226                    pwmDimStep -= 1;
+    227                    if(pwmDimStep == 0) {
+    228                      TA0CCR1 = SetLevel;
+    229                      return 0;
+    230                    }
+    231                    rOut = calcPWMSqrtOut(pwmDimStep, pwmSqrtRate);
+    232                    rOut += InitLevel;
+    233                    if(rOut<TA0CCR1) TA0CCR1 = rOut;
+    234                  }
+    235                }
+    236                else { // in other modes
+    237                  if(DimDirection){
+    238                    pwmStep +=1;
+    239                    if(pwmStep > PWMSTEPMAXDEF) pwmStep = PWMSTEPMAXDEF;
+    240                    rOut = calcPWMSqrtOut(pwmStep, PWMSQRTRATEDEF);
+    241                    if(rOut>TA0CCR1) TA0CCR1 = rOut;
+    242                  }
+    243                  else{
+    244                    pwmStep -=1;
+    245                    rOut = calcPWMSqrtOut(pwmStep, PWMSQRTRATEDEF);
+    246                    if(rOut<TA0CCR1) TA0CCR1 = rOut;
+    247                  }
+    248                }
+    249                break;
+    250            }
+    251            return 0;
+    252          }
+    253          
+    254          uint16_t calcRevPWMStep(void)
+    255          {
+    256            uint16_t y, tempx;
+    257            uint32_t tx;
+    258            switch(CurveType)
+    259            {
+    260              // Linear Curve****************************************
+    261              case CURVE_LINEAR:
+    262                y = TA0CCR1/PWMLINRATEDEF;
+    263                break;
+    264              // Square Curve****************************************
+    265              case CURVE_SQUARE:
+    266                tx = TA0CCR1/PWMSQRATEDEF;
+    267                y = sqrt(tx);
+    268                break;
+    269              // Square root Curve****************************************
+    270              case CURVE_SQRT:
+    271                tempx = TA0CCR1/PWMSQRTRATEDEF;
+    272                MPYS = tempx;
+    273                OP2 = tempx;
+    274                y = RESLO;
+    275                break;
+    276            }
+    277            return y;
+    278          }
+    279          
+    280          void DoDimFunction(void)
+    281          {
+    282                  switch(DimMode){
+    283                    
+    284                    // ON/OFF Mode*****************************************
+    285                    case DIM_MODE_ON:
+    286                      if(lcp_softon_flag == 0){
+    287                        TA0CCR1 = PWM_FREQ;
+    288                        pwmStep = PWMSTEPMAXDEF;
+    289                        RLY_ON;
+    290                        lcp_dim_flag = false;
+    291                        lcp_state_report = true;
+    292                      }
+    293                      else{ // Soft ON
+    294                        RLY_ON;
+    295                        DimDirection = 1; // ramp up
+    296                        calcPWMOutVal();
+    297                        if((TA0CCR1 >(PWM_FREQ-1)) || (pwmStep==PWMSTEPMAXDEF)){
+    298                          TA0CCR1 = PWM_FREQ;
+    299                          lcp_dim_flag = false;
+    300                          lcp_state_report = true;
+    301                        }
+    302                      }
+    303                      break;
+    304                    case DIM_MODE_OFF:
+    305                      if(lcp_softon_flag == 0){
+    306                        RLY_OFF;
+    307                        TA0CCR1 = 0;
+    308                        pwmStep = 0;
+    309                        lcp_dim_flag = false;
+    310                        lcp_state_report = true;
+    311                      }
+    312                      else{ // Soft OFF
+    313                        DimDirection = 0; // ramp down
+    314                        if((TA0CCR1 < 1) || (pwmStep==0)){
+    315                          TA0CCR1 = 0;
+    316                          RLY_OFF;
+    317                          lcp_dim_flag = false; 
+    318                          lcp_state_report = true;
+    319                        }
+    320                        else calcPWMOutVal();
+    321                      }
+    322                      break;
+    323                    
+    324                    // Dim Mode********************************************
+    325                    case DIM_MODE_DIM: 
+    326                      RLY_ON;
+    327                      if(TA0CCR1 == SetLevel){
+    328                        PWMrateFlag = false;
+    329                        lcp_dim_flag = false;
+    330                        lcp_state_report = true;
+    331                      }
+    332                      else {
+    333                        if(PWMrateFlag)
+    334                          pwmStepMax = calcPWMStep(TransitionTime);
+    335                        if(TA0CCR1 < SetLevel){
+    336                          DimDirection = 1; // ramp up
+    337                          if(PWMrateFlag){
+    338                            InitLevel = CurrentLevel;
+    339                            pwmDimStep = 0;
+    340                          }
+    341                          calcPWMOutVal();
+    342                        }
+    343                        else{
+    344                          DimDirection = 0; // ramp down
+    345                          if(PWMrateFlag){
+    346                            InitLevel = SetLevel;
+    347                            pwmDimStep = pwmStepMax;
+    348                          }
+    349                          calcPWMOutVal();
+    350                        }
+    351                      }
+    352                      if(lcp_dim_flag == 0) pwmStep = calcRevPWMStep();
+    353                      break;
+    354                      
+    355                    // Dim Start*******************************************
+    356                    case DIM_MODE_START:
+    357                        if(Direction){
+    358                          RLY_ON;
+    359                          DimDirection = 1; // ramp up
+    360                          if((TA0CCR1 >(PWM_FREQ-1)) || (pwmStep==PWMSTEPMAXDEF)){
+    361                            TA0CCR1 = PWM_FREQ;
+    362                            lcp_dim_flag = false;
+    363                            lcp_state_report = true;
+    364                          }
+    365                          else calcPWMOutVal();
+    366                        }
+    367                        else{
+    368                          DimDirection = 0; // ramp down
+    369                          if((TA0CCR1 < 1)||(pwmStep==0)){
+    370                            TA0CCR1 = 0;
+    371                            lcp_dim_flag = false;
+    372                            lcp_state_report = true;
+    373                          }
+    374                          else calcPWMOutVal();
+    375                        }
+    376                      break;
+    377                    case DIM_MODE_STOP:
+    378                      lcp_dim_flag = false;
+    379                      lcp_state_report = true;
+    380                      break;
+    381                  }
+    382                  
+    383                  CurrentLevel = TA0CCR1;
+    384          }
+    385          
+    386          void DoButtonDim(void)
+    387          {
+    388            if(pwmincflag){
+    389              DimDirection = 1;
+    390              if((TA0CCR1 >(PWM_FREQ-1)) || (pwmStep==PWMSTEPMAXDEF)){
+    391                TA0CCR1 = PWM_FREQ;
+    392                pwmincflag = 0;
+    393              }
+    394              else calcPWMOutVal();
+    395            }
+    396            else {
+    397              DimDirection = 0;
+    398              if((TA0CCR1 < 1)||(pwmStep==0)){
+    399                TA0CCR1 = 0;
+    400                pwmincflag = 1;
+    401              }
+    402              else calcPWMOutVal();
+    403            }
+    404            CurrentLevel = TA0CCR1;
+    405          }
+    406          
+    407          void DoButtonToggle(void)
+    408          {
+    409            lcp_dim_flag = true;
+    410            if(RLY_READ == 0){
+    411              DimMode = DIM_MODE_ON;
+    412            }
+    413            else{
+    414              DimMode = DIM_MODE_OFF;
+    415            }
+    416            CurrentLevel = TA0CCR1;               // record current PWM duty cycle level
+    417          }
+    418          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   DimLinearRate
+        0 ?DivMod16u
+      6   DimSqrtRate
+        6   -> _Cast32fto32u
+        8   -> _Cast32uto32f
+        6   -> _Div32f
+        6   -> sqrt
+      6   DimSquareRate
+        6   -> _Cast32uto32f
+        8   -> _Cast32uto32f
+        6   -> _Div32f
+      2   DoButtonDim
+        2   -> calcPWMOutVal
+      2   DoButtonToggle
+      4   DoDimFunction
+        4   -> calcPWMOutVal
+        4   -> calcRevPWMStep
+     12   calcPWMOutVal
+       12   -> DimLinearRate
+       12   -> DimSqrtRate
+       12   -> DimSquareRate
+       12   -> calcPWMSqOut
+       14   -> calcPWMSqOut
+       12   -> calcPWMSqrtOut
+       12 ?Epilogue5
+      6   calcPWMSqOut
+        6   -> _Cast32fto32u
+        6   -> _Cast32uto32f
+        6   -> _Mul32f
+      4   calcPWMSqrtOut
+        4   -> _Cast32fto32u
+        6   -> _Cast32uto32f
+        4   -> sqrt
+      2   calcPWMStep
+      2   calcRevPWMStep
+        0   -> _Cast32fto32u
+        2   -> _Cast32fto32u
+        2   -> _Cast32uto32f
+        4   -> _Cast32uto32f
+        2   -> _Div32f
+        2   -> sqrt
+        0 ?DivMod16u
+        2 ?DivMod16u
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       1  ?<Initializer for pwmincflag>
+       6  ??Subroutine8_0
+       8  ??Subroutine9_0
+       4  ?Subroutine0
+       8  ?Subroutine1
+      38  ?Subroutine2
+      10  ?Subroutine3
+       2  ?Subroutine4
+      16  ?Subroutine5
+      16  ?Subroutine6
+      12  ?Subroutine7
+       2  CurrentLevel
+       1  CurveType
+       1  DimDirection
+      28  DimLinearRate
+      16  DimSqrtRate
+      26  DimSquareRate
+      66  DoButtonDim
+      18  DoButtonToggle
+     342  DoDimFunction
+       2  InitLevel
+       2  MPYS
+       2  OP2
+       1  PWMrateFlag
+       1  PrevRLY
+       2  RESHI
+       2  RESLO
+       2  SetLevel
+       2  TA0CCR1
+       2  _A_PAIN_L
+       2  _A_PAOUT_L
+     422  calcPWMOutVal
+      30  calcPWMSqOut
+      28  calcPWMSqrtOut
+      28  calcPWMStep
+      90  calcRevPWMStep
+       2  pwmDimStep
+       2  pwmLinearRate
+       4  pwmSqRate
+       2  pwmSqrtRate
+       2  pwmStep
+       2  pwmStepMax
+       1  pwmincflag
+       1  soft_on_off_flag
+
+ 
+ 1 214 bytes in segment CODE
+    14 bytes in segment DATA16_AN
+     1 byte  in segment DATA16_I
+     1 byte  in segment DATA16_ID
+    25 bytes in segment DATA16_Z
+ 
+ 1 214 bytes of CODE  memory
+     1 byte  of CONST memory
+    26 bytes of DATA  memory (+ 14 bytes shared)
+
+Errors: none
+Warnings: 7

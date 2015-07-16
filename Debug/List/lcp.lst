@@ -1,0 +1,272 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:39
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\lcp.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\lcp.c" -D
+#        LC_OCCUPANCY -D OS_TEST_MODE -lcN "U:\LightCloud - Occupancy Sensor\17
+#        - Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug -D__MSP430i2041__
+#        -e --double=32 --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\lcp.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\lcp.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\lcp.c
+      1          /*****************************************************************************
+      2          *   File name: lcp.c
+      3          *
+      4          *   Description: LightCloud Protocol processing
+      5          *     This file contains the code for decoding incoming LCP packets
+      6          *       and creating and transmitting outgoing LCP response packets.
+      7          *
+      8          *   Data is located in rx_buf, filled by serial recieve function
+      9          *
+     10          ******************************************************************************
+     11          */
+     12          #include  <stdbool.h>
+     13          #include "msp430.h"
+     14          #include "io.h"
+     15          #include "timer.h"
+     16          #include "dim.h"
+     17          #define LCP_DEF
+     18          #include "LCP.h"
+     19          #include "global.h"
+     20          #include "serial.h"
+     21          #include "lcp_constants.h"
+     22          #include "flash.h"
+     23          
+     24          int parse_basic_lcp_packet();
+     25          int parse_global_command();
+     26          
+     27          // Packet field vars
+     28          unsigned char lcpPktPayloadLen = 0;
+     29          unsigned char lcpPktDeviceType = 0;
+     30          unsigned char lcpPktAPI = 0;
+     31          unsigned char lcpPktID = 0;
+     32          
+     33          unsigned int lcp_packet_count = 0;
+     34          
+     35          unsigned char responseFlag = 0;
+     36          unsigned char lcp_softon_flag = 0;
+     37          bool lcp_dim_flag = false, lcp_pm_inst_flag = false, lcp_state_report = false;
+     38          
+     39          // Dimming field vars
+     40          unsigned int LCConfigInfo = 0;
+     41          unsigned char ControllerType=0, CfgMode=0, DimMode=0, Direction=0, TransitionTime = 0;
+     42          
+     43          /****************************************************************
+     44          *
+     45          * Function: parse_lcp_packet
+     46          *
+     47          * Description: Parse LightCloud Protocol packet
+     48          *
+     49          *
+     50          *****************************************************************/
+     51          int parse_lcp_packet()
+     52          {
+     53              int result;
+     54              
+     55              result = parse_basic_lcp_packet();          // Parse completed packet
+     56              
+     57              if(result == EParseTestOK)                  // Valid packet
+     58              {
+     59                  result = parse_global_command();        // Check if it's a global command
+     60              }
+     61              
+     62          
+     63              return result;
+     64          }
+     65          
+     66          /****************************************************************
+     67          *
+     68          * Function: parse_basic_lcp_packet
+     69          *
+     70          * Description: Check LightCloud Protocol basic packet format
+     71          * 
+     72          * Returns: EParseTestOK if packet is good
+     73          *          EParseFrameErr if packet foormat error detected
+     74          *
+     75          *****************************************************************/
+     76          int parse_basic_lcp_packet()
+     77          {
+     78              // Check for non-zero payload length byte and payload length must be <= 
+     79              // max payload length 
+     80              if((rx_lcp_buf[LCP_OFFSET_PAYLOAD_LENGTH] == 0) ||  
+     81                                                (rx_lcp_buf[LCP_OFFSET_PAYLOAD_LENGTH] >= LC_MAX_PACKET_SIZE))
+     82                return EParseFrameErr;
+     83            
+     84              // buffer data must equal payload length byte
+     85              if(lcp_byte_count != rx_lcp_buf[LCP_OFFSET_PAYLOAD_LENGTH])
+     86                return EParseFrameErr;
+     87            
+     88              // If device type is not wildcard, then it must match our device type
+     89              if((rx_lcp_buf[LCP_OFFSET_DEVICE_CODE] != LC_DEVICE_TYPE_WILDCARD) && 
+     90                                                (rx_lcp_buf[LCP_OFFSET_DEVICE_CODE] != myDeviceType))
+     91                return EParseFrameErr;
+     92            
+     93              // API code must match
+     94              if(rx_lcp_buf[LCP_OFFSET_PROTOCOL_VERSION] != 0x01) 
+     95                 return EParseFrameErr;
+     96              
+     97              // OK, we got here, so the header must be good. Store header info
+     98              lcpPktPayloadLen = rx_lcp_buf[LCP_OFFSET_PAYLOAD_LENGTH];
+     99              lcpPktDeviceType = rx_lcp_buf[LCP_OFFSET_DEVICE_CODE];
+    100              lcpPktAPI = rx_lcp_buf[LCP_OFFSET_PROTOCOL_VERSION];
+    101              lcpPktID = rx_lcp_buf[LCP_OFFSET_PACKET_ID];
+    102           
+    103              return EParseTestOK;
+    104          }
+    105          
+    106          /****************************************************************
+    107          *
+    108          * Function: parse_global_command
+    109          *
+    110          * Description: Check if this is a global command packet
+    111          *
+    112          * Returns: EParseGoodDiscovery - if Discovery packet
+    113          *          EParseGoodStatus - if Status packet
+    114          *          EParseTestOK - If packet is not a global command
+    115          *
+    116          *****************************************************************/
+    117          int parse_global_command()
+    118          {
+    119              // Check payload length and device code for match with wildcard values
+    120              //if ((rx_lcp_buf[LCP_OFFSET_PAYLOAD_LENGTH] == LC_WILDCARD_PAYLOAD_LEN_GENERIC_CMD) ||
+    121              //    (rx_lcp_buf[LCP_OFFSET_DEVICE_CODE] == LC_DEVICE_TYPE_WILDCARD))
+    122              {
+    123                if(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE] == LC_PACKET_CMD_DISCOVERY)
+    124                  return(EParseGoodDiscovery);
+    125                
+    126                if(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE] == LC_PACKET_CMD_STATUS)
+    127                  return(EParseGoodStatus);
+    128                
+    129                if(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE] == LC_PACKET_CMD_IDENTITY)
+    130                  return(EParseGoodIdentity);
+    131                
+    132              }
+    133              return(EParseTestOK);           // Not a global command
+    134          }
+    135          
+    136          //#if 0
+    137          /****************************************************************
+    138          *
+    139          * Function: parse_device_specific_command
+    140          *
+    141          * Description: Parse LightCloud device specific commands
+    142          *
+    143          *
+    144          *****************************************************************/
+    145          int parse_device_specific_command()
+    146          {
+    147            switch(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE])
+    148              {
+    149                  // Process Controller Module commands
+    150              case LC_PACKET_CMD_DEVICE_CONFIG:
+    151                    CfgMode = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS];
+    152                    LCConfigInfo = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+2];
+    153                    switch(CfgMode)
+    154                    {
+    155                    case 2:
+    156                      ControllerType = LCConfigInfo;
+    157                      flash_image[FLASH_DEVICE_MODE] = LCConfigInfo;
+    158                      break;
+    159                    case 3:
+    160                      CurveType = LCConfigInfo;
+    161                      flash_image[FLASH_CURVE_TYPE] = LCConfigInfo;
+    162                      break;
+    163                    case 4:
+    164                      lcp_softon_flag = LCConfigInfo;
+    165                      flash_image[FLASH_SOFT_DIM_ON] = LCConfigInfo;
+    166                      break;
+    167                    }
+    168                    flash_info_update();
+    169                    break;
+    170              case LC_PACKET_CMD_DIMMING_CONTROL:
+    171                    DimMode = (rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS] >> 4) & 0x0F;
+    172                    Direction = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS] & 0x0F;
+    173                    TransitionTime = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+1];
+    174                    SetLevel = (rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+2] << 8) & 0xFF00 + 
+    175                                                  rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+3];
+    176                    lcp_dim_flag = true;
+    177                    if(DimMode==2)PWMrateFlag = true;
+    178                    soft_on_off_flag = true;
+    179                    PrevRLY = RLY_READ;
+    180                    break;
+    181                    
+    182              case LC_PACKET_CMD_POWER_REPORT:
+    183                    lcp_pm_inst_flag = true;
+    184                    break;
+    185              }
+    186              return 0;
+    187          }
+    188          //#endif
+    189          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      2   parse_basic_lcp_packet
+      2   parse_device_specific_command
+        2   -> flash_info_update
+        2 ?ShiftRight16u_4
+      2   parse_global_command
+      2   parse_lcp_packet
+        2   -> parse_basic_lcp_packet
+        2   -> parse_global_command
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       1  CfgMode
+       1  ControllerType
+       1  DimMode
+       1  Direction
+       2  LCConfigInfo
+       1  TransitionTime
+       2  _A_PAIN_L
+       1  lcpPktAPI
+       1  lcpPktDeviceType
+       1  lcpPktID
+       1  lcpPktPayloadLen
+       1  lcp_dim_flag
+       2  lcp_packet_count
+       1  lcp_pm_inst_flag
+       1  lcp_softon_flag
+       1  lcp_state_report
+      68  parse_basic_lcp_packet
+     152  parse_device_specific_command
+      34  parse_global_command
+      14  parse_lcp_packet
+       1  responseFlag
+
+ 
+ 268 bytes in segment CODE
+   2 bytes in segment DATA16_AN
+  18 bytes in segment DATA16_Z
+ 
+ 268 bytes of CODE memory
+  18 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

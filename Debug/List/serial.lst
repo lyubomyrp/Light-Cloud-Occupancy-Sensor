@@ -1,0 +1,359 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V6.30.1.934/W32 for MSP430           15/Jul/2015  07:36:39
+# Copyright 1996-2015 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 6.30
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430
+#    Source file   =  
+#        U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\serial.c
+#    Command line  =  
+#        "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\serial.c"
+#        -D LC_OCCUPANCY -D OS_TEST_MODE -lcN "U:\LightCloud - Occupancy
+#        Sensor\17 - Firmware\LC_OS_REV01\Debug\List\" -o "U:\LightCloud -
+#        Occupancy Sensor\17 - Firmware\LC_OS_REV01\Debug\Obj\" --debug
+#        -D__MSP430i2041__ -e --double=32 --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 7.2\430\lib\dlib\dl430fn.h" -Ohz
+#        --multiplier=16s --segment __data16=DATA16 --segment __data20=DATA20
+#    List file     =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\List\serial.lst
+#    Object file   =  
+#        U:\LightCloud - Occupancy Sensor\17 -
+#        Firmware\LC_OS_REV01\Debug\Obj\serial.r43
+#
+###############################################################################
+
+U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\serial.c
+      1          /*****************************************************************************
+      2          *   
+      3          *   File name: serial.c
+      4          *
+      5          *   Description: Serial port interrupt handlers
+      6          *   This file contains the code for low level handling of two serial ports.
+      7          *
+      8          ******************************************************************************
+      9          */
+     10          #include  <stdbool.h>
+     11          #include "msp430.h"
+     12          #define SERIAL_DEF
+     13          #include "io.h"
+     14          #include "serial.h"
+     15          #include "LCP.h"
+     16          #include "lcp_constants.h"
+     17          #include "global.h"
+     18          
+     19          unsigned int tx_offset = 0;
+     20          unsigned int tx_index = 0;
+     21          unsigned int tx_count = 0;
+     22          unsigned int rx_offset = 0;
+     23          unsigned int rx_index = 0;
+     24          unsigned char *current_tx_ptr;
+     25          unsigned char *current_rx_ptr;
+     26          unsigned int packet_length = 0;
+     27          unsigned char frame_type = 0;
+     28          
+     29          unsigned char rx_byte_count = 0;
+     30          unsigned char rx_count = 0;
+     31          bool packet_rx_flag = false;
+     32          bool tx_complete_flag = false;
+     33          bool lcp_packet_rx_flag = false;
+     34          
+     35          unsigned char rxErrCount =0;
+     36          unsigned char rxErrIndex = 0;
+     37          
+     38          unsigned char rx_state = 0;    // LightCloud Protocol state
+     39          unsigned char lcp_length = 0;   // LightCloud Protocol payload length
+     40          
+     41          // Digi frame decode variables
+     42          unsigned char digi_header_count = 0;          // Count  of Digi header field bytes
+     43          
+     44          bool lcp_flag = false;          // When false, process radio commands
+     45                                          // When true, process LCP data
+     46          
+     47          extern bool serTestFlag;
+     48          extern bool usbState;
+     49          
+     50          
+     51          /****************************************************************
+     52          *
+     53          * Function: serial_init
+     54          *
+     55          * Description: Serial port Initialization
+     56          *
+     57          * Initialize USART0
+     58          * (some code shamelessly lifted from the TI demo code - fet140_uart01_19200_2.c)
+     59          *
+     60          *****************************************************************/
+     61          int serial_init()
+     62          {
+     63          
+     64            P1SEL0 |=   BIT2 | BIT3;              // P1.2/3 eUSCI_A Function
+     65            P1SEL1 &= ~(BIT2 | BIT3);
+     66           
+     67            UCA0CTL1 |= UCSWRST;                  // L:Hold eUSCI in reset
+     68            UCA0CTL1 |= UCSSEL_2;                 // H:SMCLK 16MHz
+     69            UCA0CTL0 = 0;                         // noParity,LSB,8-bit,1-Stop,UART,Asyn
+     70            UCA0BR0   = 0xAA;                     // 9600 baud rate
+     71            UCA0BR1   = 0x06;                     // 16.384MHz/9600 = 1706.6667 integer portion = x06AA
+     72            UCA0MCTLW = 0xD600;                   // fraction portion 0.6667 = xD6 (See UG)
+     73            UCA0CTL1 &= ~UCSWRST;                 // Initialize USART state machine/Release from reset
+     74            UCA0IE   |= UCRXIE;                   // Enable RX interrupt
+     75              
+     76            current_rx_ptr = rx_buf;              // reset receive ptr
+     77            rx_byte_count = 0;
+     78          
+     79            return 0;
+     80          }
+     81          
+     82          /*****************************************************************************
+     83          *
+     84          * Function: serial_0_xmit
+     85          *
+     86          * Description: serial port 0 transmit function
+     87          * This function starts the transmission of a buffer on USART 0
+     88          * The first character is transmitted here. The remainder of the buffer is
+     89          * transmitted via the transmit interrupt function
+     90          *
+     91          * Input:  buf_index - offset to correct transmit buffer
+     92          *         len - length of data
+     93          ******************************************************************************
+     94          */
+     95          
+     96          unsigned int serial_0_xmit(unsigned char buf_index, unsigned char len)
+     97          {
+     98            unsigned int ret_val = 0;
+     99          
+    100            tx_complete_flag = false;             // Clear transmit complete flag
+    101            tx_offset = buf_index;                // save buffer we're transmitting
+    102            tx_index = 1;                         // bump index for next time
+    103            tx_count = len;                       // save byte count
+    104            current_tx_ptr = tx_buf;              // set up transmit ptr
+    105            //if (!(UCA0STATW & UCBUSY))            // if UCSI not busy
+    106            {
+    107              UCA0TXBUF = *current_tx_ptr;        // send the byte
+    108              current_tx_ptr++;                   // point to next byte
+    109              UCA0IE |= UCTXIE;                   // Enable USART0 TX interrupt
+    110            }
+    111            return ret_val;
+    112          }
+    113          
+    114          /*****************************************************************************
+    115          *
+    116          * Function: usart0_rx_int
+    117          *
+    118          * Description: USART0 receive interrupt handler
+    119          * Called on reciept of a character or receive error condition.
+    120          * Check for any receive error conditions. If error, throw away recieved byte,
+    121          * bump error count. Otherwise, get byte from the receive register. add it to
+    122          * the receive buffer. If we've reached the end of the message, send the buffer
+    123          * for processing.
+    124          *
+    125          * Function: usart0_tx_int
+    126          *
+    127          * Description: USART0 transmit interrupt handler
+    128          * Check if there are any more bytes to transmit. If there are, transmit the
+    129          * next byte and decrement the byte count. Otherwise just exit
+    130          *
+    131          ******************************************************************************
+    132          */
+    133          
+    134          #pragma vector=USCI_A0_VECTOR
+    135          __interrupt void USCI_A0_ISR(void)
+    136          {
+    137              switch(__even_in_range(UCA0IV,USCI_UART_UCTXCPTIFG)) {
+    138                  case USCI_NONE: break;
+    139                  case USCI_UART_UCRXIFG:{ // usart0 recieve interrupt service routine
+    140                    unsigned char temp;
+    141                      temp = UCA0RXBUF;                           // get recieved byte         
+    142                      // Decode frame
+    143                      switch (rx_state)
+    144                      {
+    145                        case RX_WAIT_FOR_FRAME_START:             // Digi API frame Start Delimiter
+    146                          if(temp == DIGI_API_FRAME_START){       // Start of valid API packet
+    147                            rx_state++;
+    148                          }
+    149                          break;
+    150                      
+    151                        case RX_WAIT_FOR_LEN_1:                   // Length MSB byte
+    152                          packet_length = temp;                   // Store MSB
+    153                          packet_length <<= 8;                    // Shift to high byte
+    154                          rx_state++;
+    155                          break;
+    156                      
+    157                        case RX_WAIT_FOR_LEN_2:                   // Length LSB byte
+    158                          packet_length |= temp;                  // Shift in low byte
+    159                          rx_state++;
+    160                          break; 
+    161                           
+    162                        case RX_WAIT_FOR_FRAME_TYPE:              // Digi API Frame type
+    163                          frame_type = temp;
+    164                          if(frame_type == RX_PACKET_TYPE)        // Zigbee Receive Packet?
+    165                          {
+    166                            current_rx_ptr = rx_lcp_buf;          // reset receive ptr
+    167                            rx_state++;                           // Process Lightcloud packet
+    168                          }
+    169                          else if((frame_type == AT_RSP_PACKET_TYPE) || (frame_type == TX_STATUS_PACKET_TYPE)) //or Zigbee Transmit Status?
+    170                          //else if(frame_type == AT_RSP_PACKET_TYPE)
+    171                          { // AT Command Response?
+    172                            current_rx_ptr = rx_buf;              // reset receive ptr
+    173                            *current_rx_ptr++ = temp;             // Store data
+    174                            rx_state = RX_RCV_RSP_DATA;           // Process command response
+    175                          }
+    176                          else
+    177                          {
+    178                            rx_state = RX_WAIT_FOR_FRAME_START;   // Ignore other frame types, start over
+    179                          }
+    180                          break;
+    181                      
+    182                        case RX_WAIT_FOR_DATA_START:              // Process Zigbee Receive Packet Address field
+    183                          if(digi_header_count == API_BODY_COUNT) // 64 bit source address + 16 bit network address done + receive option?
+    184                          {
+    185                            rx_state++;                           // Yes, wait for LCP data
+    186                            digi_header_count = 0;
+    187                          }
+    188                          else
+    189                          {
+    190                            digi_header_count++;                  // wait for next address byte
+    191                          }
+    192                          break;
+    193                                  
+    194                        case RX_WAIT_FOR_PREFIX:                    // Prepare for Zigbee Receive Packet Receive LCP Data - Prefix
+    195                          if(temp == LC_DEVICE_COMMAND_PREFIX_BYTE)
+    196                          {
+    197                            current_rx_ptr = rx_lcp_buf;          // reset receive ptr
+    198                            lcp_byte_count = 0;                   // reset rx'd byte count
+    199                            rx_state++;                           // We got a prefix. Get byte count next
+    200                          }
+    201                          break;
+    202                      
+    203                        case RX_WAIT_FOR_COUNT:                   // Store Zigbee Receive Packet Receive LCP Data - length
+    204                          lcp_length = temp;                      // Save payload length
+    205                          *current_rx_ptr++ = temp;               // Store length into data buffer
+    206                          rx_state++;                             // Next get data, wait for terminating character
+    207                          break;
+    208                      
+    209                        case RX_PROCESS_DATA:                     // Check for end of buffer!
+    210                          *current_rx_ptr = temp;                 // Store data
+    211                          current_rx_ptr++;                       // point to next receive slot
+    212                          lcp_byte_count++;                       // bump byte count
+    213                          lcp_length--;                           // Decrement count
+    214                          if(lcp_length == 0)                     // Packet should be finished
+    215                            rx_state++;                           // So check for terminating character
+    216                          break;
+    217                      
+    218                        case RX_WAIT_FOR_TERMINATOR:              // Wait for LCP packet terminator 0x0D
+    219                          if(temp == LC_PACKET_TERMINATOR_BYTE)
+    220                          {
+    221                            lcp_packet_rx_flag = true;            // trigger packet processing if valid frame
+    222                          }
+    223                          SignalStrengthFlag = true;
+    224                          rx_state = RX_WAIT_FOR_FRAME_START;     // Wait for next frame
+    225                          break;  
+    226                        
+    227                        case RX_RCV_RSP_DATA:                     // Process Transmit status or AT Command Response
+    228                          *current_rx_ptr++ = temp;               // Store data
+    229                          rx_byte_count++; 
+    230                          if(rx_byte_count == packet_length)
+    231                          {
+    232                            packet_rx_flag = true;                // trigger packet processing
+    233                            rx_state = RX_WAIT_FOR_FRAME_START;
+    234                            rx_byte_count = 0;
+    235                          }
+    236                          break;
+    237                      }
+    238                      break;
+    239                  }
+    240                  case USCI_UART_UCTXIFG:{ // usart0 transmit interrupt service routine
+    241                    if(tx_index == tx_count)
+    242                    {
+    243                      UCA0IE &= ~UCTXIE;          // Disable USCI_A0 TX interrupt
+    244                      tx_complete_flag = true;    // Announce transmit completion
+    245                      WaitControllerRsp = 0;
+    246                    }
+    247                    else
+    248                    if(tx_index < tx_count)       // if we haven't finished sending the data in the buffer
+    249                    {
+    250                      UCA0TXBUF = *current_tx_ptr;
+    251                      current_tx_ptr++;           // next byte to send
+    252                      tx_index++;                 // transmitted byte count
+    253                    }
+    254                    break;
+    255                  }
+    256                  case USCI_UART_UCSTTIFG: break;
+    257                  case USCI_UART_UCTXCPTIFG: break;
+    258                  default: break;
+    259                }
+    260          }
+    261          
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      8   USCI_A0_ISR
+      2   serial_0_xmit
+      2   serial_init
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      14  ?Subroutine0
+       2  UCA0IV
+     310  USCI_A0_ISR
+       2  USCI_A0_ISR::??INTVEC 18
+       2  _A_PASEL0_L
+       2  _A_PASEL1_L
+       2  _A_UCA0BRW_L
+       2  _A_UCA0CTLW0_L
+       2  _A_UCA0IE_L
+       2  _A_UCA0MCTLW_L
+       2  _A_UCA0RXBUF_L
+       2  _A_UCA0TXBUF_L
+       2  current_rx_ptr
+       2  current_tx_ptr
+       1  digi_header_count
+       1  frame_type
+       1  lcp_byte_count
+       1  lcp_flag
+       1  lcp_length
+       1  lcp_packet_rx_flag
+       2  packet_length
+       1  packet_rx_flag
+      50  pkt_buf
+       1  rxErrCount
+       1  rxErrIndex
+      50  rx_buf
+       1  rx_byte_count
+       1  rx_count
+       2  rx_index
+      20  rx_lcp_buf
+       2  rx_offset
+       1  rx_state
+      42  serial_0_xmit
+      66  serial_init
+      50  tx_buf
+       1  tx_complete_flag
+       2  tx_count
+       2  tx_index
+       2  tx_offset
+
+ 
+ 432 bytes in segment CODE
+  18 bytes in segment DATA16_AN
+ 199 bytes in segment DATA16_Z
+   2 bytes in segment INTVEC
+ 
+ 432 bytes of CODE  memory
+   0 bytes of CONST memory (+  2 bytes shared)
+ 199 bytes of DATA  memory (+ 18 bytes shared)
+
+Errors: none
+Warnings: none
