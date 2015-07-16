@@ -35,7 +35,7 @@ ActionState=1
 [Simulator]
 Freq=1000000
 [DebugChecksum]
-Checksum=-221147804
+Checksum=505913605
 [EEM State Storage]
 Buffer=BAAAAAAAAAAAAAAAAAAAAAAA
 [EEM Sequencer]
@@ -76,22 +76,8 @@ Probe1=Voltage
 ProbeSetup1=1 1 1 4 0 0
 Probe2=Energy
 ProbeSetup2=4 1 1 10 0 0
-[EEM Cycle Counter 0]
-Counter0=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-[EEM Cycle Counter 1]
-Counter1=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-[SfrWindow]
-Show=1 1
-Sort=4 0
 [array_types]
 Fmt0=int[3]	4	0
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Breakpoints]
 Count=0
 [FET]
@@ -114,6 +100,13 @@ SP=0
 SR=0
 all registers=0
 File name=
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Aliases]
 A0=_ "C:\Users\a0283112\Desktop\Submeter i2040 8k_DC_THD_AUTO_OSR_IAR5.5\emeter-toolkit\src\iar\accum48.s43" ""
 A1=_ "C:\Users\a0283112\Desktop\Submeter i2040 8k_DC_THD_AUTO_OSR_IAR5.5\emeter-toolkit\src\iar\isqrt16.s43" "C:\Users\yanning.qu\Documents\IAR\controller\cnt_rev1\emeter-toolkit-iar\isqrt16.s43"

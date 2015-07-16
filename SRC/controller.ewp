@@ -10,9 +10,9 @@
     <debug>1</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>17</archiveVersion>
+      <archiveVersion>14</archiveVersion>
       <data>
-        <version>33</version>
+        <version>32</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -97,7 +97,7 @@
         </option>
         <option>
           <name>OGChipSelectMenu</name>
-          <state>MSP430i2041	MSP430i2041</state>
+          <state>MSP430i2020	MSP430i2020</state>
         </option>
         <option>
           <name>GStackHeapOverride</name>
@@ -217,15 +217,6 @@
           <name>GLockIpe</name>
           <state>0</state>
         </option>
-        <option>
-          <name>Math variant</name>
-          <version>0</version>
-          <state>0</state>
-        </option>
-        <option>
-          <name>Math description</name>
-          <state>Default variants of cos, sin, tan, log, log10, pow, and exp.</state>
-        </option>
       </data>
     </settings>
     <settings>
@@ -237,8 +228,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>LC_OCCUPANCY</state>
-          <state>OS_TEST_MODE</state>
+          <state>LC_CONTROLLER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -254,7 +244,7 @@
         </option>
         <option>
           <name>CCListCFile</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCListCMnemonics</name>
@@ -668,7 +658,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state></state>
+          <state>$FILE_BNAME$.r43</state>
         </option>
         <option>
           <name>AMultibyteSupport</name>
@@ -710,7 +700,6 @@
       <data>
         <extensions></extensions>
         <cmdline></cmdline>
-        <hasPrio>0</hasPrio>
       </data>
     </settings>
     <settings>
@@ -730,7 +719,7 @@
       <name>XLINK</name>
       <archiveVersion>4</archiveVersion>
       <data>
-        <version>29</version>
+        <version>27</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -777,11 +766,11 @@
         </option>
         <option>
           <name>SegmentMap</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>ListSymbols</name>
-          <state>0</state>
+          <state>2</state>
         </option>
         <option>
           <name>PageLengthCheck</name>
@@ -805,7 +794,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\lnk430i2041.xcl</state>
+          <state>$TOOLKIT_DIR$\config\linker\lnk430i2020.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -1026,46 +1015,6 @@
           <name>XlinkIPE</name>
           <state>1</state>
         </option>
-        <option>
-          <name>XlinkLogEnable</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogInputFiles</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogModuleSelection</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogPrintfScanf</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogSegmentSelection</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogStackDepth</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkStackUsageEnable</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkControlFiles</name>
-          <state></state>
-        </option>
-        <option>
-          <name>XlinkCallGraphFileEnable</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkCallGraphFileName</name>
-          <state>$LIST_DIR$\$PROJ_FNAME$.call_graph.cgx</state>
-        </option>
       </data>
     </settings>
     <settings>
@@ -1137,9 +1086,9 @@
     <debug>0</debug>
     <settings>
       <name>General</name>
-      <archiveVersion>17</archiveVersion>
+      <archiveVersion>14</archiveVersion>
       <data>
-        <version>33</version>
+        <version>32</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1343,15 +1292,6 @@
         <option>
           <name>GLockIpe</name>
           <state>0</state>
-        </option>
-        <option>
-          <name>Math variant</name>
-          <version>0</version>
-          <state>0</state>
-        </option>
-        <option>
-          <name>Math description</name>
-          <state></state>
         </option>
       </data>
     </settings>
@@ -1836,7 +1776,6 @@
       <data>
         <extensions></extensions>
         <cmdline></cmdline>
-        <hasPrio>0</hasPrio>
       </data>
     </settings>
     <settings>
@@ -1856,7 +1795,7 @@
       <name>XLINK</name>
       <archiveVersion>4</archiveVersion>
       <data>
-        <version>29</version>
+        <version>27</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -2152,46 +2091,6 @@
           <name>XlinkIPE</name>
           <state>1</state>
         </option>
-        <option>
-          <name>XlinkLogEnable</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogInputFiles</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogModuleSelection</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogPrintfScanf</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogSegmentSelection</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkLogStackDepth</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkStackUsageEnable</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkControlFiles</name>
-          <state></state>
-        </option>
-        <option>
-          <name>XlinkCallGraphFileEnable</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>XlinkCallGraphFileName</name>
-          <state>$LIST_DIR$\$PROJ_FNAME$.call_graph.cgx</state>
-        </option>
       </data>
     </settings>
     <settings>
@@ -2280,9 +2179,6 @@
   </file>
   <file>
     <name>$PROJ_DIR$\read_digi_radio_info.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\sensor_motion.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\serial.c</name>

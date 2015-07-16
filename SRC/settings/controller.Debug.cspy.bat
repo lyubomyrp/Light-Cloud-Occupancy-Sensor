@@ -19,22 +19,6 @@
 @REM 
 
 
-@echo off 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\common\bin\cspybat" "C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\430\bin\430proc.dll" "C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\430\bin\430fet.dll"  %1 --plugin "C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\430\bin\430bat.dll" --backend -B "--hardware_multiplier" "16" "--hwmult_type" "2" "-p" "C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\430\config\debugger\MSP430i2020.ddf" "--iv_base" "0xFFE0" "-d" "fet" "--erase_main" "--derivative" "MSP430I204x_I203x_I202x" "--protocol" "automatic" "--eem" "EMEX_LOW" "--port" "Automatic" "--connection" "ti_usb" "--use_emulated_breakpoints" "--settlingtime=0" "--msp430_dll" "msp430.dll" "--vccDefault" "3.3" "--jtag_speed" "medium" "--memtype" "F" "--fuseBlowDisabled" 
 
-if not "%1" == "" goto debugFile 
 
-@echo on 
-
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\settings\controller.Debug.general.xcl" --backend -f "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\settings\controller.Debug.driver.xcl" 
-
-@echo off 
-goto end 
-
-:debugFile 
-
-@echo on 
-
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\settings\controller.Debug.general.xcl" "--debug_file=%1" --backend -f "U:\LightCloud - Occupancy Sensor\17 - Firmware\LC_OS_REV01\settings\controller.Debug.driver.xcl" 
-
-@echo off 
-:end

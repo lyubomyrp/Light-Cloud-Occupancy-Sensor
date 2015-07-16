@@ -1,3 +1,12 @@
+/*******************************************************************************
+*   File name: dim.c
+*
+*   Description: do dim function based on LCP request
+*     This file contains functions for calculating dim steps 
+*       based on curve and transition time request
+*
+********************************************************************************
+*/
 
 #include "msp430.h"
 #include <stdint.h>
@@ -9,26 +18,26 @@
 #include "io.h"
 #include "dim.h"
 
-bool PWMrateFlag = 0,pwmincflag=1, soft_on_off_flag = 0, DimDirection = 0; // 0-ramp down, 1-ramp up;
+bool PWMrateFlag = 0,pwmincflag=1, DimDirection = 0; // 0-ramp down, 1-ramp up;
 uint8_t PrevRLY = 0,CurveType = 0;
 uint16_t InitLevel=0, CurrentLevel = 0, SetLevel = 0, pwmStepMax = 0;
 static uint16_t pwmLinearRate = 0, pwmStep = 0, pwmDimStep = 0, pwmSqrtRate = 0;
 double pwmSqRate = 0;
 
-/*******************************************************
+/*******************************************************************************
  calcTotalPWMStep(uint8_t transitionTime)
 
 uint16_t total step# (from 0% to 100%) =
 Transition time x1000 (in ms) / 8ms timer period
 
  return: uint16_t PWM step number
-********************************************************/
+*******************************************************************************/
 uint16_t calcPWMStep(uint8_t transitionTime)
 {
   return(transitionTime * 125);
 }
 
-/*******************************************************
+/*******************************************************************************
  calcPWMSqOut(uint16_t step, double sqrate)
 
 Calculate square curve output PWM duty cycle value
@@ -36,7 +45,7 @@ based on y = kx^2
 PWM duty cycle = sqrate x (step^2)
 
  return: uint16_t PWM duty cycle output value
-********************************************************/
+*******************************************************************************/
 uint32_t calcPWMSqOut(uint16_t step, double sqrate)
 {
   uint32_t fout;
@@ -47,7 +56,7 @@ uint32_t calcPWMSqOut(uint16_t step, double sqrate)
   return fout;
 }
 
-/*******************************************************
+/*******************************************************************************
  calcPWMSqrtOut(uint16_t step, double sqrtrate)
 
 Calculate square root curve output PWM duty cycle value
@@ -55,7 +64,7 @@ based on y = kx^(1/2)
 PWM duty cycle = sqrtrate x (step^(1/2))
 
  return: uint16_t PWM duty cycle output value
-********************************************************/
+*******************************************************************************/
 uint16_t calcPWMSqrtOut(uint16_t step, uint16_t sqrtrate)
 {
   uint16_t rout;
@@ -66,14 +75,14 @@ uint16_t calcPWMSqrtOut(uint16_t step, uint16_t sqrtrate)
   return rout;
 }
 
-/*******************************************************
+/*******************************************************************************
  uint16_t DimLinearRate(void)
 
 In Dimming mode 2, calculate Linear PWM change rate =
 PWM dutycycle/percentage level change/ total PWM step #
 
  return: uint16_t PWM linear curve rate/changing slope
-********************************************************/
+*******************************************************************************/
 uint16_t DimLinearRate(void)
 {
   uint16_t x;
@@ -82,14 +91,14 @@ uint16_t DimLinearRate(void)
   return x;
 }
 
-/*******************************************************
+/*******************************************************************************
  double DimSquareRate(void)
 
 In Dimming mode 2, calculate Square k rate =
 
 
  return: uint16_t PWM square curve changing rate
-********************************************************/
+*******************************************************************************/
 double DimSquareRate(void)
 {
   uint32_t tempSq;
@@ -102,15 +111,15 @@ double DimSquareRate(void)
   return x;   
 }
 
-/*******************************************************
- unsigned int DimSqrtRate(void)
+/*******************************************************************************
+ uint16_t DimSqrtRate(void)
 
 In Dimming mode 2, calculate Square Root k rate =
 
 
  return: uint16_t PWM square root curve changing rate
-********************************************************/
-unsigned int DimSqrtRate(void)
+*******************************************************************************/
+uint16_t DimSqrtRate(void)
 {
   double tempSqrt;
   uint16_t x;
@@ -120,17 +129,22 @@ unsigned int DimSqrtRate(void)
   return x;
 }
 
-//**** Calculate PWM duty cycle output******************
-// x is steps# required to ramp (500steps in 4s)
-// y(x) = kx^2 -> k=0.26214
-// y(x) = kx^(1/2) -> k=2930
+/*******************************************************************************
+ uint16_t calcPWMOutVal(void)
+
+Calculate PWM duty cycle output
+x is steps# required to ramp (500steps in 4s)
+y(x) = kx^2 -> k=0.26214
+y(x) = kx^(1/2) -> k=2930
+
+*******************************************************************************/
 uint16_t calcPWMOutVal(void)
 {
   uint32_t fOut;
   uint16_t rOut;
-  switch(CurveType)
+  switch(DeviceCfg->curveType)
   {
-    // Linear Curve****************************************
+    // Linear Curve*************************************************************
     case CURVE_LINEAR:
       if(DimMode == DIM_MODE_DIM) // if in dim mode
       {
@@ -160,7 +174,7 @@ uint16_t calcPWMOutVal(void)
       }
     break;
     
-    // Square Curve****************************************
+    // Square Curve*************************************************************
     case CURVE_SQUARE:
       if(DimMode == DIM_MODE_DIM)// if in dim mode
       {
@@ -204,7 +218,7 @@ uint16_t calcPWMOutVal(void)
       }
       break;
     
-    // Square root Curve****************************************
+    // Square root Curve********************************************************
     case CURVE_SQRT:
       if(DimMode == DIM_MODE_DIM) // if in dim mode
       {
@@ -251,22 +265,29 @@ uint16_t calcPWMOutVal(void)
   return 0;
 }
 
+/*******************************************************************************
+ uint16_t calcRevPWMStep(void)
+
+Reverse back pwm step # when switch from dimming mode (2) to other mode
+switch back the default curve rates
+
+*******************************************************************************/
 uint16_t calcRevPWMStep(void)
 {
   uint16_t y, tempx;
   uint32_t tx;
-  switch(CurveType)
+  switch(DeviceCfg->curveType)
   {
-    // Linear Curve****************************************
+    // Linear Curve*************************************************************
     case CURVE_LINEAR:
       y = TA0CCR1/PWMLINRATEDEF;
       break;
-    // Square Curve****************************************
+    // Square Curve*************************************************************
     case CURVE_SQUARE:
       tx = TA0CCR1/PWMSQRATEDEF;
       y = sqrt(tx);
       break;
-    // Square root Curve****************************************
+    // Square root Curve********************************************************
     case CURVE_SQRT:
       tempx = TA0CCR1/PWMSQRTRATEDEF;
       MPYS = tempx;
@@ -277,13 +298,19 @@ uint16_t calcRevPWMStep(void)
   return y;
 }
 
+/*******************************************************************************
+  void DoDimFunction(void)
+
+Dimming function state machine
+
+*******************************************************************************/
 void DoDimFunction(void)
 {
         switch(DimMode){
           
-          // ON/OFF Mode*****************************************
+          // ON/OFF Mode********************************************************
           case DIM_MODE_ON:
-            if(lcp_softon_flag == 0){
+            if(DeviceCfg->softDimOn == 0){
               TA0CCR1 = PWM_FREQ;
               pwmStep = PWMSTEPMAXDEF;
               RLY_ON;
@@ -302,7 +329,7 @@ void DoDimFunction(void)
             }
             break;
           case DIM_MODE_OFF:
-            if(lcp_softon_flag == 0){
+            if(DeviceCfg->softDimOn == 0){
               RLY_OFF;
               TA0CCR1 = 0;
               pwmStep = 0;
@@ -321,7 +348,7 @@ void DoDimFunction(void)
             }
             break;
           
-          // Dim Mode********************************************
+          // Dim Mode***********************************************************
           case DIM_MODE_DIM: 
             RLY_ON;
             if(TA0CCR1 == SetLevel){
@@ -352,7 +379,7 @@ void DoDimFunction(void)
             if(lcp_dim_flag == 0) pwmStep = calcRevPWMStep();
             break;
             
-          // Dim Start*******************************************
+          // Dim Start**********************************************************
           case DIM_MODE_START:
               if(Direction){
                 RLY_ON;
@@ -383,6 +410,12 @@ void DoDimFunction(void)
         CurrentLevel = TA0CCR1;
 }
 
+/*******************************************************************************
+  void DoButtonDim(void)
+
+1 short 1 long press dimming in curve fashion
+
+*******************************************************************************/
 void DoButtonDim(void)
 {
   if(pwmincflag){
@@ -404,6 +437,12 @@ void DoButtonDim(void)
   CurrentLevel = TA0CCR1;
 }
 
+/*******************************************************************************
+  void DoButtonTogglevoid)
+
+2 short press relay toggle (soft/hard)
+
+*******************************************************************************/
 void DoButtonToggle(void)
 {
   lcp_dim_flag = true;

@@ -1,39 +1,33 @@
-/*****************************************************************************
+/*******************************************************************************
 *
 *   File name: timer.c
 *
 *   LC - Controller
 *   Initialize timer and timer service routine
 *
-*****************************************************************************/
+*******************************************************************************/
 #include  <stdbool.h>
 #include "msp430.h"
 #include "io.h"
 #include "timer.h"
-#include "global.h"
 #include "dim.h"
+#include "global.h"
 
-unsigned int countsec=0, AssoCounter=0, SsCounter=0;
-unsigned char count_8ms=0, radioInitDelay, led_30s_19_delay;
-unsigned int radioResponseDelay = 0;
-unsigned int led_rvpkt_delay=0, led_30s_1s_delay=0, led_1s_delay=0,led_30s_2s_delay, led_2s_delay, led_30s_05s_delay, led_05s_delay, led_1s_9s_delay, led_9s_1s_delay;
-bool msflag=0, radioInitflag=0;
+bool radioInitflag=0;
+unsigned char count_100ms=0, count_8ms=0, radioInitDelay;
+unsigned int radioResponseDelay = 0, AssoCounter=0, SsCounter=0;;
+unsigned int led_rvpkt_delay=0, led_30s_1s_delay=0, led_1s_delay=0,led_30s_2s_delay, led_2s_delay;
+unsigned int led_30s_05s_delay, led_05s_delay, led_1s_9s_delay, led_9s_1s_delay;
 unsigned int power_t0, power_t1;
 
-void delay_second(unsigned int cnts)
-{
-  countsec = 250*cnts;
-  while(countsec);
-}
-
-/****************************************************************
+/*******************************************************************************
 *
 * Function: timer_init
 *
 * Description: timer Initialization
 * Initialize timer period and source clock
 *
-*****************************************************************/
+*******************************************************************************/
 
 // Timer A0 Initialization
 void timer_init()
@@ -64,9 +58,9 @@ void timer_init()
   radioInitDelay = RADIOINITDELAY;      // radio initialize delay
 }
 
-/******************************************************
+/*******************************************************************************
 // Timer A0 interrupt service routine @ 250hz, 4ms
-******************************************************/
+*******************************************************************************/
 #pragma vector=TIMER0_A0_VECTOR
 __interrupt void TA0_ISR(void)
 {
@@ -74,14 +68,14 @@ __interrupt void TA0_ISR(void)
         case TA0IV_NONE:
           if(count_8ms) count_8ms--;            // main loop 8ms timer
           
-          if(countsec)
-            countsec--;                         // count 100ms timer
+          if(count_100ms)
+            count_100ms--;                      // count 100ms timer
           else{
-            countsec = 25;
+            count_100ms = 25;
             if(AssoCounter)AssoCounter--;       // ask for associate timer
             if(SsCounter)SsCounter--;           // ask for signal strength timer
             if(radioResponseDelay) radioResponseDelay--;// radio response time out        
-            if(radioInitDelay) radioInitDelay--;
+            if(radioInitDelay) radioInitDelay--;        // radio init delay
             else radioInitflag = true;
           }
           
@@ -177,6 +171,7 @@ __interrupt void TA0_ISR(void)
                 led_1s_9s_delay = TIMER_1S;
                 led_9s_1s_delay = TIMER_9S;
             }
+            StrengthLevel = 0;
           }
           else{
             LED_R_OFF;

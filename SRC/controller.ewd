@@ -10,7 +10,7 @@
     <debug>1</debug>
     <settings>
       <name>C-SPY</name>
-      <archiveVersion>5</archiveVersion>
+      <archiveVersion>4</archiveVersion>
       <data>
         <version>27</version>
         <wantNonLocal>1</wantNonLocal>
@@ -57,7 +57,7 @@
         </option>
         <option>
           <name>DdfFileName</name>
-          <state>$TOOLKIT_DIR$\config\debugger\msp430i2041.ddf</state>
+          <state>$TOOLKIT_DIR$\config\debugger\MSP430i2020.ddf</state>
         </option>
         <option>
           <name>ProcTMS</name>
@@ -153,7 +153,7 @@
       <name>430FET</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <version>29</version>
+        <version>27</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -211,7 +211,7 @@
         </option>
         <option>
           <name>CRadioProtocolType</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCRadioModuleTypeSlave</name>
@@ -235,7 +235,7 @@
         </option>
         <option>
           <name>FetConnection</name>
-          <version>4</version>
+          <version>3</version>
           <state>0</state>
         </option>
         <option>
@@ -310,14 +310,6 @@
           <name>eraseTypeSlave</name>
           <state>0</state>
         </option>
-        <option>
-          <name>DataSampleBpReservation</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>cycleCounterLevel</name>
-          <state>0</state>
-        </option>
       </data>
     </settings>
     <settings>
@@ -355,7 +347,7 @@
     </settings>
     <debuggerPlugins>
       <plugin>
-        <file>$TOOLKIT_DIR$\plugins\lcd\lcd.ewplugin</file>
+        <file>$TOOLKIT_DIR$\plugins\Lcd\lcd.ewplugin</file>
         <loadFlag>1</loadFlag>
       </plugin>
       <plugin>
@@ -372,6 +364,10 @@
       </plugin>
       <plugin>
         <file>$TOOLKIT_DIR$\plugins\rtos\OpenRTOS\OpenRTOSPlugin.ewplugin</file>
+        <loadFlag>0</loadFlag>
+      </plugin>
+      <plugin>
+        <file>$TOOLKIT_DIR$\plugins\rtos\PowerPac\PowerPacRTOS.ewplugin</file>
         <loadFlag>0</loadFlag>
       </plugin>
       <plugin>
@@ -420,7 +416,7 @@
     <debug>0</debug>
     <settings>
       <name>C-SPY</name>
-      <archiveVersion>5</archiveVersion>
+      <archiveVersion>4</archiveVersion>
       <data>
         <version>27</version>
         <wantNonLocal>1</wantNonLocal>
@@ -563,7 +559,7 @@
       <name>430FET</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <version>29</version>
+        <version>27</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -645,7 +641,7 @@
         </option>
         <option>
           <name>FetConnection</name>
-          <version>4</version>
+          <version>3</version>
           <state>0</state>
         </option>
         <option>
@@ -720,14 +716,6 @@
           <name>eraseTypeSlave</name>
           <state>0</state>
         </option>
-        <option>
-          <name>DataSampleBpReservation</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>cycleCounterLevel</name>
-          <state>0</state>
-        </option>
       </data>
     </settings>
     <settings>
@@ -765,7 +753,7 @@
     </settings>
     <debuggerPlugins>
       <plugin>
-        <file>$TOOLKIT_DIR$\plugins\lcd\lcd.ewplugin</file>
+        <file>$TOOLKIT_DIR$\plugins\Lcd\lcd.ewplugin</file>
         <loadFlag>1</loadFlag>
       </plugin>
       <plugin>
@@ -782,6 +770,10 @@
       </plugin>
       <plugin>
         <file>$TOOLKIT_DIR$\plugins\rtos\OpenRTOS\OpenRTOSPlugin.ewplugin</file>
+        <loadFlag>0</loadFlag>
+      </plugin>
+      <plugin>
+        <file>$TOOLKIT_DIR$\plugins\rtos\PowerPac\PowerPacRTOS.ewplugin</file>
         <loadFlag>0</loadFlag>
       </plugin>
       <plugin>

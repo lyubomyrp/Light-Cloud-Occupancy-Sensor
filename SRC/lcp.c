@@ -22,7 +22,7 @@
 #include "flash.h"
 
 int parse_basic_lcp_packet();
-int parse_global_command();
+int parse_command();
 
 // Packet field vars
 unsigned char lcpPktPayloadLen = 0;
@@ -30,15 +30,11 @@ unsigned char lcpPktDeviceType = 0;
 unsigned char lcpPktAPI = 0;
 unsigned char lcpPktID = 0;
 
-unsigned int lcp_packet_count = 0;
-
-unsigned char responseFlag = 0;
-unsigned char lcp_softon_flag = 0;
-bool lcp_dim_flag = false, lcp_pm_inst_flag = false, lcp_state_report = false;
+unsigned char lcp_id_rsp = 0;
+bool lcp_dim_flag = false, lcp_state_report = false;
 
 // Dimming field vars
-unsigned int LCConfigInfo = 0;
-unsigned char ControllerType=0, CfgMode=0, DimMode=0, Direction=0, TransitionTime = 0;
+unsigned char DimMode=0, Direction=0, TransitionTime = 0;
 
 /****************************************************************
 *
@@ -52,13 +48,12 @@ int parse_lcp_packet()
 {
     int result;
     
-    result = parse_basic_lcp_packet();          // Parse completed packet
+    result = parse_basic_lcp_packet();  // Parse completed packet
     
-    if(result == EParseTestOK)                  // Valid packet
+    if(result == EParseTestOK)          // Valid packet
     {
-        result = parse_global_command();        // Check if it's a global command
+        result = parse_command();       // Check if it's a global command
     }
-    
 
     return result;
 }
@@ -105,69 +100,50 @@ int parse_basic_lcp_packet()
 
 /****************************************************************
 *
-* Function: parse_global_command
-*
-* Description: Check if this is a global command packet
-*
-* Returns: EParseGoodDiscovery - if Discovery packet
-*          EParseGoodStatus - if Status packet
-*          EParseTestOK - If packet is not a global command
-*
-*****************************************************************/
-int parse_global_command()
-{
-    // Check payload length and device code for match with wildcard values
-    //if ((rx_lcp_buf[LCP_OFFSET_PAYLOAD_LENGTH] == LC_WILDCARD_PAYLOAD_LEN_GENERIC_CMD) ||
-    //    (rx_lcp_buf[LCP_OFFSET_DEVICE_CODE] == LC_DEVICE_TYPE_WILDCARD))
-    {
-      if(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE] == LC_PACKET_CMD_DISCOVERY)
-        return(EParseGoodDiscovery);
-      
-      if(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE] == LC_PACKET_CMD_STATUS)
-        return(EParseGoodStatus);
-      
-      if(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE] == LC_PACKET_CMD_IDENTITY)
-        return(EParseGoodIdentity);
-      
-    }
-    return(EParseTestOK);           // Not a global command
-}
-
-//#if 0
-/****************************************************************
-*
 * Function: parse_device_specific_command
 *
-* Description: Parse LightCloud device specific commands
+* Description: Parse LightCloud device commands
 *
 *
 *****************************************************************/
-int parse_device_specific_command()
+int parse_command()
 {
+  unsigned int CfgMode, LCConfigInfo;
+  
   switch(rx_lcp_buf[LCP_OFFSET_COMMAND_CODE])
-    {
-        // Process Controller Module commands
+  { // Process Controller Module commands
+    
+    case LC_PACKET_CMD_STATUS:
+        return(EParseGoodStatus);
+        break;
+    case LC_PACKET_CMD_IDENTITY:
+        lcp_id_feedback = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS];
+        return(EParseGoodIdentity);
+        break;
     case LC_PACKET_CMD_DEVICE_CONFIG:
           CfgMode = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS];
           LCConfigInfo = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+2];
           switch(CfgMode)
           {
           case 2:
-            ControllerType = LCConfigInfo;
-            flash_image[FLASH_DEVICE_MODE] = LCConfigInfo;
+            DeviceCfg->deviceMode = LCConfigInfo;
             break;
           case 3:
-            CurveType = LCConfigInfo;
-            flash_image[FLASH_CURVE_TYPE] = LCConfigInfo;
+            DeviceCfg->curveType = LCConfigInfo;
             break;
           case 4:
-            lcp_softon_flag = LCConfigInfo;
-            flash_image[FLASH_SOFT_DIM_ON] = LCConfigInfo;
+            DeviceCfg->softDimOn= LCConfigInfo;
+            break;
+          case 5:
+            DeviceCfg->powerPktOn = LCConfigInfo;
+            break;
+          case 6:
+            DeviceCfg->relayState = LCConfigInfo;
             break;
           }
           flash_info_update();
           break;
-    case LC_PACKET_CMD_DIMMING_CONTROL:
+    case LC_PACKET_CMD_STATE_CHANGE:
           DimMode = (rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS] >> 4) & 0x0F;
           Direction = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS] & 0x0F;
           TransitionTime = rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+1];
@@ -175,15 +151,14 @@ int parse_device_specific_command()
                                         rx_lcp_buf[LCP_OFFSET_BEGIN_ARGS+3];
           lcp_dim_flag = true;
           if(DimMode==2)PWMrateFlag = true;
-          soft_on_off_flag = true;
           PrevRLY = RLY_READ;
           break;
           
     case LC_PACKET_CMD_POWER_REPORT:
-          lcp_pm_inst_flag = true;
+          return(EParseGoodPower);
           break;
     }
-    return 0;
+    return(EParseTestOK);
 }
 //#endif
 

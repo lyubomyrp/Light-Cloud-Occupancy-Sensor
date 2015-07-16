@@ -5,7 +5,21 @@
 #define GLOBAL_EXT extern
 #endif
 
-#include <stdbool.h>
+struct flash_def                // device configuration structure
+{
+    unsigned char deviceMode;   // device mode
+    unsigned char curveType;    // curve type
+    unsigned char softDimOn;    // soft dim on/off
+    unsigned char powerPktOn;   // power monitor packet on/off
+    unsigned char hbDefault;    // heartbeat default
+    unsigned char hbEnable;     // heartbeat enable/disable
+    unsigned char relayState;   // relay default state
+    unsigned char pwm_H;        // pwm high byte
+    unsigned char pwm_L;        // pwm low byte
+    unsigned char filler[7];
+};
+
+extern struct flash_def *DeviceCfg; // device configuration structure
 
 extern void ResetRvBuf(void);
 extern int ActuatorHardOn(void);
@@ -16,6 +30,7 @@ extern void read_digi_radio_info(void);
 extern bool RecFlag, SampleReadyFlag, AssoFlag, AssoCheckFlag, WaitControllerRsp, SignalStrengthFlag;
 extern unsigned char StrengthLevel;
 extern unsigned int myDeviceType;
+
 
 #ifdef LC_OCCUPANCY
 /*******************************************************************************

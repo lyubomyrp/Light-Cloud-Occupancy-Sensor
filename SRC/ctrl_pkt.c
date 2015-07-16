@@ -1,11 +1,11 @@
-/*****************************************************************************
+/*******************************************************************************
 *   File name: ctrl_pkt.c
 *
 *   Description: Controller packet generation
 *     This file contains functions for generating LCP response and information
 *     packets for the Controller Module
 *
-******************************************************************************
+********************************************************************************
 */
 #include <string.h>
 #include <stdbool.h>
@@ -24,14 +24,13 @@
 
 // Define device identity
 unsigned char hwVersion;
-//unsigned long sourceAddressLow = 0x4099585C;
-//unsigned long sourceAddressHigh = 0x0013a200;
 unsigned long sourceAddressLow;
 unsigned long sourceAddressHigh;
 unsigned char panID[8] = {0};
 unsigned char channel = 0;
+unsigned char pkt_buf[TX_BUF_SIZE];
 
-/*****************************************************************************
+/*******************************************************************************
 *
 * Function: send_status_response
 *
@@ -39,7 +38,7 @@ unsigned char channel = 0;
 *
 * Input:  None
 *
-******************************************************************************
+********************************************************************************
 */
 
 int send_status_response(void)
@@ -56,7 +55,7 @@ int send_status_response(void)
     pkt_buf[index++] = RLY_READ;                                                // Actuator Status
     pkt_buf[index++] = CurrentLevel>>8;                                         // Dimming level
     pkt_buf[index++] = CurrentLevel;
-    pkt_buf[index++] = CurveType;
+    pkt_buf[index++] = DeviceCfg->curveType;
     pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
     
     send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
@@ -64,35 +63,7 @@ int send_status_response(void)
     return 0;
 }
 
-/*****************************************************************************
-*
-* Function: send_discovery_response
-*
-* Description: send LCP discovery response packet
-*
-* Input:  None
-*
-******************************************************************************
-*/
-
-int send_discovery_response(void)
-{
-  char index = 0;
-    
-    pkt_buf[index++] = LC_DEVICE_RESPONSE_PREFIX_BYTE;                          // Prefix
-    pkt_buf[index++] =  0x04;                                                   // Payload Length
-    pkt_buf[index++] = myDeviceType;                                            // Device code 
-    pkt_buf[index++] = LCP_PROTOCOL_VERSION;                                    // LCP protocol version
-    pkt_buf[index++] = lcpPktID;                                                // Packet ID
-    pkt_buf[index++] = LC_PACKET_CMD_DISCOVERY;                                 // Command code
-    pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
-    
-    send_radio_api_packet_data(destination_addr, network_addr, pkt_buf, index);
-    led_rvpkt_delay = TIMER_2S;
-    return 0;
-}
-
-/*****************************************************************************
+/*******************************************************************************
 *
 * Function: send_identity_response
 *
@@ -100,7 +71,7 @@ int send_discovery_response(void)
 *
 * Input:  None
 *
-******************************************************************************
+********************************************************************************
 */
 
 int send_identity_response()
@@ -128,7 +99,7 @@ int send_identity_response()
     pkt_buf[index++] = (unsigned char) (sourceAddressLow & 0x00FF);
     memcpy(&pkt_buf[index], &panID, 8);                                         // PAN ID
     index += 8;
-    pkt_buf[index++] = responseFlag;                                            // Response request
+    pkt_buf[index++] = lcp_id_feedback;                                         // Response request
     pkt_buf[1] = index-2;                                                       // Add length
     pkt_buf[index++] = LC_PACKET_TERMINATOR_BYTE;                               // Packet terminator
     
@@ -137,9 +108,9 @@ int send_identity_response()
     return 0;
 }
 
-/*************** Controller Specific Response Packets ******************************/
+/*************** Controller Specific Response Packets *************************/
 
-/*****************************************************************************
+/*******************************************************************************
 *
 * Function: state_change_report
 *
@@ -147,7 +118,7 @@ int send_identity_response()
 *
 * Input:  None
 *
-******************************************************************************
+********************************************************************************
 */
 
 int state_change_report(void)
@@ -171,7 +142,7 @@ int state_change_report(void)
     return 0;
 }
 
-/*****************************************************************************
+/*******************************************************************************
 *
 * Function: send_power_loss_detect
 *
@@ -179,7 +150,7 @@ int state_change_report(void)
 *
 * Input:  None
 *
-******************************************************************************
+********************************************************************************
 */
 
 int send_power_loss_detect(void)
@@ -199,7 +170,7 @@ int send_power_loss_detect(void)
     return 0;
 }
 
-/*****************************************************************************
+/*******************************************************************************
 *
 * Function: send_power_response
 *
@@ -207,7 +178,7 @@ int send_power_loss_detect(void)
 *
 * Input:  None
 *
-******************************************************************************
+********************************************************************************
 */
 
 int send_pm_result(void)
@@ -251,7 +222,7 @@ int send_pm_result(void)
 
 #ifdef LC_OCCUPANCY
 
-/*****************************************************************************
+/*******************************************************************************
 *
 * Function: send_occupancy_event
 *
@@ -259,7 +230,7 @@ int send_pm_result(void)
 *
 * Input:  None
 *
-******************************************************************************
+********************************************************************************
 */
 
 int send_occupancy_event(void)

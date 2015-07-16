@@ -1,10 +1,10 @@
-/*****************************************************************************
+/*******************************************************************************
 *   File name: api_pkt.c
 *
 *   Description: API packet generation
 *     This file contains functions for generating Zigbee API interface packets
 *
-******************************************************************************
+********************************************************************************
 */
 
 #include <string.h>
@@ -20,6 +20,7 @@
 unsigned char destination_addr[8] = {0x00, 0x13, 0xa2, 0x00, 0x40, 0xb6, 0x68, 0x3d};
 unsigned char network_addr[2] = {0xFF, 0xFE};
 //unsigned char network_addr[2] = {0};
+unsigned char tx_buf[TX_BUF_SIZE];
 
 /*****************************************************************************
 *

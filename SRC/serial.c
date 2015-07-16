@@ -9,45 +9,36 @@
 */
 #include  <stdbool.h>
 #include "msp430.h"
-#define SERIAL_DEF
+//#define SERIAL_DEF
 #include "io.h"
 #include "serial.h"
-#include "LCP.h"
+#include "lcp.h"
 #include "lcp_constants.h"
+#include "api_pkt.h"
 #include "global.h"
 
 unsigned int tx_offset = 0;
 unsigned int tx_index = 0;
 unsigned int tx_count = 0;
-unsigned int rx_offset = 0;
-unsigned int rx_index = 0;
 unsigned char *current_tx_ptr;
 unsigned char *current_rx_ptr;
 unsigned int packet_length = 0;
 unsigned char frame_type = 0;
 
+unsigned char lcp_byte_count;
 unsigned char rx_byte_count = 0;
-unsigned char rx_count = 0;
 bool packet_rx_flag = false;
 bool tx_complete_flag = false;
 bool lcp_packet_rx_flag = false;
 
-unsigned char rxErrCount =0;
-unsigned char rxErrIndex = 0;
-
-unsigned char rx_state = 0;    // LightCloud Protocol state
-unsigned char lcp_length = 0;   // LightCloud Protocol payload length
+unsigned char rx_state = 0;             // LightCloud Protocol state
+unsigned char lcp_length = 0;           // LightCloud Protocol payload length
 
 // Digi frame decode variables
-unsigned char digi_header_count = 0;          // Count  of Digi header field bytes
+unsigned char digi_header_count = 0;    // Count  of Digi header field bytes
 
-bool lcp_flag = false;          // When false, process radio commands
-                                // When true, process LCP data
-
-extern bool serTestFlag;
-extern bool usbState;
-
-
+unsigned char rx_buf[RX_BUF_SIZE]; // receive all other packet data except LCP data
+unsigned char rx_lcp_buf[RX_LCP_BUF_SIZE];// receive only LCP packet data
 /****************************************************************
 *
 * Function: serial_init
@@ -191,7 +182,7 @@ __interrupt void USCI_A0_ISR(void)
                 }
                 break;
                         
-              case RX_WAIT_FOR_PREFIX:                    // Prepare for Zigbee Receive Packet Receive LCP Data - Prefix
+              case RX_WAIT_FOR_PREFIX:                  // Prepare for Zigbee Receive Packet Receive LCP Data - Prefix
                 if(temp == LC_DEVICE_COMMAND_PREFIX_BYTE)
                 {
                   current_rx_ptr = rx_lcp_buf;          // reset receive ptr

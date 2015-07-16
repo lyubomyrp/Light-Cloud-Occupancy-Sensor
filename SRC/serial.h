@@ -1,4 +1,10 @@
-
+/*******************************************************************************
+*   
+*   File name: serial.h
+*
+*   defines serial interrupt
+*   
+*******************************************************************************/
 #ifdef SERIAL_DEF
 #define SERIAL_EXT
 #else
@@ -15,12 +21,10 @@
 #define CMD_RSP_STATUS          0x04            // Status info in Command Response frame
 #define CMD_RSP_DATA            0x05
 
-//#define AT_CMD_RESP             0x88            // Frame type for AT command response frame
 #define DIGI_API_FRAME_START    0x7E            // Digi API Frame start delimiter
 #define AT_RSP_PACKET_TYPE      0x88            // Digi API AT command response packet
 #define TX_STATUS_PACKET_TYPE   0x8B            // Digi API Transmit status
 #define RX_PACKET_TYPE          0x90            // Digi API receive frame type
-#define API_LENGTH_COUNT        2               // Digi API length count
 #define API_BODY_COUNT          10              // 64 bit source address + 16 bit network address + receive options byte
 
 enum serial_rx_states {
@@ -33,31 +37,20 @@ enum serial_rx_states {
                  RX_WAIT_FOR_COUNT,             // LCP packet byte count - State 6
                  RX_PROCESS_DATA,               // State 7
                  RX_WAIT_FOR_TERMINATOR,        // State 8
-                 RX_RCV_RSP_DATA};              // State 9
+                 RX_RCV_RSP_DATA                // State 9
+};
 
 SERIAL_EXT int serial_init(void);
 SERIAL_EXT unsigned int serial_0_xmit(unsigned char buf_index, unsigned char len);
 
 SERIAL_EXT bool packet_rx_flag;
 SERIAL_EXT bool lcp_packet_rx_flag;
-SERIAL_EXT bool lcp_flag;          // When false, process radio commands
-                                   // When true, process LCP data
-
-SERIAL_EXT unsigned int tx_offset;
-SERIAL_EXT unsigned int tx_index;
-SERIAL_EXT unsigned int rx_offset;
-SERIAL_EXT unsigned int rx_index;
 
 SERIAL_EXT unsigned char rx_byte_count;
 SERIAL_EXT unsigned char lcp_byte_count;
-SERIAL_EXT unsigned char rx_count;
 SERIAL_EXT unsigned char *current_rx_ptr;
-SERIAL_EXT bool tx_complete_flag;
-
 
 // Define buffers
-SERIAL_EXT unsigned char tx_buf[TX_BUF_SIZE];
 SERIAL_EXT unsigned char rx_buf[RX_BUF_SIZE]; // receive all other packet data except LCP data
-SERIAL_EXT unsigned char pkt_buf[TX_BUF_SIZE];
 SERIAL_EXT unsigned char rx_lcp_buf[RX_LCP_BUF_SIZE];// receive only LCP packet data
 

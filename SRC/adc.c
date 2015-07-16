@@ -32,8 +32,6 @@
 #define TRIGGER_THRESHOLD_L             200
 
 
-
-
 bool ADCInitFlag = 1, TriggerFlag = 0; 
 unsigned char V_endstops = ENDSTOP_HITS_FOR_OVERLOAD, *current_freq_ptr;
 char iV_history_index;
@@ -43,8 +41,8 @@ int16_t iV, iI, iV_dc=0, iV_diff, iI_dc, iV_max=0, iV_min=0, iI_max=0, iI_min=0,
 int32_t tV_accum, tI_accum, iP_mpy;
 uint64_t iV_mpy, iI_mpy, iV_accum, iI_accum;
 uint32_t iV_div, iV_sqrt, iI_div, iI_sqrt, tP;
-//uint16_t tV_accum[3], tV_accum_history[3];
 uint16_t send_V, send_I, send_P, send_F, send_PF, send_THD;
+
 /*
 int32_t dc_filter16_init(int16_t x)
 {
@@ -169,7 +167,7 @@ int per_sample_dsp()
   iI_accum += ((uint32_t)RESHI<<16)| RESLO;
   
   freq_counter++;
-  if((iV_history > 0) && (iV < 0)){
+  if((iV_history > 0) && (iV < 0)){     // we cross from positive to negative
     if(ADCInitFlag == 0){
       vfreq_counter_buf += (freq_counter - vfreq_counter_history);
       index_f++;
@@ -226,7 +224,7 @@ int per_sample_dsp()
   }
   
   
-  if(ControllerType == LC_CONTROLLER_TYPE_TRIGGER){
+  if(DeviceCfg->deviceMode == LC_CONTROLLER_TYPE_TRIGGER){
     /*if(tI > TRIGGER_THRESHOLD_H){
       lcp_dim_flag = false;
       lcp_state_report = true;

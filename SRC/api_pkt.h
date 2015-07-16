@@ -20,4 +20,4 @@ API_EXT unsigned char send_radio_api_packet_param_string(unsigned char cmd1, uns
 
 API_EXT unsigned char destination_addr[8];
 API_EXT unsigned char network_addr[2];
-
+API_EXT unsigned char tx_buf[TX_BUF_SIZE];

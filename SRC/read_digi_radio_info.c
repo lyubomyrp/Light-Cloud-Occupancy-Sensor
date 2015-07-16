@@ -83,8 +83,6 @@ void read_digi_radio_info(void)
   if((rx_buf[2] == 'A') && (rx_buf[3] == 'I')){
     if((rx_buf[CMD_RSP_STATUS] == 0) && (rx_buf[CMD_RSP_DATA] == 0)){
       AssoFlag = true;
-      LED_R_OFF;
-      LED_G_ON;
       radioResponseDelay = RADIORSPDELAY;
       send_radio_api_packet('O', 'P');    // Get PAN ID
       while((packet_rx_flag == true) || (radioResponseDelay==0));           
@@ -113,13 +111,8 @@ void read_digi_radio_info(void)
   else
   {
     AssoFlag = false;
-    LED_G_OFF;
-    led_30s_19_delay = TIMER_30S_19;
-    led_1s_9s_delay = TIMER_1S;
-    led_9s_1s_delay = TIMER_9S;
     ResetRvBuf();
     radioResponseDelay = RADIORSPDELAY;
-    StrengthLevel = 0;
     send_radio_api_packet_param('N', 'R', 0);
     while((packet_rx_flag == true) || (radioResponseDelay==0));
   }

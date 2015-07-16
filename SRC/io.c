@@ -1,4 +1,4 @@
-/*****************************************************************************
+/*******************************************************************************
 *
 *   File name: io.c
 *
@@ -8,27 +8,24 @@
 *   Outputs (1) - P2.6(PWM); P1.0(RLY); P2.1-P2.5,P2.7,P1.1(LEDs)
 *   Inputs (0)  - P1.1(P2.0)(Btn); P1.4(PWR_OK); A0.0(V), A1.0(I)
 *
-*****************************************************************************/
+******************************************************************************S*/
 
 #define IO_DEF
 #include  <stdbool.h>
 #include "msp430.h"
 #include "io.h"
-#include "timer.h"
 #include "ctrl_pkt.h"
 #include "flash.h"
 #include "global.h"
-#include "dim.h"
 
-
-/****************************************************************
+/*******************************************************************************
 *
 * Function: io_init
 *
 * Description: Digital IO port Initialization
 * Initialize input and output pins
 *
-*****************************************************************/
+*******************************************************************************/
 int io_init()
 {
 #ifdef LC_CONTROLLER
@@ -42,9 +39,11 @@ int io_init()
   P1IES |= BIT4;                // P1.4 power ok high-low transition interrupt
   P1IE |= BIT4;                 // Enable interrupt
   P1IFG &= ~BIT4;               // Clear interrupt flag
-  LED_ALL_OFF;
-  RLY_OFF;
-  PWM_OFF;
+  
+  LED_ALL_OFF;                  // All led off
+  LED_W_ON;                     // if no power loss, white LED on?
+  RLY_OFF;                      // relay off
+  PWM_OFF;                      // pwm output off
   
 
 #elif  LC_OCCUPANCY
@@ -78,7 +77,7 @@ int io_init()
   return 0;
 }
 
-/****************************************************************
+/*******************************************************************************
 *
 * Function: PORT1_ISR
 *
@@ -86,7 +85,7 @@ int io_init()
 *
 * Interrupt handling for P1 IO pins
 *
-*****************************************************************/
+*******************************************************************************/
 #pragma vector=PORT1_VECTOR
 __interrupt void PORT1_ISR(void)
 {
@@ -99,11 +98,10 @@ __interrupt void PORT1_ISR(void)
         case 0x0A:                      // P1.4 interrupt
           LED_ALL_OFF;
           powerloss_image[0] = RLY_READ;
+          RLY_OFF;
           powerloss_image[1] = TA0CCR1;
           powerloss_image[2] = TA0CCR1 >> 8;
-          RLY_OFF;
-          flash_powerloss_update();
-          //LED_B0_ON;
+          flash_write();
           send_power_loss_detect();
           P1IFG &= ~BIT4;               // Clear IFG
           break;
@@ -112,5 +110,4 @@ __interrupt void PORT1_ISR(void)
         case 0x10: break;               // P1.7 interrupt
     }
 }
-
 
